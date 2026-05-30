@@ -11,6 +11,11 @@ export const i18n = {
     donate: 'Donate',
     language: 'English',
     switchTo: 'fr',
+    footer: {
+      tagline: 'A quarterly literary magazine\npublished in the neighborhood.',
+      contact: 'Contact',
+      rights: 'All rights reserved.',
+    },
   },
   fr: {
     sections: [
@@ -24,5 +29,10 @@ export const i18n = {
     donate: 'Faire un don',
     language: 'Français',
     switchTo: 'en',
+    footer: {
+      tagline: 'Une revue littéraire trimestrielle\npubliée dans le voisinage.',
+      contact: 'Contact',
+      rights: 'Tous droits réservés.',
+    },
   },
 }

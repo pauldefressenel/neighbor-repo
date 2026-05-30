@@ -5,7 +5,7 @@ export default function ArticleCard({ category, title, excerpt, author, mainImag
   return (
     <article className="article-card">
       {mainImage
-        ? <img className="article-image" src={urlFor(mainImage).width(600).url()} alt={title} />
+        ? <img className="article-image" src={urlFor(mainImage).width(1200).url()} alt={title} />
         : <div className="article-image article-image--placeholder" />
       }
       <p className="article-category">{category}</p>
