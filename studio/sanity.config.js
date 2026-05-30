@@ -3,6 +3,7 @@ import { structureTool } from 'sanity/structure'
 import { visionTool } from '@sanity/vision'
 import { schemaTypes } from './schemas/index'
 import { structure } from './structure'
+import { ForceLightScheme } from './forceLight'
 
 export default defineConfig({
   name: 'neighbor',
@@ -15,5 +16,10 @@ export default defineConfig({
   ],
   schema: {
     types: schemaTypes,
+  },
+  studio: {
+    components: {
+      layout: ForceLightScheme,
+    },
   },
 })

@@ -1,0 +1,113 @@
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.article-page {
+  width: 600px;
+  margin: 0 auto;
+  padding: 120px 0 80px;
+}
+
+
+.article-page-category {
+  font-family: 'Geist Mono', monospace;
+  font-weight: 700;
+  font-size: 17px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #FF1919;
+  margin: 0 0 10px;
+  text-align: center;
+  animation: fadeUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0.05s both;
+}
+
+.article-page-title {
+  font-family: 'NeighborFont', serif;
+  font-size: 48px;
+  font-weight: 400;
+  line-height: 1.1;
+  letter-spacing: -0.03em;
+  color: #1a1a1a;
+  margin: 0 0 10px;
+  text-align: center;
+  animation: fadeUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0.1s both;
+}
+
+.article-page-byline {
+  font-family: 'EB Garamond', serif;
+  font-size: 21px;
+  color: #1a1a1a;
+  text-align: center;
+  margin: 0 0 48px;
+  animation: fadeUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0.15s both;
+}
+
+.article-page-author {
+  font-family: 'EB Garamond', serif;
+  font-size: 21px;
+  color: #1a1a1a;
+}
+
+.article-page-date {
+  font-family: 'EB Garamond', serif;
+  font-size: 21px;
+  color: #1a1a1a;
+}
+
+.article-page-rule {
+  display: none;
+}
+
+.article-page-body {
+  font-family: 'EB Garamond', serif;
+  font-size: 21px;
+  line-height: 1.55;
+  color: #1a1a1a;
+  animation: fadeUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.2s both;
+}
+
+.article-page-body p {
+  margin: 0 0 1.4em;
+}
+
+.article-page-body > p:first-child::first-letter {
+  font-family: 'NeighborFont', serif;
+  font-size: 96px;
+  color: #FF1919;
+  float: left;
+  line-height: 0.78;
+  margin-right: 14px;
+  margin-top: 8px;
+}
+
+.article-citation {
+  font-style: italic;
+  color: #555;
+  font-size: 0.95em;
+}
+
+.article-page-poem {
+  margin-top: 48px;
+}
+
+.article-page-poem-title {
+  font-family: 'EB Garamond', serif;
+  font-size: 24px;
+  font-weight: 400;
+  margin: 0 0 24px;
+}
+
+.article-page-poem p {
+  font-family: 'EB Garamond', serif;
+  font-size: 21px;
+  line-height: 1.55;
+  margin: 0 0 0.4em;
+  white-space: pre-wrap;
+}

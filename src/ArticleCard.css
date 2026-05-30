@@ -12,6 +12,9 @@
 .article-card {
   display: flex;
   flex-direction: column;
+  text-decoration: none;
+  color: inherit;
+  cursor: pointer;
 }
 
 .article-image {

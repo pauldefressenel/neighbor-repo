@@ -1,4 +1,5 @@
 import { defineField, defineType } from 'sanity'
+import { BlockquoteIcon } from '@sanity/icons'
 
 export const article = defineType({
   name: 'article',
@@ -47,7 +48,6 @@ export const article = defineType({
     defineField({
       name: 'category',
       title: 'Category',
-      description: 'e.g. Book Review, Short Essay, Poem, Interview',
       type: 'string',
       validation: Rule => Rule.required(),
     }),
@@ -75,7 +75,17 @@ export const article = defineType({
       name: 'body',
       title: 'Body',
       type: 'array',
-      of: [{ type: 'block' }],
+      of: [{
+        type: 'block',
+        lists: [],
+        marks: {
+          decorators: [
+            { title: 'Strong', value: 'strong' },
+            { title: 'Emphasis', value: 'em' },
+            { title: 'Citation', value: 'citation', icon: BlockquoteIcon },
+          ],
+        }
+      }],
     }),
     defineField({
       name: 'poems',
@@ -99,29 +109,6 @@ export const article = defineType({
       title: 'Translation Slug',
       description: 'Slug of the translated version of this article',
       type: 'string',
-    }),
-    defineField({
-      name: 'audioFile',
-      title: 'Audio File URL',
-      type: 'url',
-    }),
-    defineField({
-      name: 'audioQuote',
-      title: 'Audio Caption',
-      type: 'string',
-    }),
-    defineField({
-      name: 'featured',
-      title: 'Featured',
-      type: 'string',
-      options: {
-        list: [
-          { title: 'No', value: 'NO' },
-          { title: 'Yes', value: 'YES' },
-          { title: 'English only', value: 'English' },
-          { title: 'French only', value: 'French' },
-        ],
-      },
     }),
     defineField({
       name: 'publishedAt',

@@ -10,6 +10,7 @@ export const i18n = {
     about: 'About',
     donate: 'Donate',
     language: 'English',
+    latest: 'Latest',
     switchTo: 'fr',
     footer: {
       tagline: 'A quarterly literary magazine\npublished in the neighborhood.',
@@ -28,6 +29,7 @@ export const i18n = {
     about: 'À Propos',
     donate: 'Faire un don',
     language: 'Français',
+    latest: 'Récents',
     switchTo: 'en',
     footer: {
       tagline: 'Une revue littéraire trimestrielle\npubliée dans le voisinage.',

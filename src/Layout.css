@@ -22,6 +22,8 @@
 }
 
 .site-title {
+  text-decoration: none;
+  color: inherit;
   font-family: 'NeighborFont', serif;
   font-weight: 400;
   font-size: 32px;

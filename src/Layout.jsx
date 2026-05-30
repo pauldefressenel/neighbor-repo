@@ -1,8 +1,10 @@
-import { NavLink, Routes, Route, useParams, useNavigate, useLocation } from 'react-router-dom'
+import { NavLink, Link, Routes, Route, useParams, useNavigate, useLocation } from 'react-router-dom'
 import { i18n } from './i18n'
 import './Layout.css'
 import NeighborhoodPage from './NeighborhoodPage'
 import SectionPage from './SectionPage'
+import ArticlePage from './ArticlePage'
+import LatestPage from './LatestPage'
 
 export default function Layout() {
   const { lang, section } = useParams()
@@ -18,7 +20,7 @@ export default function Layout() {
       <header className="header">
         <div className="header-top">
           <div className="header-top-spacer" />
-          <h1 className="site-title">The Neighbor</h1>
+          <Link to={`/${lang}`} className="site-title">The Neighbor</Link>
           <nav className="header-meta">
             <a href="#">{t.about}</a>
             <span className="lang-selector" onClick={switchLanguage}>
@@ -49,7 +51,9 @@ export default function Layout() {
       </header>
 
       <Routes>
+        <Route index element={<LatestPage key={useLocation().pathname} />} />
         <Route path="neighborhood" element={<NeighborhoodPage key={useLocation().pathname} />} />
+        <Route path=":section/:slug" element={<ArticlePage />} />
         <Route path=":section" element={<SectionPage key={useLocation().pathname} />} />
       </Routes>
     </div>
