@@ -39,6 +39,11 @@ push to `main`):
 | `neighbor` | `/` (framework Vite) | `www.theneighborr.com`; the apex redirects to `www` |
 | `neighbor-studio` | `studio/` (`sanity build`, SPA) | `cms.theneighborr.com` |
 
+Both projects run `scripts/vercel-build.mjs` when their Root Directory is the
+repo root: it builds the Studio when the project's production hostname contains
+`studio` or `cms` (or `NEIGHBOR_BUILD=studio` is set) and the site otherwise, so
+the Studio project works even without the Root Directory setting.
+
 `vercel.json` at the root carries the SPA rewrite, immutable caching for
 `/assets` and `/portraits`, and permanent redirects from every URL the old Framer
 site published (the six slugs with accented or curly-quote characters appear both
