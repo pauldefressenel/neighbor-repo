@@ -38,5 +38,3 @@ Two Vercel projects from this one repository:
 - **Studio** — root directory `studio/`, built with `sanity build`, served as an
   SPA. Point the CMS subdomain at this project and add that origin to Sanity's
   CORS list with credentials allowed.
-
-See `CLAUDE.md` for the finer architecture notes.
