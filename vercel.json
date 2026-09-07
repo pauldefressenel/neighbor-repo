@@ -128,12 +128,12 @@
       "permanent": true
     },
     {
-      "source": "/entries/articles/la-grande-nausée",
+      "source": "/entries/articles/la-grande-naus%C3%A9e",
       "destination": "/fr/fiction-poetry/la-grande-nausée",
       "permanent": true
     },
     {
-      "source": "/entries/articles/la-grande-naus%C3%A9e",
+      "source": "/entries/articles/la-grande-naus%c3%a9e",
       "destination": "/fr/fiction-poetry/la-grande-nausée",
       "permanent": true
     },
@@ -143,12 +143,12 @@
       "permanent": true
     },
     {
-      "source": "/entries/articles/salammbô-flaubert-en",
+      "source": "/entries/articles/salammb%C3%B4-flaubert-en",
       "destination": "/en/literature-review/salammbô-flaubert-en",
       "permanent": true
     },
     {
-      "source": "/entries/articles/salammb%C3%B4-flaubert-en",
+      "source": "/entries/articles/salammb%c3%b4-flaubert-en",
       "destination": "/en/literature-review/salammbô-flaubert-en",
       "permanent": true
     },
@@ -183,12 +183,12 @@
       "permanent": true
     },
     {
-      "source": "/entries/articles/salammbô-flaubert-fr",
+      "source": "/entries/articles/salammb%C3%B4-flaubert-fr",
       "destination": "/fr/literature-review/salammbô-flaubert-fr",
       "permanent": true
     },
     {
-      "source": "/entries/articles/salammb%C3%B4-flaubert-fr",
+      "source": "/entries/articles/salammb%c3%b4-flaubert-fr",
       "destination": "/fr/literature-review/salammbô-flaubert-fr",
       "permanent": true
     },
@@ -198,12 +198,12 @@
       "permanent": true
     },
     {
-      "source": "/entries/articles/sur-l-aliénation-de-l-artiste",
+      "source": "/entries/articles/sur-l-ali%C3%A9nation-de-l-artiste",
       "destination": "/fr/literature-review/sur-l-aliénation-de-l-artiste",
       "permanent": true
     },
     {
-      "source": "/entries/articles/sur-l-ali%C3%A9nation-de-l-artiste",
+      "source": "/entries/articles/sur-l-ali%c3%a9nation-de-l-artiste",
       "destination": "/fr/literature-review/sur-l-aliénation-de-l-artiste",
       "permanent": true
     },
@@ -213,12 +213,12 @@
       "permanent": true
     },
     {
-      "source": "/entries/articles/the-hidden-apocalypse-in-kendrick-lamar’s-“damn.”",
+      "source": "/entries/articles/the-hidden-apocalypse-in-kendrick-lamar%E2%80%99s-%E2%80%9Cdamn.%E2%80%9D",
       "destination": "/en/the-arts/the-hidden-apocalypse-in-kendrick-lamar’s-“damn.”",
       "permanent": true
     },
     {
-      "source": "/entries/articles/the-hidden-apocalypse-in-kendrick-lamar%E2%80%99s-%E2%80%9Cdamn.%E2%80%9D",
+      "source": "/entries/articles/the-hidden-apocalypse-in-kendrick-lamar%e2%80%99s-%e2%80%9cdamn.%e2%80%9d",
       "destination": "/en/the-arts/the-hidden-apocalypse-in-kendrick-lamar’s-“damn.”",
       "permanent": true
     },
@@ -268,12 +268,12 @@
       "permanent": true
     },
     {
-      "source": "/entries/articles/vivaldi-mon-père-et-moi",
+      "source": "/entries/articles/vivaldi-mon-p%C3%A8re-et-moi",
       "destination": "/fr/the-arts/vivaldi-mon-père-et-moi",
       "permanent": true
     },
     {
-      "source": "/entries/articles/vivaldi-mon-p%C3%A8re-et-moi",
+      "source": "/entries/articles/vivaldi-mon-p%c3%a8re-et-moi",
       "destination": "/fr/the-arts/vivaldi-mon-père-et-moi",
       "permanent": true
     },

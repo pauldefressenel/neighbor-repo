@@ -14,14 +14,25 @@
   z-index: 100;
 }
 
+/* Measured on theneighborr.com: the header switches layout at 750 and 1000px
+   (the home page's breakpoints; section pages use 700/900 for their grids but
+   the header is the same component). Desktop: wordmark centred, links ending
+   15px from the right edge, nav centred with 60px gaps. */
 .header-top {
   height: 60px;
   display: grid;
   grid-template-columns: 1fr auto 1fr;
   align-items: center;
-  padding: 0 48px;
+  padding: 0 15px;
   border-bottom: 1px solid #1a1a1a;
 }
+
+/* Explicit placement: the toggle is display:none above the phone breakpoint,
+   and a hidden item is skipped by auto-placement, which would slide the
+   wordmark into the first column. */
+.nav-toggle { grid-column: 1; }
+.site-title { grid-column: 2; }
+.header-meta { grid-column: 3; }
 
 .site-title {
   text-decoration: none;
@@ -38,7 +49,7 @@
 
 .header-meta {
   display: flex;
-  gap: 28px;
+  gap: 25px;  /* Framer's 27px minus the width our "▾" glyph adds to the selector */
   align-items: center;
   justify-self: end;
 }
@@ -100,8 +111,9 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 48px;
-  padding: 0 48px;
+  gap: 60px;
+  padding: 0 20px;
+  white-space: nowrap;
   border-bottom: 1px solid #1a1a1a;
 }
 
@@ -234,15 +246,54 @@
   opacity: 0.4;
 }
 
-@media (max-width: 699.98px) {
-  /* Single 60px row: toggle, wordmark, language. */
+/* Tablet (750–999): About and Donate sit at the left edge, the language
+   selector at the right, the wordmark stays centred; nav gaps tighten to 35px
+   so the five sections fit on one line. */
+@media (min-width: 750px) and (max-width: 999.98px) {
+  .header-top {
+    display: flex;
+    position: relative;
+    padding: 0 13px 0 15px;
+  }
+
+  .site-title {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+
+  .header-meta {
+    flex: 1;
+    gap: 15px;
+  }
+
+  .header-meta .lang-menu {
+    order: 1;
+    margin-left: auto;
+  }
+
+  .sections-nav {
+    gap: 35px;
+  }
+}
+
+@media (max-width: 749.98px) {
+  /* Single 60px row, left-aligned: 25px toggle at 15px, wordmark 50px after
+     it, language selector at the right. */
   .header-top {
     height: 60px;
-    padding: 0 20px;
+    grid-template-columns: 26px auto 1fr;
+    padding: 0 24px 0 15px;
   }
 
   .site-title {
     font-size: 29px;
+    justify-self: start;
+    margin-left: 49px;
+  }
+
+  .header-meta {
+    justify-self: end;
   }
 
   .sections-nav {

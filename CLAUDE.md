@@ -62,7 +62,7 @@ URL structure: `/:lang/:section` (e.g. `/en/fiction-poetry`, `/fr/literature-rev
 
 ### Breakpoints
 
-The four Framer breakpoints are used verbatim: ≥1200 / 900–1199 / 700–899 / ≤699. Below 700 the header collapses to one 60px row with a hamburger and the sections nav moves into `menu-overlay`; article grids go 4/3/2/1 columns and portrait grids use 70px (90px on phone) row gaps.
+Framer uses different breakpoints per page. The section pages' set (≥1200 / 900–1199 / 700–899 / ≤699) drives the article grids (4/3/2/1 columns) and portrait grids (70px row gaps, 90px on phone). The header follows the home page's set instead, measured on the live site: ≥1000 desktop (wordmark centred, links ending 15px from the right, nav gap 60px), 750–999 tablet (About/Donate at the left edge, language at the right, nav gap 35px), ≤749 phone (one 60px row: 25px hamburger at 15px, wordmark at 90px, language at the right; the sections nav moves into `menu-overlay`). Layout.css has the measured values.
 
 ### The Neighborhood Page
 
