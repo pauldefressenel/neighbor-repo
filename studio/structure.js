@@ -3,6 +3,8 @@ const languages = [
   { title: 'Français', value: 'fr' },
 ]
 
+const aboutTitle = { en: 'About', fr: 'A Propos' }
+
 const sections = {
   en: [
     { title: 'Fiction & Poetry', value: 'fiction-poetry' },
@@ -28,8 +30,8 @@ export const structure = (S) =>
           .child(
             S.list()
               .title(langTitle)
-              .items(
-                sections[lang].map(({ title, value: section }) =>
+              .items([
+                ...sections[lang].map(({ title, value: section }) =>
                   S.listItem()
                     .title(title)
                     .child(
@@ -39,8 +41,13 @@ export const structure = (S) =>
                         .params({ lang, section })
                         .defaultOrdering([{ field: 'publishedAt', direction: 'desc' }])
                     )
-                )
-              )
+                ),
+                S.divider(),
+                // One fixed document per language, so it opens straight into the editor.
+                S.listItem()
+                  .title(aboutTitle[lang])
+                  .child(S.document().schemaType('aboutPage').documentId(`about-${lang}`)),
+              ])
           )
       )
     )

@@ -1,0 +1,348 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "framework": "vite",
+  "redirects": [
+    {
+      "source": "/home/fr",
+      "destination": "/fr",
+      "permanent": true
+    },
+    {
+      "source": "/sections/fiction/en",
+      "destination": "/en/fiction-poetry",
+      "permanent": true
+    },
+    {
+      "source": "/sections/fiction/fr",
+      "destination": "/fr/fiction-poetry",
+      "permanent": true
+    },
+    {
+      "source": "/sections/literature/en",
+      "destination": "/en/literature-review",
+      "permanent": true
+    },
+    {
+      "source": "/sections/literature/fr",
+      "destination": "/fr/literature-review",
+      "permanent": true
+    },
+    {
+      "source": "/sections/arts/en",
+      "destination": "/en/the-arts",
+      "permanent": true
+    },
+    {
+      "source": "/sections/arts/fr",
+      "destination": "/fr/the-arts",
+      "permanent": true
+    },
+    {
+      "source": "/sections/portraits/en",
+      "destination": "/en/portraits",
+      "permanent": true
+    },
+    {
+      "source": "/sections/portraits/fr",
+      "destination": "/fr/portraits",
+      "permanent": true
+    },
+    {
+      "source": "/about/en",
+      "destination": "/en/about",
+      "permanent": true
+    },
+    {
+      "source": "/neighborhood/en",
+      "destination": "/en/neighborhood",
+      "permanent": true
+    },
+    {
+      "source": "/about/fr",
+      "destination": "/fr/about",
+      "permanent": true
+    },
+    {
+      "source": "/neighborhood/fr",
+      "destination": "/fr/neighborhood",
+      "permanent": true
+    },
+    {
+      "source": "/neighborhood/en-2",
+      "destination": "/en/neighborhood",
+      "permanent": true
+    },
+    {
+      "source": "/entries/articles/anchor",
+      "destination": "/en/fiction-poetry/anchor",
+      "permanent": true
+    },
+    {
+      "source": "/entries/articles/a-name-is-a-sound",
+      "destination": "/en/fiction-poetry/a-name-is-a-sound",
+      "permanent": true
+    },
+    {
+      "source": "/entries/articles/voltas-i",
+      "destination": "/en/fiction-poetry/voltas-i",
+      "permanent": true
+    },
+    {
+      "source": "/entries/articles/anatomy-of-a-laugh",
+      "destination": "/en/fiction-poetry/anatomy-of-a-laugh",
+      "permanent": true
+    },
+    {
+      "source": "/entries/articles/killed-by-kindness",
+      "destination": "/en/fiction-poetry/killed-by-kindness",
+      "permanent": true
+    },
+    {
+      "source": "/entries/articles/shibuya-dancing-en",
+      "destination": "/en/fiction-poetry/shibuya-dancing-en",
+      "permanent": true
+    },
+    {
+      "source": "/entries/articles/goya-as-saturn-saw-him",
+      "destination": "/en/fiction-poetry/goya-as-saturn-saw-him",
+      "permanent": true
+    },
+    {
+      "source": "/entries/articles/nausea-winter",
+      "destination": "/en/fiction-poetry/nausea-winter",
+      "permanent": true
+    },
+    {
+      "source": "/entries/articles/la-chute-et-l-envol",
+      "destination": "/fr/fiction-poetry/la-chute-et-l-envol",
+      "permanent": true
+    },
+    {
+      "source": "/entries/articles/eloge-de-la-mauvaise-foi",
+      "destination": "/fr/fiction-poetry/eloge-de-la-mauvaise-foi",
+      "permanent": true
+    },
+    {
+      "source": "/entries/articles/shibuya-dancing-fr",
+      "destination": "/fr/fiction-poetry/shibuya-dancing-fr",
+      "permanent": true
+    },
+    {
+      "source": "/entries/articles/la-grande-nausée",
+      "destination": "/fr/fiction-poetry/la-grande-nausée",
+      "permanent": true
+    },
+    {
+      "source": "/entries/articles/the-world-of-yesterday",
+      "destination": "/en/literature-review/the-world-of-yesterday",
+      "permanent": true
+    },
+    {
+      "source": "/entries/articles/salammbô-flaubert-en",
+      "destination": "/en/literature-review/salammbô-flaubert-en",
+      "permanent": true
+    },
+    {
+      "source": "/entries/articles/the-death-of-ivan-ilyitch",
+      "destination": "/en/literature-review/the-death-of-ivan-ilyitch",
+      "permanent": true
+    },
+    {
+      "source": "/entries/articles/on-creative-alienation",
+      "destination": "/en/literature-review/on-creative-alienation",
+      "permanent": true
+    },
+    {
+      "source": "/entries/articles/narcissus-and-goldmund-en",
+      "destination": "/en/literature-review/narcissus-and-goldmund-en",
+      "permanent": true
+    },
+    {
+      "source": "/entries/articles/kolkhoze",
+      "destination": "/fr/literature-review/kolkhoze",
+      "permanent": true
+    },
+    {
+      "source": "/entries/articles/cyrano-de-bergerac",
+      "destination": "/fr/literature-review/cyrano-de-bergerac",
+      "permanent": true
+    },
+    {
+      "source": "/entries/articles/les-nuits-blanches",
+      "destination": "/fr/literature-review/les-nuits-blanches",
+      "permanent": true
+    },
+    {
+      "source": "/entries/articles/salammbô-flaubert-fr",
+      "destination": "/fr/literature-review/salammbô-flaubert-fr",
+      "permanent": true
+    },
+    {
+      "source": "/entries/articles/la-mort-d-ivan-ilyitch",
+      "destination": "/fr/literature-review/la-mort-d-ivan-ilyitch",
+      "permanent": true
+    },
+    {
+      "source": "/entries/articles/sur-l-aliénation-de-l-artiste",
+      "destination": "/fr/literature-review/sur-l-aliénation-de-l-artiste",
+      "permanent": true
+    },
+    {
+      "source": "/entries/articles/narcissus-and-goldmund-fr",
+      "destination": "/fr/literature-review/narcissus-and-goldmund-fr",
+      "permanent": true
+    },
+    {
+      "source": "/entries/articles/the-hidden-apocalypse-in-kendrick-lamar’s-“damn.”",
+      "destination": "/en/the-arts/the-hidden-apocalypse-in-kendrick-lamar’s-“damn.”",
+      "permanent": true
+    },
+    {
+      "source": "/entries/articles/etude-blue",
+      "destination": "/en/the-arts/etude-blue",
+      "permanent": true
+    },
+    {
+      "source": "/entries/articles/nietzsche-through-marty-mauser-and-alysa-liu",
+      "destination": "/en/the-arts/nietzsche-through-marty-mauser-and-alysa-liu",
+      "permanent": true
+    },
+    {
+      "source": "/entries/articles/mektoub-my-love-en",
+      "destination": "/en/the-arts/mektoub-my-love-en",
+      "permanent": true
+    },
+    {
+      "source": "/entries/articles/vivaldi-my-dad-and-i",
+      "destination": "/en/the-arts/vivaldi-my-dad-and-i",
+      "permanent": true
+    },
+    {
+      "source": "/entries/articles/the-dissonance-of-jazz",
+      "destination": "/en/the-arts/the-dissonance-of-jazz",
+      "permanent": true
+    },
+    {
+      "source": "/entries/articles/inherent-vice-en",
+      "destination": "/en/the-arts/inherent-vice-en",
+      "permanent": true
+    },
+    {
+      "source": "/entries/articles/borsalino-mon-voisin-et-ma-casquette",
+      "destination": "/fr/the-arts/borsalino-mon-voisin-et-ma-casquette",
+      "permanent": true
+    },
+    {
+      "source": "/entries/articles/sur-nietzsche-chez-marty-mauser-et-alysa-liu",
+      "destination": "/fr/the-arts/sur-nietzsche-chez-marty-mauser-et-alysa-liu",
+      "permanent": true
+    },
+    {
+      "source": "/entries/articles/mektoub-my-love-fr",
+      "destination": "/fr/the-arts/mektoub-my-love-fr",
+      "permanent": true
+    },
+    {
+      "source": "/entries/articles/vivaldi-mon-père-et-moi",
+      "destination": "/fr/the-arts/vivaldi-mon-père-et-moi",
+      "permanent": true
+    },
+    {
+      "source": "/entries/articles/apprivoiser-le-jazz",
+      "destination": "/fr/the-arts/apprivoiser-le-jazz",
+      "permanent": true
+    },
+    {
+      "source": "/entries/articles/inherent-vice-fr",
+      "destination": "/fr/the-arts/inherent-vice-fr",
+      "permanent": true
+    },
+    {
+      "source": "/entries/portraits/alexis-zorba-en",
+      "destination": "/en/portraits/alexis-zorba-en",
+      "permanent": true
+    },
+    {
+      "source": "/entries/portraits/richard-feynman-en",
+      "destination": "/en/portraits/richard-feynman-en",
+      "permanent": true
+    },
+    {
+      "source": "/entries/portraits/henry-miller-en",
+      "destination": "/en/portraits/henry-miller-en",
+      "permanent": true
+    },
+    {
+      "source": "/entries/portraits/robert-sapolsky-en",
+      "destination": "/en/portraits/robert-sapolsky-en",
+      "permanent": true
+    },
+    {
+      "source": "/entries/portraits/vera-chytilova-en",
+      "destination": "/en/portraits/vera-chytilova-en",
+      "permanent": true
+    },
+    {
+      "source": "/entries/portraits/rick-rubin-en",
+      "destination": "/en/portraits/rick-rubin-en",
+      "permanent": true
+    },
+    {
+      "source": "/entries/portraits/furtive-hedgehog-en",
+      "destination": "/en/portraits/furtive-hedgehog-en",
+      "permanent": true
+    },
+    {
+      "source": "/entries/portraits/alexis-zorba-fr",
+      "destination": "/fr/portraits/alexis-zorba-fr",
+      "permanent": true
+    },
+    {
+      "source": "/entries/portraits/richard-feynman-fr",
+      "destination": "/fr/portraits/richard-feynman-fr",
+      "permanent": true
+    },
+    {
+      "source": "/entries/portraits/henry-miller-fr",
+      "destination": "/fr/portraits/henry-miller-fr",
+      "permanent": true
+    },
+    {
+      "source": "/entries/portraits/robert-sapolsky-fr",
+      "destination": "/fr/portraits/robert-sapolsky-fr",
+      "permanent": true
+    },
+    {
+      "source": "/entries/portraits/vera-chytilova-fr",
+      "destination": "/fr/portraits/vera-chytilova-fr",
+      "permanent": true
+    },
+    {
+      "source": "/entries/portraits/rick-rubin-fr",
+      "destination": "/fr/portraits/rick-rubin-fr",
+      "permanent": true
+    },
+    {
+      "source": "/entries/portraits/furtive-hedgehog-fr",
+      "destination": "/fr/portraits/furtive-hedgehog-fr",
+      "permanent": true
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/((?!assets/|portraits/|favicon\\.png|NeighborFont-).*)",
+      "destination": "/index.html"
+    }
+  ],
+  "headers": [
+    {
+      "source": "/(portraits|assets)/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=31536000, immutable"
+        }
+      ]
+    }
+  ]
+}

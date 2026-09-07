@@ -1,16 +1,42 @@
-# React + Vite
+# The Neighbor
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Source for [theneighborr.com](https://www.theneighborr.com), a bilingual literary
+magazine. A Vite + React front end reads from a Sanity dataset; the Sanity Studio
+lives in `studio/` and deploys separately to its own subdomain.
 
-Currently, two official plugins are available:
+## Run it
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+```bash
+npm install
+npm run dev            # site → http://localhost:5173
 
-## React Compiler
+cd studio && npm install
+npm run dev            # studio → http://localhost:3333
+```
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+`localhost:5173` must be an allowed CORS origin on the Sanity project
+(sanity.io/manage → API → CORS origins).
 
-## Expanding the ESLint configuration
+## Layout
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+| Path | What |
+|---|---|
+| `src/` | Site. Routes are `/:lang/:section/:slug` with `lang` = `en` \| `fr`. |
+| `studio/` | Sanity Studio v3. Schema in `studio/schemas/`, sidebar in `studio/structure.js`. |
+| `import/` | One-off tooling: the Framer scraper/importer that seeded the dataset, and the About page seed. |
+| `public/portraits/` | Sprite frames for the seven animated portraits. |
+
+Content types: `article` (all sections, both languages, with `featured` driving
+each language's homepage) and `aboutPage` (one document per language).
+
+## Deploy
+
+Two Vercel projects from this one repository:
+
+- **Site** — root directory `/`, framework Vite. `vercel.json` carries the SPA
+  rewrite and permanent redirects from every URL the old Framer site published.
+- **Studio** — root directory `studio/`, built with `sanity build`, served as an
+  SPA. Point the CMS subdomain at this project and add that origin to Sanity's
+  CORS list with credentials allowed.
+
+See `CLAUDE.md` for the finer architecture notes.

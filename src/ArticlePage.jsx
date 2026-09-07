@@ -5,7 +5,7 @@ import { getArticleBySlug } from './sanity/queries'
 import './ArticlePage.css'
 
 export default function ArticlePage() {
-  const { slug } = useParams()
+  const { lang, slug } = useParams()
   const [article, setArticle] = useState(null)
 
   useEffect(() => {
@@ -22,18 +22,22 @@ export default function ArticlePage() {
     },
   }
 
+  // Dates are stored at UTC midnight, so format in UTC or a westward timezone
+  // renders the previous day. Framer prints "Jul 6, 2026" / "6 juil. 2026".
   const date = article.publishedAt
-    ? new Date(article.publishedAt).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })
+    ? new Date(article.publishedAt).toLocaleDateString(lang === 'fr' ? 'fr-FR' : 'en-US', {
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric',
+        timeZone: 'UTC',
+      })
     : null
 
   return (
     <main className="article-page">
-      <p className="article-page-category">{article.category}</p>
       <h1 className="article-page-title">{article.title}</h1>
-      <p className="article-page-byline">
-        <span className="article-page-author">By {article.author}</span>
-        {date && <span className="article-page-date"> · {date}</span>}
-      </p>
+      <p className="article-page-author">{article.author}</p>
+      {date && <p className="article-page-date">{date}</p>}
       <hr className="article-page-rule" />
       {article.body && (
         <div className="article-page-body">

@@ -1,14 +1,3 @@
-@keyframes fadeUp {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
 .article-card {
   display: flex;
   flex-direction: column;
@@ -18,13 +7,12 @@
 }
 
 .article-image {
-  width: 75%;
+  width: 90%;
   aspect-ratio: 5 / 3;
   object-fit: cover;
   display: block;
   align-self: center;
   margin-bottom: 20px;
-  animation: fadeUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0.3s both;
 }
 
 .article-image--placeholder {
@@ -38,7 +26,7 @@
   letter-spacing: 0em;
   color: #FF1919;
   text-transform: uppercase;
-  animation: fadeUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0.35s both;
+  animation: appear-5 0.2s var(--ease-spring) 0.5s both;
 }
 
 .article-title {
@@ -48,7 +36,7 @@
   font-size: 27px;
   letter-spacing: -0.03em;
   line-height: 1.1em;
-  animation: fadeUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0.35s both;
+  animation: appear-5 0.2s var(--ease-spring) 0.5s both;
 }
 
 .article-description {
@@ -58,7 +46,7 @@
   font-size: 20px;
   letter-spacing: 0em;
   line-height: 1.1em;
-  animation: fadeUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0.4s both;
+  animation: appear-5 0.2s var(--ease-spring) 0.55s both;
 }
 
 .article-author {
@@ -68,5 +56,18 @@
   font-size: 20px;
   letter-spacing: 0em;
   line-height: 1.1em;
-  animation: fadeUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0.4s both;
+  animation: appear-5 0.2s var(--ease-spring) 0.55s both;
+}
+
+@media (max-width: 699.98px) {
+  .article-image {
+    width: 80%;
+  }
+
+  /* One column on phones, so cards are separated by a rule rather than by
+     the grid gutter alone. */
+  .article-card:not(:last-child) {
+    padding-bottom: 30px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.5);
+  }
 }

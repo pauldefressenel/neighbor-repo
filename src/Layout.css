@@ -1,5 +1,7 @@
 .page {
   min-height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
 
 .header {
@@ -41,8 +43,36 @@
   justify-self: end;
 }
 
+.lang-menu {
+  position: relative;
+  display: inline-flex;
+}
+
+/* The other language sits in a 55px row that opens 20px below the header. */
+.lang-menu .lang-option {
+  position: absolute;
+  top: 58px;            /* selector sits ~22px into the 60px row; Framer's row top is at 80px */
+  right: 0;
+  height: 55px;
+  padding: 0 4px;
+  background: #FFFFF2;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+}
+
+.lang-menu .lang-option--open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
 .header-meta a,
-.lang-selector {
+.lang-selector,
+.lang-option {
+  border: none;
+  background: none;
+  padding: 0;
   font-family: 'Geist Mono', monospace;
   font-weight: 500;
   font-size: 14px;
@@ -53,8 +83,14 @@
   cursor: pointer;
 }
 
+.lang-menu .lang-option {
+  padding: 0 4px;
+  background: #FFFFF2;
+}
+
 .header-meta a:hover,
-.lang-selector:hover {
+.lang-selector:hover,
+.lang-option:hover {
   text-decoration: underline;
   text-underline-offset: 2px;
 }
@@ -90,4 +126,139 @@
 
 .section-link--disabled {
   cursor: default;
+}
+
+/* ── Phone menu ───────────────────────────────────────────────────────────── */
+
+/* The toggle and its overlay only exist below 700px; above that the sections
+   nav is a permanent second header row. */
+.nav-toggle {
+  display: none;
+  justify-self: start;
+  width: 26px;
+  height: 26px;
+  padding: 0;
+  border: none;
+  background: none;
+  cursor: pointer;
+}
+
+.nav-toggle-icon,
+.nav-toggle-icon::before,
+.nav-toggle-icon::after {
+  display: block;
+  width: 25px;
+  height: 1.5px;
+  background-color: #1a1a1a;
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.nav-toggle-icon {
+  position: relative;
+}
+
+.nav-toggle-icon::before,
+.nav-toggle-icon::after {
+  content: '';
+  position: absolute;
+  left: 0;
+}
+
+.nav-toggle-icon::before { top: -7px; }
+.nav-toggle-icon::after  { top: 7px; }
+
+.nav-toggle-icon--open {
+  background-color: transparent;
+}
+
+.nav-toggle-icon--open::before {
+  top: 0;
+  transform: rotate(45deg);
+}
+
+.nav-toggle-icon--open::after {
+  top: 0;
+  transform: rotate(-45deg);
+}
+
+.menu-overlay {
+  display: none;
+  position: fixed;
+  top: 60px;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 99;
+  /* The overlay uses a pale pink ground, not the cream of the rest of the site;
+     the header keeps its cream and stays above it. */
+  background-color: #FDF0F4;
+  padding: 84px 31px;
+  overflow-y: auto;
+  animation: menu-in 0.32s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes menu-in {
+  from { opacity: 0; transform: translateY(-8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.menu-overlay-nav {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.menu-overlay-link {
+  font-family: 'NeighborFont', serif;
+  font-weight: 400;
+  font-size: 40px;
+  letter-spacing: -0.02em;
+  line-height: 1.22em;
+  color: #1a1a1a;
+  text-decoration: none;
+  animation: menu-item-in 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* Framer separates the four sections from the secondary links with a blank
+   line rather than a rule. */
+.menu-overlay-link--group-start {
+  margin-top: 1.55em;
+}
+
+@keyframes menu-item-in {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.menu-overlay-link--disabled {
+  opacity: 0.4;
+}
+
+@media (max-width: 699.98px) {
+  /* Single 60px row: toggle, wordmark, language. */
+  .header-top {
+    height: 60px;
+    padding: 0 20px;
+  }
+
+  .site-title {
+    font-size: 29px;
+  }
+
+  .sections-nav {
+    display: none;
+  }
+
+  /* About and Donate move into the overlay; the language switch stays put. */
+  .header-meta a {
+    display: none;
+  }
+
+  .nav-toggle {
+    display: block;
+  }
+
+  .menu-overlay--open {
+    display: block;
+  }
 }

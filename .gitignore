@@ -29,3 +29,10 @@ studio/.sanity/runtime
 *.njsproj
 *.sln
 *.sw?
+
+# Framer migration scratch (import/scrape-framer.mjs)
+import/.framer-cache
+import/backup-*.ndjson
+
+# Claude Code launch config (local tooling)
+.claude/

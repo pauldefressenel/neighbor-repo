@@ -1,3 +1,5 @@
+export const DONATE_URL = 'https://buymeacoffee.com/theneighbor'
+
 export const i18n = {
   en: {
     sections: [
@@ -12,10 +14,11 @@ export const i18n = {
     language: 'English',
     latest: 'Latest',
     switchTo: 'fr',
+    // The phone menu drops the article: "Neighborhood", not "The Neighborhood".
+    menuNeighborhood: 'Neighborhood',
     footer: {
-      tagline: 'A quarterly literary magazine\npublished in the neighborhood.',
-      contact: 'Contact',
-      rights: 'All rights reserved.',
+      submit: 'Submit a piece:',
+      email: 'paul@theneighborr.com',
     },
   },
   fr: {
@@ -26,15 +29,15 @@ export const i18n = {
       { label: 'Portraits', value: 'portraits' },
       { label: 'Le Voisinage', value: 'neighborhood' },
     ],
-    about: 'À Propos',
+    about: 'A Propos',
     donate: 'Faire un don',
     language: 'Français',
     latest: 'Récents',
     switchTo: 'en',
+    menuNeighborhood: 'Voisinage',
     footer: {
-      tagline: 'Une revue littéraire trimestrielle\npubliée dans le voisinage.',
-      contact: 'Contact',
-      rights: 'Tous droits réservés.',
+      submit: 'Propose un texte :',
+      email: 'paul@theneighborr.com',
     },
   },
 }

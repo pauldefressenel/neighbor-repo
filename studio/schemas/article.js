@@ -111,6 +111,33 @@ export const article = defineType({
       type: 'string',
     }),
     defineField({
+      name: 'featured',
+      title: 'Featured',
+      description: 'Show this article in the Latest strip on the homepage of that language',
+      type: 'string',
+      options: {
+        list: [
+          { title: 'Not featured', value: 'NO' },
+          { title: 'Featured — English homepage', value: 'English' },
+          { title: 'Featured — French homepage', value: 'French' },
+        ],
+      },
+      initialValue: 'NO',
+    }),
+    defineField({
+      name: 'audioFile',
+      title: 'Audio File',
+      description: 'URL of an audio reading for this article',
+      type: 'url',
+    }),
+    defineField({
+      name: 'audioQuote',
+      title: 'Audio Quote',
+      description: 'Short pull-quote displayed alongside the audio player',
+      type: 'text',
+      rows: 2,
+    }),
+    defineField({
       name: 'publishedAt',
       title: 'Published At',
       type: 'datetime',

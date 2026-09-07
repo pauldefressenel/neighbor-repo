@@ -1,0 +1,28 @@
+.broadsheet-lead-body {
+  column-count: 2;
+  column-gap: 28px;
+  font-family: 'EB Garamond', serif;
+  font-size: 17px;
+  line-height: 1.5;
+  text-align: justify;
+  hyphens: auto;
+  color: #1a1a1a;
+}
+
+.broadsheet-lead-body p {
+  margin: 0;
+}
+
+.broadsheet-lead-body p + p {
+  text-indent: 1.2em;
+}
+
+.broadsheet-lead-body p:first-child::first-letter {
+  font-family: 'NeighborFont', serif;
+  font-size: 70px;
+  color: #FF1919;
+  float: left;
+  line-height: 0.74;
+  margin-right: 10px;
+  margin-top: 6px;
+}

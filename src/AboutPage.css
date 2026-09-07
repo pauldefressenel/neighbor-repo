@@ -1,0 +1,65 @@
+/* Measured on theneighborr.com/about at 1280px: title 50px above a 650px
+   column, 25px paragraph gaps, avatars 46px below, captions 5px under them. */
+
+.about-page {
+  margin-top: 100px;
+  padding: 50px 0 80px;
+}
+
+.about-page .page-title {
+  margin-bottom: 50px;
+}
+
+.about-body,
+.about-founders {
+  animation: appear-10 0.4s var(--ease-spring) 0.3s both;
+}
+
+.about-body {
+  width: min(650px, 100% - 40px);
+  margin: 0 auto;
+  font-family: 'EB Garamond', serif;
+  font-size: 21px;
+  line-height: 1.4em;
+  color: #1a1a1a;
+}
+
+.about-body p + p {
+  margin-top: 25px;
+}
+
+.about-founders {
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  gap: 66px;
+  margin-top: 46px;
+}
+
+.about-founder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  margin: 0;
+}
+
+.about-founder img {
+  height: 72px;
+  width: auto;
+  image-rendering: pixelated;
+  user-select: none;
+}
+
+.about-founder figcaption {
+  font-family: 'EB Garamond', serif;
+  font-size: 18px;
+  line-height: 1.4em;
+  color: #1a1a1a;
+}
+
+@media (max-width: 699.98px) {
+  .about-page {
+    margin-top: 60px;
+  }
+}

@@ -1,0 +1,28 @@
+/* The slot is Framer's fixed 110×110 frame; the character's own box is
+   centred inside it (Zorba's is 94×91, the rest fill it). Sprites render at
+   1:1, never scaled. */
+.portrait-slot {
+  position: relative;
+  width: 110px;
+  height: 110px;
+  flex: none;
+  display: flex;
+  align-items: flex-start;   /* Zorba's smaller box sits at the top of the slot */
+  justify-content: center;
+}
+
+.portrait-box {
+  position: relative;
+  flex: none;
+  transform-style: preserve-3d;
+}
+
+.portrait-layer {
+  position: absolute;
+  display: block;
+  object-fit: contain;
+  image-rendering: pixelated;
+  user-select: none;
+  pointer-events: none;
+  backface-visibility: visible;
+}

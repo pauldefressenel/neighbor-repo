@@ -1,0 +1,56 @@
+/* Geometry from Framer's Portrait Vignette component. */
+
+.portrait-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  width: min-content;
+  text-decoration: none;
+  color: inherit;
+  cursor: pointer;
+}
+
+.portrait-still {
+  width: 110px;
+  height: 110px;
+  object-fit: contain;
+  image-rendering: pixelated;
+}
+
+.portrait-text {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  width: 300px;
+  text-align: center;
+}
+
+.portrait-heading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  width: 100%;
+}
+
+.portrait-body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 7px;
+  width: 100%;
+}
+
+/* The article card spaces its lines with margins; the vignette uses gaps. */
+.portrait-card .article-title,
+.portrait-card .article-description,
+.portrait-card .article-author {
+  margin-top: 0;
+  width: 100%;
+}
+
+.portrait-card .article-description {
+  text-wrap: balance;
+}

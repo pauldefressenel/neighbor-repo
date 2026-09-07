@@ -17,9 +17,14 @@ export const getArticlesBySection = (language, section) =>
     { language, section }
   )
 
+// The homepage strip is editorially chosen, not simply the newest articles:
+// an article appears here when its `featured` field names this language.
+const FEATURED_FLAG = { en: 'English', fr: 'French' }
+
 export const getLatestArticles = (language) =>
   client.fetch(
-    `*[_type == "article" && language == $language] | order(publishedAt desc) [0...4] {
+    `*[_type == "article" && language == $language && featured == $featured]
+      | order(publishedAt desc) [0...4] {
       _id,
       title,
       slug,
@@ -31,7 +36,7 @@ export const getLatestArticles = (language) =>
       mainImage,
       publishedAt
     }`,
-    { language }
+    { language, featured: FEATURED_FLAG[language] ?? FEATURED_FLAG.en }
   )
 
 export const getArticleBySlug = (slug) =>
@@ -51,4 +56,14 @@ export const getArticleBySlug = (slug) =>
       publishedAt
     }`,
     { slug }
+  )
+
+export const getAboutPage = (language) =>
+  client.fetch(
+    `*[_type == "aboutPage" && _id == $id][0] {
+      title,
+      body,
+      founders[] { _key, name, image }
+    }`,
+    { id: `about-${language}` }
   )

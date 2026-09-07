@@ -1,32 +1,11 @@
-@keyframes fadeUp {
-  from {
-    opacity: 0;
-    transform: translateY(12px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
 .article-page {
-  width: 600px;
+  /* Framer holds the column at 650px and falls back to the 20px page gutter
+     once the viewport is narrower than that. */
+  width: min(650px, 100% - 40px);
   margin: 0 auto;
   padding: 120px 0 80px;
 }
 
-
-.article-page-category {
-  font-family: 'Geist Mono', monospace;
-  font-weight: 700;
-  font-size: 17px;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: #FF1919;
-  margin: 0 0 10px;
-  text-align: center;
-  animation: fadeUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0.05s both;
-}
 
 .article-page-title {
   font-family: 'NeighborFont', serif;
@@ -37,28 +16,28 @@
   color: #1a1a1a;
   margin: 0 0 10px;
   text-align: center;
-  animation: fadeUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0.1s both;
+  animation: appear-10 0.3s var(--ease-spring) 0.15s both;
 }
 
-.article-page-byline {
-  font-family: 'EB Garamond', serif;
-  font-size: 21px;
-  color: #1a1a1a;
-  text-align: center;
-  margin: 0 0 48px;
-  animation: fadeUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0.15s both;
-}
-
-.article-page-author {
-  font-family: 'EB Garamond', serif;
-  font-size: 21px;
-  color: #1a1a1a;
-}
-
+/* Framer stacks these: author on one line, date beneath, both centred.
+   Matches the /Detail Page/Subtitle text style (EB Garamond 21px / 1em). */
+.article-page-author,
 .article-page-date {
   font-family: 'EB Garamond', serif;
   font-size: 21px;
+  line-height: 1em;
   color: #1a1a1a;
+  text-align: center;
+  margin: 0;
+  animation: appear-10 0.3s var(--ease-spring) 0.2s both;
+}
+
+.article-page-author {
+  margin-bottom: 8px;
+}
+
+.article-page-date {
+  margin-bottom: 48px;
 }
 
 .article-page-rule {
@@ -70,7 +49,7 @@
   font-size: 21px;
   line-height: 1.55;
   color: #1a1a1a;
-  animation: fadeUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.2s both;
+  animation: appear-10 0.3s var(--ease-spring) 0.3s both;
 }
 
 .article-page-body p {
@@ -95,6 +74,7 @@
 
 .article-page-poem {
   margin-top: 48px;
+  animation: appear-10 0.3s var(--ease-spring) 0.3s both;
 }
 
 .article-page-poem-title {
@@ -110,4 +90,16 @@
   line-height: 1.55;
   margin: 0 0 0.4em;
   white-space: pre-wrap;
+}
+
+@media (max-width: 699.98px) {
+  /* Clears the shorter single-row phone header. */
+  .article-page {
+    padding: 80px 0 60px;
+  }
+
+  .article-page-body > p:first-child::first-letter {
+    font-size: 72px;
+    margin-right: 10px;
+  }
 }

@@ -10,7 +10,24 @@ const SPEED = 0.3
 const MAX_SPEED = 0.8
 const SPINNER_SIZE = 25
 const SPINNER_STROKE = 1.5
+// The header is two rows on desktop and a single row on phones, so the canvas
+// offset has to follow the same 700px breakpoint the stylesheets use.
 const HEADER_HEIGHT = 100
+const HEADER_HEIGHT_PHONE = 60
+const PHONE_BREAKPOINT = 700
+
+const headerHeight = () =>
+  window.innerWidth < PHONE_BREAKPOINT ? HEADER_HEIGHT_PHONE : HEADER_HEIGHT
+
+function useHeaderHeight() {
+  const [height, setHeight] = useState(headerHeight)
+  useEffect(() => {
+    const onResize = () => setHeight(headerHeight())
+    window.addEventListener('resize', onResize)
+    return () => window.removeEventListener('resize', onResize)
+  }, [])
+  return height
+}
 
 // Mutates particles in place — no allocations per frame
 function stepPhysics(ps, halfW, halfH) {
@@ -213,8 +230,9 @@ function PorchNotes({ avatars }) {
 function Spinner() {
   const r = SPINNER_SIZE / 2 - SPINNER_STROKE
   const circ = 2 * Math.PI * r
+  const top = useHeaderHeight()
   return (
-    <div style={{ position: 'fixed', top: HEADER_HEIGHT, left: 0, right: 0, bottom: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+    <div style={{ position: 'fixed', top, left: 0, right: 0, bottom: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
       <svg width={SPINNER_SIZE} height={SPINNER_SIZE} viewBox={`0 0 ${SPINNER_SIZE} ${SPINNER_SIZE}`} fill="none" style={{ animation: 'wall-spin 1.1s linear infinite' }}>
         <defs><linearGradient id="sg" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stopColor="#1a1a1a" stopOpacity="1" /><stop offset="100%" stopColor="#1a1a1a" stopOpacity="0" /></linearGradient></defs>
         <circle cx={SPINNER_SIZE / 2} cy={SPINNER_SIZE / 2} r={r} stroke="url(#sg)" strokeWidth={SPINNER_STROKE} strokeLinecap="round" fill="none" strokeDasharray={`${circ * 0.78} ${circ * 0.22}`} />
@@ -224,6 +242,7 @@ function Spinner() {
 }
 
 export default function NeighborhoodPage() {
+  const headerH = useHeaderHeight()
   const [status, setStatus] = useState('loading')
   const [totalCount, setTotalCount] = useState(0)
   const particlesRef = useRef([])
@@ -239,7 +258,7 @@ export default function NeighborhoodPage() {
         const filtered = all.filter(p => p.image_url)
         if (!filtered.length) { setStatus('error'); return }
         setTotalCount(all.length)
-        const w = window.innerWidth, h = window.innerHeight - HEADER_HEIGHT
+        const w = window.innerWidth, h = window.innerHeight - headerHeight()
         dimRef.current = { halfW: w / 2, halfH: h / 2, cx: w / 2, cy: h / 2 }
         const ps = initParticles(filtered, w, h)
         const hw = w / 2, hh = h / 2
@@ -274,7 +293,7 @@ export default function NeighborhoodPage() {
 
   return (
     <>
-    <div style={{ marginTop: HEADER_HEIGHT, height: `calc(100vh - ${HEADER_HEIGHT}px)`, position: 'relative', overflow: 'hidden', userSelect: 'none' }}>
+    <div style={{ marginTop: headerH, height: `calc(100vh - ${headerH}px)`, position: 'relative', overflow: 'hidden', userSelect: 'none' }}>
       <div style={{ position: 'absolute', left: '50%', top: '50%', transform: 'translate(-50%, -50%)', textAlign: 'center', pointerEvents: 'none', zIndex: 10, whiteSpace: 'nowrap' }}>
         <div style={{ fontFamily: "'NeighborFont', serif", fontWeight: 400, fontSize: 40, letterSpacing: '-0.02em', lineHeight: 1.1, color: '#1a1a1a' }}>
           Welcome to the<br />Neighborhood
