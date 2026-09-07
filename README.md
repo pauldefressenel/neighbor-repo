@@ -31,10 +31,21 @@ each language's homepage) and `aboutPage` (one document per language).
 
 ## Deploy
 
-Two Vercel projects from this one repository:
+Two Vercel projects are imported from this one repository (auto-deploy on every
+push to `main`):
 
-- **Site** — root directory `/`, framework Vite. `vercel.json` carries the SPA
-  rewrite and permanent redirects from every URL the old Framer site published.
-- **Studio** — root directory `studio/`, built with `sanity build`, served as an
-  SPA. Point the CMS subdomain at this project and add that origin to Sanity's
-  CORS list with credentials allowed.
+| Project | Root directory | Serves |
+|---|---|---|
+| `neighbor` | `/` (framework Vite) | `www.theneighborr.com`; the apex redirects to `www` |
+| `neighbor-studio` | `studio/` (`sanity build`, SPA) | `cms.theneighborr.com` |
+
+`vercel.json` at the root carries the SPA rewrite, immutable caching for
+`/assets` and `/portraits`, and permanent redirects from every URL the old Framer
+site published (the six slugs with accented or curly-quote characters appear both
+raw and percent-encoded). `npm run build` also writes `dist/sitemap.xml` from the
+Sanity dataset (`scripts/sitemap.mjs`); `public/robots.txt` points at it.
+
+Sanity CORS origins (sanity.io/manage → API → CORS origins) must include
+`https://www.theneighborr.com`, `https://theneighborr.com`, `https://*.vercel.app`
+(previews) and `https://cms.theneighborr.com` with credentials allowed, otherwise
+the Studio cannot log in and the site cannot fetch content.

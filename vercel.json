@@ -133,12 +133,22 @@
       "permanent": true
     },
     {
+      "source": "/entries/articles/la-grande-naus%C3%A9e",
+      "destination": "/fr/fiction-poetry/la-grande-nausée",
+      "permanent": true
+    },
+    {
       "source": "/entries/articles/the-world-of-yesterday",
       "destination": "/en/literature-review/the-world-of-yesterday",
       "permanent": true
     },
     {
       "source": "/entries/articles/salammbô-flaubert-en",
+      "destination": "/en/literature-review/salammbô-flaubert-en",
+      "permanent": true
+    },
+    {
+      "source": "/entries/articles/salammb%C3%B4-flaubert-en",
       "destination": "/en/literature-review/salammbô-flaubert-en",
       "permanent": true
     },
@@ -178,6 +188,11 @@
       "permanent": true
     },
     {
+      "source": "/entries/articles/salammb%C3%B4-flaubert-fr",
+      "destination": "/fr/literature-review/salammbô-flaubert-fr",
+      "permanent": true
+    },
+    {
       "source": "/entries/articles/la-mort-d-ivan-ilyitch",
       "destination": "/fr/literature-review/la-mort-d-ivan-ilyitch",
       "permanent": true
@@ -188,12 +203,22 @@
       "permanent": true
     },
     {
+      "source": "/entries/articles/sur-l-ali%C3%A9nation-de-l-artiste",
+      "destination": "/fr/literature-review/sur-l-aliénation-de-l-artiste",
+      "permanent": true
+    },
+    {
       "source": "/entries/articles/narcissus-and-goldmund-fr",
       "destination": "/fr/literature-review/narcissus-and-goldmund-fr",
       "permanent": true
     },
     {
       "source": "/entries/articles/the-hidden-apocalypse-in-kendrick-lamar’s-“damn.”",
+      "destination": "/en/the-arts/the-hidden-apocalypse-in-kendrick-lamar’s-“damn.”",
+      "permanent": true
+    },
+    {
+      "source": "/entries/articles/the-hidden-apocalypse-in-kendrick-lamar%E2%80%99s-%E2%80%9Cdamn.%E2%80%9D",
       "destination": "/en/the-arts/the-hidden-apocalypse-in-kendrick-lamar’s-“damn.”",
       "permanent": true
     },
@@ -244,6 +269,11 @@
     },
     {
       "source": "/entries/articles/vivaldi-mon-père-et-moi",
+      "destination": "/fr/the-arts/vivaldi-mon-père-et-moi",
+      "permanent": true
+    },
+    {
+      "source": "/entries/articles/vivaldi-mon-p%C3%A8re-et-moi",
       "destination": "/fr/the-arts/vivaldi-mon-père-et-moi",
       "permanent": true
     },

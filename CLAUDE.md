@@ -9,17 +9,18 @@ From the project root:
 ```bash
 npm run dev          # frontend only (localhost:5173)
 npm run dev:studio   # Sanity Studio only (localhost:3333)
-npm run build        # production build of the frontend
+npm run build        # production build of the frontend + dist/sitemap.xml
 npm run lint         # ESLint
 ```
 
 Both apps must be started separately — there is no single command that runs them concurrently.
 
+Deployment is through Vercel, not `sanity deploy`: the site is one Vercel project (root, Vite) and the Studio another (root directory `studio/`, served at `cms.theneighborr.com`). See the README's Deploy section.
+
 From `studio/`:
 
 ```bash
 npx sanity dataset import <file.ndjson> production  # bulk-import content (seed.ndjson exists)
-npx sanity deploy                                    # deploy Studio to sanity.io
 ```
 
 Content migration from the live Framer site:

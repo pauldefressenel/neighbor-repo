@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "vite",
     "dev:studio": "cd studio && npx sanity dev",
-    "build": "vite build",
+    "build": "vite build && node scripts/sitemap.mjs",
     "lint": "eslint .",
     "preview": "vite preview"
   },
