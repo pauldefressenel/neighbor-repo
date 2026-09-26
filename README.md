@@ -12,6 +12,9 @@ npm run dev            # site → http://localhost:5173
 
 cd studio && npm install
 npm run dev            # studio → http://localhost:3333
+
+cd mobile && npm install
+npx expo start         # iPhone app → scan the QR code with Expo Go
 ```
 
 `localhost:5173` must be an allowed CORS origin on the Sanity project
@@ -23,6 +26,7 @@ npm run dev            # studio → http://localhost:3333
 |---|---|
 | `src/` | Site. Routes are `/:lang/:section/:slug` with `lang` = `en` \| `fr`. |
 | `studio/` | Sanity Studio v3. Schema in `studio/schemas/`, sidebar in `studio/structure.js`. |
+| `mobile/` | iOS app (Expo, Expo Router). Screens in `mobile/src/app/`; reads the same Sanity dataset as the site. |
 | `import/` | One-off tooling: the Framer scraper/importer that seeded the dataset, and the About page seed. |
 | `public/portraits/` | Sprite frames for the seven animated portraits. |
 
