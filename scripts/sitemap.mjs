@@ -5,7 +5,7 @@
 import { writeFileSync, existsSync } from 'node:fs'
 import { createClient } from '@sanity/client'
 
-const ORIGIN = 'https://www.theneighborr.com'
+const ORIGIN = 'https://react.theneighborr.com'
 const LANGS = ['en', 'fr']
 const SECTIONS = ['fiction-poetry', 'literature-review', 'the-arts', 'portraits']
 

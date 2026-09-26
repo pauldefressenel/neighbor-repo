@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://www.theneighborr.com/sitemap.xml
+Sitemap: https://react.theneighborr.com/sitemap.xml

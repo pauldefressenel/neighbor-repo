@@ -8,7 +8,9 @@
 
 .article-image {
   width: 90%;
-  aspect-ratio: 5 / 3;
+  /* Framer's frame is 2:1, the shape of the illustrations themselves; a taller
+     frame makes object-fit: cover zoom in on them. */
+  aspect-ratio: 2 / 1;
   object-fit: cover;
   display: block;
   align-self: center;

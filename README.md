@@ -36,7 +36,7 @@ push to `main`):
 
 | Project | Root directory | Serves |
 |---|---|---|
-| `neighbor` | `/` (framework Vite) | `www.theneighborr.com`; the apex redirects to `www` |
+| `neighbor-frontend` | `/` (framework Vite) | `react.theneighborr.com` |
 | `neighbor-studio` | `studio/` (`sanity build`, SPA) | `cms.theneighborr.com` |
 
 Both projects run `scripts/vercel-build.mjs` when their Root Directory is the
@@ -51,6 +51,6 @@ raw and percent-encoded). `npm run build` also writes `dist/sitemap.xml` from th
 Sanity dataset (`scripts/sitemap.mjs`); `public/robots.txt` points at it.
 
 Sanity CORS origins (sanity.io/manage → API → CORS origins) must include
-`https://www.theneighborr.com`, `https://theneighborr.com`, `https://*.vercel.app`
+`https://react.theneighborr.com`, `https://*.vercel.app`
 (previews) and `https://cms.theneighborr.com` with credentials allowed, otherwise
 the Studio cannot log in and the site cannot fetch content.
