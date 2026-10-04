@@ -1,6 +1,6 @@
 import { Redirect } from 'expo-router'
 
-// Same default as the website: `/` opens the English edition.
+// The app serves the French edition only for now; English comes later.
 export default function Index() {
-  return <Redirect href="/en" />
+  return <Redirect href="/fr" />
 }

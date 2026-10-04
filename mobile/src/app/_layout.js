@@ -5,6 +5,8 @@ import * as SplashScreen from 'expo-splash-screen'
 import { useFonts } from 'expo-font'
 import { EBGaramond_400Regular, EBGaramond_500Medium } from '@expo-google-fonts/eb-garamond'
 import { GeistMono_500Medium, GeistMono_700Bold } from '@expo-google-fonts/geist-mono'
+import { NewAmsterdam_400Regular } from '@expo-google-fonts/new-amsterdam'
+import { Paprika_400Regular } from '@expo-google-fonts/paprika'
 import { colors } from '../theme'
 
 SplashScreen.preventAutoHideAsync()
@@ -17,6 +19,8 @@ export default function RootLayout() {
     EBGaramond_500Medium,
     GeistMono_500Medium,
     GeistMono_700Bold,
+    NewAmsterdam_400Regular,
+    Paprika_400Regular,
   })
 
   useEffect(() => {

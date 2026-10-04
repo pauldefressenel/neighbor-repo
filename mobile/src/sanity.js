@@ -32,3 +32,20 @@ export const getLatestArticles = (language) =>
     }`,
     { language, featured: FEATURED_FLAG[language] ?? FEATURED_FLAG.en }
   )
+
+// Every article in one of the app's rubriques (see sections.js), newest first.
+export const getSectionArticles = (language, sections) =>
+  client.fetch(
+    `*[_type == "article" && language == $language && section in $sections]
+      | order(publishedAt desc) {
+      _id,
+      title,
+      slug,
+      section,
+      category,
+      author,
+      excerpt,
+      mainImage
+    }`,
+    { language, sections }
+  )
