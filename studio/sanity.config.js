@@ -2,7 +2,7 @@ import { defineConfig } from 'sanity'
 import { structureTool } from 'sanity/structure'
 import { visionTool } from '@sanity/vision'
 import { schemaTypes } from './schemas/index'
-import { structure } from './structure'
+import { structure, articleTemplate } from './structure'
 import { ForceLightScheme } from './forceLight'
 
 export default defineConfig({
@@ -16,6 +16,7 @@ export default defineConfig({
   ],
   schema: {
     types: schemaTypes,
+    templates: (prev) => [...prev, articleTemplate],
   },
   studio: {
     components: {
