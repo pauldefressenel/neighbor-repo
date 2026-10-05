@@ -13,7 +13,7 @@ import { colors, fonts, menu as menuStyle } from '../../../theme'
 export default function RubriquesScreen() {
   // From the URL: this stack's screens don't inherit the tab's params, and
   // an undefined lang made every rubrique link to /undefined/…, which
-  // redirected to A La Une.
+  // redirected to En Couverture.
   const { lang } = useGlobalSearchParams()
 
   // One rubrique per tap: further taps are ignored until the list is back in

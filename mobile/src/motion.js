@@ -77,8 +77,8 @@ export function FadePressable({ style, children, onPressIn, onPressOut, pressSca
 export const APPEAR = {
   // The page title, one line at a time.
   titleLines: { rise: 10, delay: 200, stagger: 75, spring: { duration: 400, bounce: 0.4 } },
-  // The line above the first card, once the page title is in.
-  firstLine: { rise: 5, delay: 350, spring: { duration: 200, bounce: 0 } },
+  // The dinkus under the page title, once the title is in.
+  dinkus: { rise: 5, delay: 350, spring: { duration: 200, bounce: 0 } },
   // Each card, in four parts.
   image: { rise: 10, delay: 400, spring: { duration: 400, bounce: 0.3 } },
   top: { rise: 5, delay: 500, spring: { duration: 200, bounce: 0 } }, // category and title

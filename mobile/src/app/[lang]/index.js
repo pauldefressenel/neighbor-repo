@@ -6,7 +6,7 @@ import Masthead from '../../Masthead'
 import { getLatestArticles } from '../../sanity'
 import { colors } from '../../theme'
 
-// A La Une: the articles the editors flag as featured for this language.
+// En Couverture: the articles the editors flag as featured for this language.
 export default function LatestScreen() {
   const { lang } = useLocalSearchParams()
   const fetchArticles = useCallback(() => getLatestArticles(lang), [lang])
@@ -14,7 +14,7 @@ export default function LatestScreen() {
   return (
     <View style={{ flex: 1, backgroundColor: colors.paper }}>
       <Masthead />
-      <ArticleList lang={lang} title="A La Une" fetchArticles={fetchArticles} />
+      <ArticleList lang={lang} title="En Couverture" fetchArticles={fetchArticles} />
     </View>
   )
 }

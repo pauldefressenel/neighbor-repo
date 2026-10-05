@@ -36,7 +36,7 @@ submitted yet.
 _layout.js                  fonts, splash screen, a <Slot> (not a Stack) inside GestureHandlerRootView
 index.js                    → /fr
 [lang]/_layout.js           Tabs with the custom TabBar: index, rubriques, a-propos (in that order)
-[lang]/index.js             A La Une — articles whose `featured` is "French"
+[lang]/index.js             En Couverture — articles whose `featured` is "French"
 [lang]/rubriques/_layout.js JS Stack with a crossfade; owns the Masthead and its back arrow
 [lang]/rubriques/index.js   the three rubriques as a table of contents; prefetches each one
 [lang]/rubriques/[section].js one rubrique's articles (slug from sections.js)
@@ -66,21 +66,26 @@ Navigation details that are easy to break:
   `getLatestArticles`, `getSectionArticles`, and `prefetchSectionArticles`. A
   prefetch is used once by the next fetch for that rubrique; pull to refresh
   fetches again.
-- `ArticleList.js` — shared by A La Une and each rubrique: a page title (not
-  underlined), a FlatList of cards, pull to refresh, and a retry message on
-  error. `fetchArticles` must be stable (`useCallback`). Every article card,
-  the first included, has the hand-drawn `Rule` above it. Two portraits in a
-  row get 90px of space instead.
+- `ArticleList.js` — shared by En Couverture and each rubrique: a page title
+  closed by a dinkus (`Dinkus.js`), a FlatList of cards, pull to refresh, and
+  a retry message on error. `fetchArticles` must be stable (`useCallback`). Between two article
+  cards is the hand-drawn `Rule`, 42pt from the date above and from the
+  category below (measured to the letters). The first card has no line above
+  it. Two portraits in a row get 90px of space instead.
 - `ArticleCard.js` — a centred title page: category, title, excerpt,
   illustration, "de <author>", and the date in French, formatted by hand
   rather than with `Intl`.
-  - The title is balanced, and `maxFill={0.8}` breaks a single line wider
-    than 80% of the card onto two lines. Its line height is 1em.
+  - The title shares `titleType` (theme.js) with the page title: NeighborFont
+    35pt, -0.03em letter-spacing, 1.1 line height, Regular (Medium page
+    titles were tried and rejected). It is balanced, and
+    `maxFill={0.8}` breaks a single line wider than 80% of the card onto two
+    lines.
   - The excerpt is balanced too, and sits right under the title with no gap.
   - The illustration is full width, with its height from the image's own
     proportions (`imageAspect`, from Sanity's metadata), so it is never
     cropped. It has 22px above and below.
-  - Category: Londrina Solid Light, red, letter-spacing 2.5.
+  - Category: Averia Libre Regular, red, 18pt, -0.05em letter-spacing,
+    1.1em line height.
   - Date: EB Garamond regular italic, lighter than the author's medium.
 - `Masthead.js` — the fixed top bar: the wordmark between two equal slots,
   with an optional back arrow that fades with the page transition.
@@ -117,21 +122,29 @@ Navigation details that are easy to break:
   needs static requires; the sizes give height-only layers their width). A new
   sprite needs a line here.
 - `ComingSoon.js` — the placeholder screen.
+- `Dinkus.js` — three black asterisks in a row, 20pt apart (measured between
+  the glyphs), in Averia Serif Libre 26pt. Each asterisk keeps a full line
+  box, because iOS clips a glyph to its box and the asterisk sits at its top.
+  (A red ⁂ triangle was tried first.)
 
 ## Spacing that depends on two places
 
 These were measured in the simulator. If you change one half, re-measure and
 change the other half too.
 
-- **The page title is centred** between the masthead's rule and the line above
-  the first card, about 55pt each side. The two halves are
-  `rubriquesTitle.marginTop` in `theme.js` (41.5) and `titleStyle.marginBottom`
-  in `ArticleList.js` (39.5). `rubriquesTitle` also places the Rubriques list's
-  and A Propos's titles, so all tabs move together.
-- **Each card's category is centred** between the line above the card and the
-  title, about 33.7pt each side. The two halves are the separator's
-  `marginBottom` (17) in `ArticleList.js`, together with `firstSeparator`
-  for the first card, and the title's `marginTop` (21) in `ArticleCard.js`.
+- **The page title's spacing.** `rubriquesTitle.marginTop` in `theme.js` (41.5)
+  sets the space above the title. Below it, 36pt to the dinkus
+  (`titleStyle.marginBottom`, 22.7) and 36pt from the dinkus to the first
+  category (`styles.dinkus.marginBottom`, 17), both measured to the letters. `rubriquesTitle` also places the
+  Rubriques list's and A Propos's titles, so all tabs move together.
+- **The line between cards** sits 42pt from the date above and 42pt from the
+  category below. The separator's margins in `ArticleList.js` (35.7 / 37.9)
+  only make up the difference, because the date's and category's line boxes
+  already hold 6.3pt and 4.1pt (the latter for Averia Libre at 18pt).
+- **Category → title** is 15pt between the letters, set by the title's
+  `marginTop` (1) in `ArticleCard.js`. It is that small because the title's
+  8pt top padding (room for accents) and both line boxes already hold 14pt. Changing either font, size or line height
+  means re-measuring.
 
 To measure, screenshot the simulator (`xcrun simctl io booted screenshot`)
 and look for the rows of ink and red. A second Metro server on another port

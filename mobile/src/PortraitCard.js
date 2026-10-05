@@ -56,7 +56,7 @@ const styles = StyleSheet.create({
   },
   category: {
     ...centred,
-    fontFamily: fonts.londrina,
+    fontFamily: fonts.averia,
     fontSize: 18,
     letterSpacing: 2,
     color: colors.red,

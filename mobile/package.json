@@ -3,9 +3,10 @@
   "version": "1.0.0",
   "main": "expo-router/entry",
   "dependencies": {
+    "@expo-google-fonts/averia-libre": "^0.4.0",
+    "@expo-google-fonts/averia-serif-libre": "^0.4.1",
     "@expo-google-fonts/eb-garamond": "^0.4.3",
     "@expo-google-fonts/geist-mono": "^0.4.3",
-    "@expo-google-fonts/londrina-solid": "^0.4.1",
     "@expo-google-fonts/new-amsterdam": "^0.4.0",
     "@expo-google-fonts/paprika": "^0.4.1",
     "@sanity/client": "^8.7.0",

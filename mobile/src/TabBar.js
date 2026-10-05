@@ -13,7 +13,7 @@ const icons = {
 
 // French-only for now, like the rest of the app's chrome.
 const LABELS = {
-  index: 'A La Une',
+  index: 'En Couverture',
   rubriques: 'Rubriques',
   'a-propos': 'A Propos',
 }

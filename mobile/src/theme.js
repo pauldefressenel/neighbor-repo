@@ -22,7 +22,8 @@ export const fonts = {
   mono: 'GeistMono_500Medium',
   newAmsterdam: 'NewAmsterdam_400Regular',
   paprika: 'Paprika_400Regular',
-  londrina: 'LondrinaSolid_300Light', // card categories
+  averia: 'AveriaLibre_400Regular', // card categories
+  averiaSerif: 'AveriaSerifLibre_400Regular', // the dinkus under page titles
 }
 
 // The big centred title at the top of a page (Rubriques, a rubrique, …).
@@ -36,21 +37,27 @@ export const pageTitle = {
   marginBottom: 15,
 }
 
-// The title of the Rubriques list and of every article page (A La Une and
-// each rubrique), so the title sits in the same place from page to page. The
-// space below it is set by each page.
+// The title of the Rubriques list and of every article page (En Couverture
+// and each rubrique), so the title sits in the same place from page to page.
+// The space below it is set by each page.
+// The type shared by page titles and article titles, so the two match:
+// 35pt, -0.03em letter-spacing, 1.1 line height.
+export const titleType = {
+  fontFamily: fonts.neighbor,
+  fontSize: 35,
+  lineHeight: 35 * 1.1,
+  letterSpacing: 35 * -0.03,
+  color: colors.ink,
+}
+
 export const rubriquesTitle = {
-  // On an article page, this and ArticleList's titleStyle margin centre the
-  // title between the masthead's rule and the line above the first card.
+  ...titleType,
+  // With ArticleList's titleStyle margin, sets the space above and below the
+  // title on an article page.
   marginTop: 41.5,
   // NeighborFont's descenders run below a tight line box, so the q needs room.
   paddingBottom: 4,
   textAlign: 'center',
-  fontFamily: fonts.neighbor,
-  fontSize: 35,
-  lineHeight: 50,
-  letterSpacing: -0.35,
-  color: colors.ink,
 }
 
 // The Rubriques list's layout, shared with A Propos: a page of titled blocks,

@@ -8,7 +8,8 @@ import { EBGaramond_400Regular, EBGaramond_400Regular_Italic, EBGaramond_500Medi
 import { GeistMono_500Medium, GeistMono_700Bold } from '@expo-google-fonts/geist-mono'
 import { NewAmsterdam_400Regular } from '@expo-google-fonts/new-amsterdam'
 import { Paprika_400Regular } from '@expo-google-fonts/paprika'
-import { LondrinaSolid_300Light } from '@expo-google-fonts/londrina-solid'
+import { AveriaLibre_400Regular } from '@expo-google-fonts/averia-libre'
+import { AveriaSerifLibre_400Regular } from '@expo-google-fonts/averia-serif-libre'
 import { colors } from '../theme'
 
 SplashScreen.preventAutoHideAsync()
@@ -25,7 +26,8 @@ export default function RootLayout() {
     GeistMono_700Bold,
     NewAmsterdam_400Regular,
     Paprika_400Regular,
-    LondrinaSolid_300Light,
+    AveriaLibre_400Regular,
+    AveriaSerifLibre_400Regular,
   })
 
   useEffect(() => {
