@@ -4,10 +4,10 @@
 // rather than failing the deploy.
 import { writeFileSync, existsSync } from 'node:fs'
 import { createClient } from '@sanity/client'
+import { NEIGHBORHOOD_OPEN, RUBRIQUES, rubriqueOf } from '../src/sections.js'
 
 const ORIGIN = 'https://react.theneighborr.com'
 const LANGS = ['en', 'fr']
-const SECTIONS = ['fiction-poetry', 'literature-review', 'the-arts', 'portraits']
 
 if (!existsSync('dist')) {
   console.error('sitemap: dist/ not found — run vite build first')
@@ -23,8 +23,9 @@ const client = createClient({
 
 const urls = []
 for (const lang of LANGS) {
-  urls.push(`/${lang}`, `/${lang}/about`, `/${lang}/neighborhood`)
-  for (const section of SECTIONS) urls.push(`/${lang}/${section}`)
+  urls.push(`/${lang}`, `/${lang}/about`)
+  if (NEIGHBORHOOD_OPEN) urls.push(`/${lang}/neighborhood`)
+  for (const { value } of RUBRIQUES) urls.push(`/${lang}/${value}`)
 }
 
 let articles = []
@@ -38,8 +39,8 @@ try {
 
 const entries = urls.map((path) => ({ loc: path }))
 for (const a of articles) {
-  if (!LANGS.includes(a.language) || !SECTIONS.includes(a.section)) continue
-  entries.push({ loc: `/${a.language}/${a.section}/${a.slug}`, lastmod: a._updatedAt || a.publishedAt })
+  if (!LANGS.includes(a.language) || !RUBRIQUES.some((r) => r.sanity.includes(a.section))) continue
+  entries.push({ loc: `/${a.language}/${rubriqueOf(a.section)}/${a.slug}`, lastmod: a._updatedAt || a.publishedAt })
 }
 
 const escape = (s) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;')

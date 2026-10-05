@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom'
 import './SectionPage.css'
 import { getArticlesBySection } from './sanity/queries'
 import { i18n } from './i18n'
+import { findRubrique } from './sections'
 import ArticleCard from './ArticleCard'
 import PortraitCard from './PortraitCard'
 
@@ -13,7 +14,7 @@ export default function SectionPage() {
   const title = t.sections.find(s => s.value === section)?.label
 
   useEffect(() => {
-    getArticlesBySection(lang, section).then(setArticles)
+    getArticlesBySection(lang, findRubrique(section)?.sanity ?? []).then(setArticles)
   }, [lang, section])
 
   return (

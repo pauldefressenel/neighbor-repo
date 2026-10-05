@@ -1,5 +1,6 @@
-// The app's three rubriques. Sanity still has the website's four sections,
-// so Essais & Critiques gathers both the literature reviews and the arts.
+// The app's three rubriques, as on the site (src/sections.js) and in the
+// Studio. Sanity still has four sections, so Essais & Critiques gathers both
+// the literature reviews and the arts.
 // The order here is the order of the Rubriques list; `subtitle` is the small
 // line under each name there. It is set in capitals, so it has no accents.
 export const SECTIONS = [

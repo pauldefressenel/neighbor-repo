@@ -1,8 +1,9 @@
 import { client } from './client'
 
-export const getArticlesBySection = (language, section) =>
+// Every article in one rubrique: `sections` is its Sanity sections (sections.js).
+export const getArticlesBySection = (language, sections) =>
   client.fetch(
-    `*[_type == "article" && language == $language && section == $section] | order(publishedAt desc) {
+    `*[_type == "article" && language == $language && section in $sections] | order(publishedAt desc) {
       _id,
       title,
       slug,
@@ -14,7 +15,7 @@ export const getArticlesBySection = (language, section) =>
       mainImage,
       publishedAt
     }`,
-    { language, section }
+    { language, sections }
   )
 
 // The homepage strip is editorially chosen, not simply the newest articles:

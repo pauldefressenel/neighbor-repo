@@ -6,9 +6,10 @@ const languages = [
 
 const aboutTitle = { en: 'About', fr: 'A Propos' }
 
-// The app's three rubriques (mobile/src/sections.js). Articles still carry the
-// website's four `section` values, so Essais & Critiques gathers two of them;
-// creating an article there asks which one it belongs to.
+// The three rubriques, as on the site (src/sections.js) and in the app
+// (mobile/src/sections.js). Articles still carry four `section` values, so
+// Essais & Critiques gathers two of them; creating an article there asks
+// which one it belongs to.
 const rubriques = {
   fr: [
     {

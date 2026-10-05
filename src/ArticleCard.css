@@ -22,10 +22,11 @@
 }
 
 .article-category {
-  font-family: 'Geist Mono', monospace;
-  font-weight: 700;
-  font-size: 16px;
-  letter-spacing: 0em;
+  /* The app's category style (mobile/src/ArticleCard.js), a size smaller. */
+  font-family: 'New Amsterdam', sans-serif;
+  font-weight: 400;
+  font-size: 18px;
+  letter-spacing: 1px;
   color: #FF1919;
   text-transform: uppercase;
   animation: appear-5 0.2s var(--ease-spring) 0.5s both;

@@ -40,7 +40,7 @@ This is a monorepo with three apps, all reading the same Sanity dataset:
 - **`studio/`** — Sanity Studio v3 (separate `package.json`, runs independently)
 - **`mobile/`** — the iOS app, Expo + Expo Router (separate `package.json`). It has its own `mobile/CLAUDE.md`; read it before touching anything in `mobile/`. Most current work happens here.
 
-The app and the website organise content differently. The website has four sections in two languages. The app is French-only for now and groups those four sections into three rubriques (`mobile/src/sections.js`). The Studio sidebar follows the app's rubriques. Both lists have to stay in step.
+Sanity stores four `section` values. The website, the app and the Studio sidebar all group them into the same three rubriques: Essays & Criticism (`literature-review` + `the-arts`), Prose & Poetry (`fiction-poetry`) and Portraits. Each has its own copy of the list, in `src/sections.js`, `mobile/src/sections.js` and `studio/structure.js`; change all three together. The website is bilingual and uses English URL slugs for both languages. The app is French-only for now and uses French slugs.
 
 ### Frontend (`src/`)
 
@@ -49,18 +49,19 @@ The app and the website organise content differently. The website has four secti
 - Per-component CSS files next to each component (no CSS modules or Tailwind)
 - `AboutPage.jsx` — renders the `about-<lang>` Sanity document (title, body, founders' avatars)
 - `BroadsheetPage.jsx` — `/broadsheet`, outside `Layout`: a standalone newspaper-style front page experiment with hard-coded issue details. It is not linked from the site.
-- `PortraitCard.jsx` + `PortraitAnimation.jsx` — Framer's Portrait Vignette: a 110×110 sprite slot over a 300px centred text block. `portraitAnimations.js` is a hand-transcribed spec of the seven portrait loops (frames, mirrors, per-step positions, dwell times), sourced from the Framer MCP node XML and the published component chunks and verified against recordings of the live site. Sprites live in `public/portraits/`; do not regenerate this file from the chunks — that path was tried and is unreliable.
+- `PortraitCard.jsx` + `PortraitAnimation.jsx` — Framer's Portrait Vignette: a 110×110 sprite slot over a 300px centred text block. `portraitAnimations.js` is a hand-transcribed spec of the seven portrait loops (frames, mirrors, per-step positions, dwell times), sourced from the Framer MCP node XML and the published component chunks and verified against recordings of the live site. Sprites live in `public/portraits/`; do not regenerate this file from the chunks — that path was tried and is unreliable. The iOS app plays the same spec and sprites (`mobile/src/PortraitAnimation.js`), so a change here changes both.
 - `src/sanity/client.js` — Sanity client + `urlFor()` image helper
 - `src/sanity/queries.js` — GROQ queries (`getArticlesBySection`, `getLatestArticles`, `getArticleBySlug`, `getAboutPage`)
-- `i18n.js` — bilingual strings and section labels for `en` / `fr`
+- `sections.js` — the three rubriques (`essays-criticism`, `prose-poetry`, `portraits`), each with its Sanity sections. `rubriqueOf()` maps an article's `section` to its URL segment, and `LEGACY_SECTIONS` lists the pre-rubrique URLs.
+- `i18n.js` — bilingual strings and nav labels (the three rubriques plus The Neighborhood) for `en` / `fr`
 - `scripts/sitemap.mjs` writes `dist/sitemap.xml` after `vite build`, and `scripts/vercel-build.mjs` is the Vercel build entry
 
 ### Routing and Bilingualism
 
-URL structure: `/:lang/:section` and `/:lang/:section/:slug` (e.g. `/en/fiction-poetry`, `/fr/literature-review/<slug>`).
+URL structure: `/:lang/:rubrique` and `/:lang/:rubrique/:slug` (e.g. `/en/prose-poetry`, `/fr/essays-criticism/<slug>`). Article URLs use the article's rubrique (`rubriqueOf(section)`); `ArticlePage` looks articles up by slug alone. The old section URLs (`/:lang/fiction-poetry`, `/literature-review`, `/the-arts`, with or without a slug) redirect to their rubrique, in `vercel.json` in production and through `LegacySection` routes in `Layout.jsx` in development. The Framer redirects in `vercel.json` point straight at the new URLs.
 
 - `/` redirects to `/en`; `/:lang` is the Latest page (articles whose `featured` names that language)
-- `/:lang/about` is the About page, `/:lang/neighborhood` The Neighborhood; Donate links out to `https://buymeacoffee.com/theneighbor`
+- `/:lang/about` is the About page. `/:lang/neighborhood` is The Neighborhood, which is hidden until it is ready: while `NEIGHBORHOOD_OPEN` in `src/sections.js` is false, it is left out of the nav, the phone menu and the sitemap, and its URL redirects to `/:lang`. About sits in the sections nav after the three rubriques; there is no Donate link.
 - `lang` param is `en` or `fr`; `i18n.js` drives all translated labels and section listings
 - `Layout` reads `lang` from the URL and passes it to queries so only articles with the matching `language` field are fetched
 - The language selector opens a small row with the other language (as on Framer); choosing it navigates to the same section under the alternate lang prefix
@@ -68,11 +69,11 @@ URL structure: `/:lang/:section` and `/:lang/:section/:slug` (e.g. `/en/fiction-
 
 ### Breakpoints
 
-Framer uses different breakpoints per page. The section pages' set (≥1200 / 900–1199 / 700–899 / ≤699) drives the article grids (4/3/2/1 columns) and portrait grids (70px row gaps, 90px on phone). The header follows the home page's set instead, measured on the live site: ≥1000 desktop (wordmark centred, links ending 15px from the right, nav gap 60px), 750–999 tablet (About/Donate at the left edge, language at the right, nav gap 35px), ≤749 phone (one 60px row: 25px hamburger at 15px, wordmark at 90px, language at the right; the sections nav moves into `menu-overlay`). Layout.css has the measured values.
+Framer uses different breakpoints per page. The section pages' set (≥1200 / 900–1199 / 700–899 / ≤699) drives the article grids (4/3/2/1 columns) and portrait grids (70px row gaps, 90px on phone). The header follows the home page's set instead, measured on the live site: ≥1000 desktop (wordmark centred, language selector ending 15px from the right, nav links EB Garamond Medium 18px with 60px gaps), 750–999 tablet (language at the right, nav gaps 35px), ≤749 phone (one 60px row: 25px hamburger at 15px, wordmark at 90px, language at the right; the sections nav moves into `menu-overlay`). Layout.css has the measured values.
 
 ### The Neighborhood Page
 
-`NeighborhoodPage.jsx` is a special interactive canvas — not a standard article section. It:
+`NeighborhoodPage.jsx` is a special interactive canvas, not a standard article section. It is hidden for now (see `NEIGHBORHOOD_OPEN` above). It:
 
 - Fetches community members from an external REST API (`https://the-neighbor.onrender.com/community`)
 - Lays out member portrait images using a golden-angle spiral
@@ -113,7 +114,7 @@ apostrophes, so prefer the scraper.
 ### Fonts
 
 - **NeighborFont** (proprietary) — served locally from `public/` as `.otf` files, declared via `@font-face` in `index.css`. The app bundles its own copies in `mobile/assets/fonts/`.
-- **EB Garamond** + **Geist Mono** — loaded from Google Fonts via `<link>` in `index.html`
+- **EB Garamond**, **New Amsterdam** (card categories) and **Geist Mono** (being phased out) — loaded from Google Fonts via `<link>` in `index.html`
 
 ### CORS
 

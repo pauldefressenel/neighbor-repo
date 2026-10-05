@@ -1,16 +1,15 @@
-export const DONATE_URL = 'https://buymeacoffee.com/theneighbor'
-
+// `sections` is the nav: the three rubriques (sections.js). The Neighborhood
+// is drawn by the site rather than sourced from Sanity, and joins the nav
+// only once NEIGHBORHOOD_OPEN (sections.js) is true.
 export const i18n = {
   en: {
     sections: [
-      { label: 'Fiction & Poetry', value: 'fiction-poetry' },
-      { label: 'Literature Review', value: 'literature-review' },
-      { label: 'The Arts', value: 'the-arts' },
+      { label: 'Essays & Criticism', value: 'essays-criticism' },
+      { label: 'Prose & Poetry', value: 'prose-poetry' },
       { label: 'Portraits', value: 'portraits' },
-      { label: 'The Neighborhood', value: 'neighborhood' },
     ],
+    neighborhood: 'The Neighborhood',
     about: 'About',
-    donate: 'Donate',
     language: 'English',
     latest: 'Latest',
     switchTo: 'fr',
@@ -23,14 +22,12 @@ export const i18n = {
   },
   fr: {
     sections: [
-      { label: 'Fiction & Poésie', value: 'fiction-poetry' },
-      { label: 'La Revue Littéraire', value: 'literature-review' },
-      { label: 'Les Arts', value: 'the-arts' },
+      { label: 'Essais & Critiques', value: 'essays-criticism' },
+      { label: 'Prose & Poésie', value: 'prose-poetry' },
       { label: 'Portraits', value: 'portraits' },
-      { label: 'Le Voisinage', value: 'neighborhood' },
     ],
+    neighborhood: 'Le Voisinage',
     about: 'A Propos',
-    donate: 'Faire un don',
     language: 'Français',
     latest: 'Récents',
     switchTo: 'en',

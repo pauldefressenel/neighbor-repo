@@ -24,7 +24,7 @@ npx expo start         # iPhone app → scan the QR code with Expo Go
 
 | Path | What |
 |---|---|
-| `src/` | Site. Routes are `/:lang/:section/:slug` with `lang` = `en` \| `fr`. |
+| `src/` | Site. Routes are `/:lang/:rubrique/:slug` with `lang` = `en` \| `fr` and the three rubriques in `src/sections.js`. |
 | `studio/` | Sanity Studio v3. Schema in `studio/schemas/`, sidebar in `studio/structure.js`. |
 | `mobile/` | iOS app (Expo, Expo Router). Screens in `mobile/src/app/`; reads the same Sanity dataset as the site. |
 | `import/` | One-off tooling: the Framer scraper/importer that seeded the dataset, and the About page seed. |

@@ -1,6 +1,7 @@
 import { useState } from 'react'
-import { NavLink, Link, Routes, Route, useParams, useNavigate, useLocation } from 'react-router-dom'
-import { i18n, DONATE_URL } from './i18n'
+import { NavLink, Link, Navigate, Routes, Route, useParams, useNavigate, useLocation } from 'react-router-dom'
+import { i18n } from './i18n'
+import { LEGACY_SECTIONS, NEIGHBORHOOD_OPEN } from './sections'
 import './Layout.css'
 import NeighborhoodPage from './NeighborhoodPage'
 import SectionPage from './SectionPage'
@@ -9,21 +10,30 @@ import LatestPage from './LatestPage'
 import AboutPage from './AboutPage'
 import Footer from './Footer'
 
-// The phone menu reorders the nav: the four reading sections, then a gap,
-// then Neighborhood, About and Donate.
-function menuItems(t, lang) {
-  const reading = t.sections.filter((s) => s.value !== 'neighborhood')
-  const neighborhood = t.sections.find((s) => s.value === 'neighborhood')
+// The nav: the three rubriques, The Neighborhood once it opens, then About.
+function navSections(t) {
   return [
-    ...reading.map((s) => ({ label: s.label, to: `/${lang}/${s.value}` })),
-    {
-      label: t.menuNeighborhood ?? neighborhood?.label,
-      to: `/${lang}/neighborhood`,
-      groupStart: true,
-    },
-    { label: t.about, to: `/${lang}/about` },
-    { label: t.donate, href: DONATE_URL },
+    ...t.sections,
+    ...(NEIGHBORHOOD_OPEN ? [{ label: t.neighborhood, value: 'neighborhood' }] : []),
+    { label: t.about, value: 'about' },
   ]
+}
+
+// The phone menu lists the same links; The Neighborhood, once it opens, is
+// set apart from the rubriques by a gap and drops its article.
+function menuItems(t, lang) {
+  return navSections(t).map(({ label, value }) =>
+    value === 'neighborhood'
+      ? { label: t.menuNeighborhood, to: `/${lang}/${value}`, groupStart: true }
+      : { label, to: `/${lang}/${value}` }
+  )
+}
+
+// An old section URL (/en/the-arts/…) sends the reader to its rubrique,
+// keeping the article slug if there is one.
+function LegacySection({ to }) {
+  const { lang, '*': rest } = useParams()
+  return <Navigate to={`/${lang}/${to}${rest ? `/${rest}` : ''}`} replace />
 }
 
 export default function Layout() {
@@ -61,7 +71,6 @@ export default function Layout() {
             The Neighbor
           </Link>
           <nav className="header-meta">
-            <NavLink to={`/${lang}/about`}>{t.about}</NavLink>
             {/* Framer: the selector opens a row with the other language rather than switching outright. */}
             <span className="lang-menu">
               <button
@@ -82,11 +91,10 @@ export default function Layout() {
                 {other.language}
               </button>
             </span>
-            <a href={DONATE_URL} target="_blank" rel="noopener noreferrer">{t.donate}</a>
           </nav>
         </div>
         <nav className="sections-nav">
-          {t.sections.map(({ label, value }) =>
+          {navSections(t).map(({ label, value }) =>
             value ? (
               <NavLink
                 key={label}
@@ -106,34 +114,36 @@ export default function Layout() {
         </nav>
       </header>
 
-      {/* Phone-only: the sections nav collapses behind the header toggle.
-          Framer groups the four reading sections, then a blank line, then
-          Neighborhood / About / Donate. */}
+      {/* Phone-only: the sections nav collapses behind the header toggle. */}
       <div
         className={`menu-overlay${menuOpen ? ' menu-overlay--open' : ''}`}
         hidden={!menuOpen}
       >
         <nav className="menu-overlay-nav">
-          {menuItems(t, lang).map(({ label, to, href, groupStart }, i) => {
-            const className = `menu-overlay-link${groupStart ? ' menu-overlay-link--group-start' : ''}`
-            const style = { animationDelay: `${0.06 + i * 0.035}s` }
-            return href ? (
-              <a key={label} href={href} target="_blank" rel="noopener noreferrer" className={className} style={style}>
-                {label}
-              </a>
-            ) : (
-              <NavLink key={label} to={to} className={className} style={style} onClick={() => setMenuOpen(false)}>
-                {label}
-              </NavLink>
-            )
-          })}
+          {menuItems(t, lang).map(({ label, to, groupStart }, i) => (
+            <NavLink
+              key={label}
+              to={to}
+              className={`menu-overlay-link${groupStart ? ' menu-overlay-link--group-start' : ''}`}
+              style={{ animationDelay: `${0.06 + i * 0.035}s` }}
+              onClick={() => setMenuOpen(false)}
+            >
+              {label}
+            </NavLink>
+          ))}
         </nav>
       </div>
 
       <Routes>
         <Route index element={<LatestPage key={useLocation().pathname} />} />
         <Route path="about" element={<AboutPage />} />
-        <Route path="neighborhood" element={<NeighborhoodPage key={useLocation().pathname} />} />
+        <Route
+          path="neighborhood"
+          element={NEIGHBORHOOD_OPEN ? <NeighborhoodPage key={pathname} /> : <Navigate to={`/${lang}`} replace />}
+        />
+        {Object.entries(LEGACY_SECTIONS).map(([from, to]) => (
+          <Route key={from} path={`${from}/*`} element={<LegacySection to={to} />} />
+        ))}
         <Route path=":section/:slug" element={<ArticlePage />} />
         <Route path=":section" element={<SectionPage key={useLocation().pathname} />} />
       </Routes>

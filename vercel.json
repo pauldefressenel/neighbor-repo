@@ -11,32 +11,32 @@
     },
     {
       "source": "/sections/fiction/en",
-      "destination": "/en/fiction-poetry",
+      "destination": "/en/prose-poetry",
       "permanent": true
     },
     {
       "source": "/sections/fiction/fr",
-      "destination": "/fr/fiction-poetry",
+      "destination": "/fr/prose-poetry",
       "permanent": true
     },
     {
       "source": "/sections/literature/en",
-      "destination": "/en/literature-review",
+      "destination": "/en/essays-criticism",
       "permanent": true
     },
     {
       "source": "/sections/literature/fr",
-      "destination": "/fr/literature-review",
+      "destination": "/fr/essays-criticism",
       "permanent": true
     },
     {
       "source": "/sections/arts/en",
-      "destination": "/en/the-arts",
+      "destination": "/en/essays-criticism",
       "permanent": true
     },
     {
       "source": "/sections/arts/fr",
-      "destination": "/fr/the-arts",
+      "destination": "/fr/essays-criticism",
       "permanent": true
     },
     {
@@ -76,217 +76,217 @@
     },
     {
       "source": "/entries/articles/anchor",
-      "destination": "/en/fiction-poetry/anchor",
+      "destination": "/en/prose-poetry/anchor",
       "permanent": true
     },
     {
       "source": "/entries/articles/a-name-is-a-sound",
-      "destination": "/en/fiction-poetry/a-name-is-a-sound",
+      "destination": "/en/prose-poetry/a-name-is-a-sound",
       "permanent": true
     },
     {
       "source": "/entries/articles/voltas-i",
-      "destination": "/en/fiction-poetry/voltas-i",
+      "destination": "/en/prose-poetry/voltas-i",
       "permanent": true
     },
     {
       "source": "/entries/articles/anatomy-of-a-laugh",
-      "destination": "/en/fiction-poetry/anatomy-of-a-laugh",
+      "destination": "/en/prose-poetry/anatomy-of-a-laugh",
       "permanent": true
     },
     {
       "source": "/entries/articles/killed-by-kindness",
-      "destination": "/en/fiction-poetry/killed-by-kindness",
+      "destination": "/en/prose-poetry/killed-by-kindness",
       "permanent": true
     },
     {
       "source": "/entries/articles/shibuya-dancing-en",
-      "destination": "/en/fiction-poetry/shibuya-dancing-en",
+      "destination": "/en/prose-poetry/shibuya-dancing-en",
       "permanent": true
     },
     {
       "source": "/entries/articles/goya-as-saturn-saw-him",
-      "destination": "/en/fiction-poetry/goya-as-saturn-saw-him",
+      "destination": "/en/prose-poetry/goya-as-saturn-saw-him",
       "permanent": true
     },
     {
       "source": "/entries/articles/nausea-winter",
-      "destination": "/en/fiction-poetry/nausea-winter",
+      "destination": "/en/prose-poetry/nausea-winter",
       "permanent": true
     },
     {
       "source": "/entries/articles/la-chute-et-l-envol",
-      "destination": "/fr/fiction-poetry/la-chute-et-l-envol",
+      "destination": "/fr/prose-poetry/la-chute-et-l-envol",
       "permanent": true
     },
     {
       "source": "/entries/articles/eloge-de-la-mauvaise-foi",
-      "destination": "/fr/fiction-poetry/eloge-de-la-mauvaise-foi",
+      "destination": "/fr/prose-poetry/eloge-de-la-mauvaise-foi",
       "permanent": true
     },
     {
       "source": "/entries/articles/shibuya-dancing-fr",
-      "destination": "/fr/fiction-poetry/shibuya-dancing-fr",
+      "destination": "/fr/prose-poetry/shibuya-dancing-fr",
       "permanent": true
     },
     {
       "source": "/entries/articles/la-grande-naus%C3%A9e",
-      "destination": "/fr/fiction-poetry/la-grande-nausée",
+      "destination": "/fr/prose-poetry/la-grande-nausée",
       "permanent": true
     },
     {
       "source": "/entries/articles/la-grande-naus%c3%a9e",
-      "destination": "/fr/fiction-poetry/la-grande-nausée",
+      "destination": "/fr/prose-poetry/la-grande-nausée",
       "permanent": true
     },
     {
       "source": "/entries/articles/the-world-of-yesterday",
-      "destination": "/en/literature-review/the-world-of-yesterday",
+      "destination": "/en/essays-criticism/the-world-of-yesterday",
       "permanent": true
     },
     {
       "source": "/entries/articles/salammb%C3%B4-flaubert-en",
-      "destination": "/en/literature-review/salammbô-flaubert-en",
+      "destination": "/en/essays-criticism/salammbô-flaubert-en",
       "permanent": true
     },
     {
       "source": "/entries/articles/salammb%c3%b4-flaubert-en",
-      "destination": "/en/literature-review/salammbô-flaubert-en",
+      "destination": "/en/essays-criticism/salammbô-flaubert-en",
       "permanent": true
     },
     {
       "source": "/entries/articles/the-death-of-ivan-ilyitch",
-      "destination": "/en/literature-review/the-death-of-ivan-ilyitch",
+      "destination": "/en/essays-criticism/the-death-of-ivan-ilyitch",
       "permanent": true
     },
     {
       "source": "/entries/articles/on-creative-alienation",
-      "destination": "/en/literature-review/on-creative-alienation",
+      "destination": "/en/essays-criticism/on-creative-alienation",
       "permanent": true
     },
     {
       "source": "/entries/articles/narcissus-and-goldmund-en",
-      "destination": "/en/literature-review/narcissus-and-goldmund-en",
+      "destination": "/en/essays-criticism/narcissus-and-goldmund-en",
       "permanent": true
     },
     {
       "source": "/entries/articles/kolkhoze",
-      "destination": "/fr/literature-review/kolkhoze",
+      "destination": "/fr/essays-criticism/kolkhoze",
       "permanent": true
     },
     {
       "source": "/entries/articles/cyrano-de-bergerac",
-      "destination": "/fr/literature-review/cyrano-de-bergerac",
+      "destination": "/fr/essays-criticism/cyrano-de-bergerac",
       "permanent": true
     },
     {
       "source": "/entries/articles/les-nuits-blanches",
-      "destination": "/fr/literature-review/les-nuits-blanches",
+      "destination": "/fr/essays-criticism/les-nuits-blanches",
       "permanent": true
     },
     {
       "source": "/entries/articles/salammb%C3%B4-flaubert-fr",
-      "destination": "/fr/literature-review/salammbô-flaubert-fr",
+      "destination": "/fr/essays-criticism/salammbô-flaubert-fr",
       "permanent": true
     },
     {
       "source": "/entries/articles/salammb%c3%b4-flaubert-fr",
-      "destination": "/fr/literature-review/salammbô-flaubert-fr",
+      "destination": "/fr/essays-criticism/salammbô-flaubert-fr",
       "permanent": true
     },
     {
       "source": "/entries/articles/la-mort-d-ivan-ilyitch",
-      "destination": "/fr/literature-review/la-mort-d-ivan-ilyitch",
+      "destination": "/fr/essays-criticism/la-mort-d-ivan-ilyitch",
       "permanent": true
     },
     {
       "source": "/entries/articles/sur-l-ali%C3%A9nation-de-l-artiste",
-      "destination": "/fr/literature-review/sur-l-aliénation-de-l-artiste",
+      "destination": "/fr/essays-criticism/sur-l-aliénation-de-l-artiste",
       "permanent": true
     },
     {
       "source": "/entries/articles/sur-l-ali%c3%a9nation-de-l-artiste",
-      "destination": "/fr/literature-review/sur-l-aliénation-de-l-artiste",
+      "destination": "/fr/essays-criticism/sur-l-aliénation-de-l-artiste",
       "permanent": true
     },
     {
       "source": "/entries/articles/narcissus-and-goldmund-fr",
-      "destination": "/fr/literature-review/narcissus-and-goldmund-fr",
+      "destination": "/fr/essays-criticism/narcissus-and-goldmund-fr",
       "permanent": true
     },
     {
       "source": "/entries/articles/the-hidden-apocalypse-in-kendrick-lamar%E2%80%99s-%E2%80%9Cdamn.%E2%80%9D",
-      "destination": "/en/the-arts/the-hidden-apocalypse-in-kendrick-lamar’s-“damn.”",
+      "destination": "/en/essays-criticism/the-hidden-apocalypse-in-kendrick-lamar’s-“damn.”",
       "permanent": true
     },
     {
       "source": "/entries/articles/the-hidden-apocalypse-in-kendrick-lamar%e2%80%99s-%e2%80%9cdamn.%e2%80%9d",
-      "destination": "/en/the-arts/the-hidden-apocalypse-in-kendrick-lamar’s-“damn.”",
+      "destination": "/en/essays-criticism/the-hidden-apocalypse-in-kendrick-lamar’s-“damn.”",
       "permanent": true
     },
     {
       "source": "/entries/articles/etude-blue",
-      "destination": "/en/the-arts/etude-blue",
+      "destination": "/en/essays-criticism/etude-blue",
       "permanent": true
     },
     {
       "source": "/entries/articles/nietzsche-through-marty-mauser-and-alysa-liu",
-      "destination": "/en/the-arts/nietzsche-through-marty-mauser-and-alysa-liu",
+      "destination": "/en/essays-criticism/nietzsche-through-marty-mauser-and-alysa-liu",
       "permanent": true
     },
     {
       "source": "/entries/articles/mektoub-my-love-en",
-      "destination": "/en/the-arts/mektoub-my-love-en",
+      "destination": "/en/essays-criticism/mektoub-my-love-en",
       "permanent": true
     },
     {
       "source": "/entries/articles/vivaldi-my-dad-and-i",
-      "destination": "/en/the-arts/vivaldi-my-dad-and-i",
+      "destination": "/en/essays-criticism/vivaldi-my-dad-and-i",
       "permanent": true
     },
     {
       "source": "/entries/articles/the-dissonance-of-jazz",
-      "destination": "/en/the-arts/the-dissonance-of-jazz",
+      "destination": "/en/essays-criticism/the-dissonance-of-jazz",
       "permanent": true
     },
     {
       "source": "/entries/articles/inherent-vice-en",
-      "destination": "/en/the-arts/inherent-vice-en",
+      "destination": "/en/essays-criticism/inherent-vice-en",
       "permanent": true
     },
     {
       "source": "/entries/articles/borsalino-mon-voisin-et-ma-casquette",
-      "destination": "/fr/the-arts/borsalino-mon-voisin-et-ma-casquette",
+      "destination": "/fr/essays-criticism/borsalino-mon-voisin-et-ma-casquette",
       "permanent": true
     },
     {
       "source": "/entries/articles/sur-nietzsche-chez-marty-mauser-et-alysa-liu",
-      "destination": "/fr/the-arts/sur-nietzsche-chez-marty-mauser-et-alysa-liu",
+      "destination": "/fr/essays-criticism/sur-nietzsche-chez-marty-mauser-et-alysa-liu",
       "permanent": true
     },
     {
       "source": "/entries/articles/mektoub-my-love-fr",
-      "destination": "/fr/the-arts/mektoub-my-love-fr",
+      "destination": "/fr/essays-criticism/mektoub-my-love-fr",
       "permanent": true
     },
     {
       "source": "/entries/articles/vivaldi-mon-p%C3%A8re-et-moi",
-      "destination": "/fr/the-arts/vivaldi-mon-père-et-moi",
+      "destination": "/fr/essays-criticism/vivaldi-mon-père-et-moi",
       "permanent": true
     },
     {
       "source": "/entries/articles/vivaldi-mon-p%c3%a8re-et-moi",
-      "destination": "/fr/the-arts/vivaldi-mon-père-et-moi",
+      "destination": "/fr/essays-criticism/vivaldi-mon-père-et-moi",
       "permanent": true
     },
     {
       "source": "/entries/articles/apprivoiser-le-jazz",
-      "destination": "/fr/the-arts/apprivoiser-le-jazz",
+      "destination": "/fr/essays-criticism/apprivoiser-le-jazz",
       "permanent": true
     },
     {
       "source": "/entries/articles/inherent-vice-fr",
-      "destination": "/fr/the-arts/inherent-vice-fr",
+      "destination": "/fr/essays-criticism/inherent-vice-fr",
       "permanent": true
     },
     {
@@ -357,6 +357,36 @@
     {
       "source": "/entries/portraits/furtive-hedgehog-fr",
       "destination": "/fr/portraits/furtive-hedgehog-fr",
+      "permanent": true
+    },
+    {
+      "source": "/:lang(en|fr)/fiction-poetry",
+      "destination": "/:lang/prose-poetry",
+      "permanent": true
+    },
+    {
+      "source": "/:lang(en|fr)/fiction-poetry/:slug",
+      "destination": "/:lang/prose-poetry/:slug",
+      "permanent": true
+    },
+    {
+      "source": "/:lang(en|fr)/literature-review",
+      "destination": "/:lang/essays-criticism",
+      "permanent": true
+    },
+    {
+      "source": "/:lang(en|fr)/literature-review/:slug",
+      "destination": "/:lang/essays-criticism/:slug",
+      "permanent": true
+    },
+    {
+      "source": "/:lang(en|fr)/the-arts",
+      "destination": "/:lang/essays-criticism",
+      "permanent": true
+    },
+    {
+      "source": "/:lang(en|fr)/the-arts/:slug",
+      "destination": "/:lang/essays-criticism/:slug",
       "permanent": true
     }
   ],

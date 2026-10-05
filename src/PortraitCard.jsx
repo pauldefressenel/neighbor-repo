@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom'
 import PortraitAnimation from './PortraitAnimation'
 import { urlFor } from './sanity/client'
 import { hasPortraitAnimation } from './portraits'
+import { rubriqueOf } from './sections'
 import './ArticleCard.css'
 import './PortraitCard.css'
 
@@ -10,7 +11,7 @@ import './PortraitCard.css'
 // the article card; only the layout differs.
 export default function PortraitCard({ category, title, excerpt, author, mainImage, slug, language, section }) {
   return (
-    <Link className="portrait-card" to={`/${language}/${section}/${slug.current}`}>
+    <Link className="portrait-card" to={`/${language}/${rubriqueOf(section)}/${slug.current}`}>
       {hasPortraitAnimation(slug.current)
         ? <PortraitAnimation slug={slug.current} alt={title} />
         : <div className="portrait-slot">
