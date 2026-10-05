@@ -60,7 +60,8 @@ Navigation details that are easy to break:
 
 - `sections.js` — the three rubriques (`essais-critiques`, `prose-poesie`,
   `portraits`), each mapped to one or more of Sanity's four `section` values.
-  `studio/structure.js` duplicates this list, so change both together.
+  `src/sections.js` (the website) and `studio/structure.js` duplicate this
+  list, so change all three together.
 - `sanity.js` — client (same project, dataset `production`, CDN on), `urlFor`,
   `getLatestArticles`, `getSectionArticles`, and `prefetchSectionArticles`. A
   prefetch is used once by the next fetch for that rubrique; pull to refresh
@@ -87,6 +88,19 @@ Navigation details that are easy to break:
   and shared text and layout styles (`pageTitle`, `rubriquesTitle`, `menu`).
 - `rivers.js` / `River.js` — wavy "river" separators between articles,
   currently off (`SHOW_RIVERS = false`, plain spacing instead).
+- `PortraitAnimation.js` — the website's portrait player ported to React
+  Native. It reads the website's own spec (`../src/portraitAnimations.js`,
+  through `../src/portraits.js`) and sprites (`../public/portraits/`); nothing
+  is copied. `metro.config.js` adds those folders to `watchFolders`. The spec
+  is written as CSS (percentages, `'px'` strings, translates relative to the
+  layer's size), and `layerStyle` resolves it to numbers. A NaN that reaches
+  expo-image crashes Expo Go natively, so keep every value finite. Drawn at
+  `PORTRAIT_SCALE` (1.4) times Framer's 110px slot. `ArticleCard` puts it
+  where the picture goes. A portrait with no animation shows its whole
+  `mainImage` in a square instead of the 2:1 crop.
+- `portraitSprites.js` — `require()` and pixel size for each sprite (Metro
+  needs static requires; the sizes give height-only layers their width). A new
+  sprite needs a line here.
 - `ComingSoon.js` — the placeholder screen.
 
 ## Conventions
