@@ -30,6 +30,7 @@ node import/scrape-framer.mjs                        # theneighborr.com → impo
 node import/import-framer.mjs                        # dry run: prints the plan, writes nothing
 SANITY_TOKEN=<token> node import/import-framer.mjs --write
 SANITY_TOKEN=<token> node import/seed-about.mjs      # (re)seed the about-en / about-fr documents
+SANITY_TOKEN=<token> node import/assign-vignettes.mjs <dir> --write  # set main images from numbered vignettes (dry run without --write)
 ```
 
 ## Architecture
@@ -106,6 +107,13 @@ the cutover. Two scripts keep Sanity in step with it:
   are not rendered by Framer, so they are carried over from the existing document;
   unpaired translations are reported for manual linking. Every `--write` first
   dumps the current dataset to `import/backup-<timestamp>.ndjson`.
+
+`assign-vignettes.mjs` sets articles' main images from a folder of vignettes
+numbered per rubrique (`essais-critiques/1.png` is the oldest French essay). Each
+image also goes to the article's translation. The slug-to-number table is in the
+script; the vignettes themselves live outside the repo. Illustrations are drawn
+full width at their own proportions (about 1818×572, never cropped) on the site
+and in the app.
 
 `Articles.csv` / `import.mjs` are the earlier one-off CSV import. That export
 dropped pull-quote and attribution paragraphs and mangled typographic

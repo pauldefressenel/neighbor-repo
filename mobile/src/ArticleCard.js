@@ -20,7 +20,7 @@ const frenchDate = (iso) => {
 // animated sprite (or, without one, the whole drawing in a square) rather
 // than a 2:1 crop. Inside a list that sets
 // AppearContext, its parts rise in one after another.
-export default function ArticleCard({ category, title, excerpt, author, mainImage, publishedAt, slug, section }) {
+export default function ArticleCard({ category, title, excerpt, author, mainImage, imageAspect, publishedAt, slug, section }) {
   const date = publishedAt ? frenchDate(publishedAt) : null
   return (
     <View style={styles.card}>
@@ -32,7 +32,7 @@ export default function ArticleCard({ category, title, excerpt, author, mainImag
         {excerpt ? <Text style={styles.excerpt}>{excerpt}</Text> : null}
       </Rise>
       <Rise step={APPEAR.image}>
-        <Illustration title={title} mainImage={mainImage} slug={slug?.current} section={section} />
+        <Illustration title={title} mainImage={mainImage} imageAspect={imageAspect} slug={slug?.current} section={section} />
       </Rise>
       <Rise step={APPEAR.bottom}>
         {author ? <Text style={styles.author}>de {author}</Text> : null}
@@ -42,14 +42,19 @@ export default function ArticleCard({ category, title, excerpt, author, mainImag
   )
 }
 
-function Illustration({ title, mainImage, slug, section }) {
+// The vignettes' shared proportions (about 1818×572), for the placeholder.
+const VIGNETTE_ASPECT = 1818 / 572
+
+function Illustration({ title, mainImage, imageAspect, slug, section }) {
   if (hasPortrait(slug)) {
     return <View style={styles.portrait}><PortraitAnimation slug={slug} alt={title} /></View>
   }
-  if (!mainImage) return <View style={[styles.image, styles.placeholder]} />
+  if (!mainImage) return <View style={[styles.image, styles.placeholder, { aspectRatio: VIGNETTE_ASPECT }]} />
   return section === 'portraits'
     ? <Image style={[styles.portrait, styles.portraitStill]} source={urlFor(mainImage).width(400).url()} contentFit="contain" accessibilityLabel={title} transition={200} />
-    : <Image style={styles.image} source={urlFor(mainImage).width(1200).url()} contentFit="cover" accessibilityLabel={title} transition={200} />
+    // Full width, and as tall as the drawing's own proportions make it
+    // (from Sanity's metadata), so nothing is cropped.
+    : <Image style={[styles.image, { aspectRatio: imageAspect ?? VIGNETTE_ASPECT }]} source={urlFor(mainImage).width(1200).url()} contentFit="contain" accessibilityLabel={title} transition={200} />
 }
 
 const centred = { textAlign: 'center', color: colors.ink }
@@ -89,17 +94,16 @@ const styles = StyleSheet.create({
     letterSpacing: 0,
   },
   image: {
-    width: '85%',
-    aspectRatio: 2,
+    width: '100%',
     alignSelf: 'center',
-    marginVertical: 30,
+    marginVertical: 15,
   },
   placeholder: {
     backgroundColor: colors.placeholder,
   },
   portrait: {
     alignSelf: 'center',
-    marginVertical: 30,
+    marginVertical: 15,
   },
   portraitStill: {
     width: 110 * PORTRAIT_SCALE,

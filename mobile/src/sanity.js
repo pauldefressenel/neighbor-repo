@@ -29,6 +29,7 @@ export const getLatestArticles = (language) =>
       author,
       excerpt,
       mainImage,
+      "imageAspect": mainImage.asset->metadata.dimensions.aspectRatio,
       publishedAt
     }`,
     { language, featured: FEATURED_FLAG[language] ?? FEATURED_FLAG.en }
@@ -47,6 +48,7 @@ const fetchSectionArticles = (language, sections) =>
       author,
       excerpt,
       mainImage,
+      "imageAspect": mainImage.asset->metadata.dimensions.aspectRatio,
       publishedAt
     }`,
     { language, sections }

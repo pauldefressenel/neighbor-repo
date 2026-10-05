@@ -7,17 +7,18 @@
 }
 
 .article-image {
-  width: 90%;
-  /* Framer's frame is 2:1, the shape of the illustrations themselves; a taller
-     frame makes object-fit: cover zoom in on them. */
-  aspect-ratio: 2 / 1;
-  object-fit: cover;
+  /* The illustration spans the card's width and its height follows from its
+     own proportions, so nothing is ever cropped. The vignettes are all drawn
+     at the same size (about 1818×572), so they come out the same height. */
+  width: 100%;
+  height: auto;
   display: block;
   align-self: center;
   margin-bottom: 20px;
 }
 
 .article-image--placeholder {
+  aspect-ratio: 1818 / 572;
   background-color: #7B61FF;
 }
 
@@ -63,10 +64,6 @@
 }
 
 @media (max-width: 699.98px) {
-  .article-image {
-    width: 80%;
-  }
-
   /* One column on phones, so cards are separated by a rule rather than by
      the grid gutter alone. */
   .article-card:not(:last-child) {
