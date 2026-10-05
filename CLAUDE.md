@@ -13,9 +13,9 @@ npm run build        # production build of the frontend + dist/sitemap.xml
 npm run lint         # ESLint
 ```
 
-Both apps must be started separately — there is no single command that runs them concurrently.
+Each app is started separately — there is no single command that runs them concurrently. The iOS app runs from `mobile/` (`npx expo start`, then Expo Go); see `mobile/CLAUDE.md`.
 
-Deployment is through Vercel, not `sanity deploy`: the site is one Vercel project (root, Vite) and the Studio another (root directory `studio/`, served at `cms.theneighborr.com`). See the README's Deploy section.
+Deployment is through Vercel, not `sanity deploy`: the site is one Vercel project (root, Vite, served at `react.theneighborr.com`) and the Studio another (root directory `studio/`, served at `cms.theneighborr.com`). `scripts/vercel-build.mjs` picks which one to build when a project's root directory is left at the repo root. See the README's Deploy section. The mobile app is not deployed yet (no EAS config).
 
 From `studio/`:
 
@@ -29,32 +29,38 @@ Content migration from the live Framer site:
 node import/scrape-framer.mjs                        # theneighborr.com → import/framer-content.json
 node import/import-framer.mjs                        # dry run: prints the plan, writes nothing
 SANITY_TOKEN=<token> node import/import-framer.mjs --write
+SANITY_TOKEN=<token> node import/seed-about.mjs      # (re)seed the about-en / about-fr documents
 ```
 
 ## Architecture
 
-This is a monorepo with two apps sharing the same directory:
+This is a monorepo with three apps, all reading the same Sanity dataset:
 
-- **Root** — Vite + React frontend (`src/`, `index.html`, `vite.config.js`)
+- **Root** — Vite + React website (`src/`, `index.html`, `vite.config.js`)
 - **`studio/`** — Sanity Studio v3 (separate `package.json`, runs independently)
+- **`mobile/`** — the iOS app, Expo + Expo Router (separate `package.json`). It has its own `mobile/CLAUDE.md`; read it before touching anything in `mobile/`. Most current work happens here.
+
+The app and the website organise content differently. The website has four sections in two languages. The app is French-only for now and groups those four sections into three rubriques (`mobile/src/sections.js`). The Studio sidebar follows the app's rubriques. Both lists have to stay in step.
 
 ### Frontend (`src/`)
 
 - `main.jsx` → mounts React
 - `App.jsx` → routing shell; `Layout.jsx` holds the header, phone menu overlay, routes and `Footer`
 - Per-component CSS files next to each component (no CSS modules or Tailwind)
-- `AboutPage.jsx` — static copy from `i18n.js` (`aboutParagraphs`, `founders`); avatars in `public/about/`
+- `AboutPage.jsx` — renders the `about-<lang>` Sanity document (title, body, founders' avatars)
+- `BroadsheetPage.jsx` — `/broadsheet`, outside `Layout`: a standalone newspaper-style front page experiment with hard-coded issue details. It is not linked from the site.
 - `PortraitCard.jsx` + `PortraitAnimation.jsx` — Framer's Portrait Vignette: a 110×110 sprite slot over a 300px centred text block. `portraitAnimations.js` is a hand-transcribed spec of the seven portrait loops (frames, mirrors, per-step positions, dwell times), sourced from the Framer MCP node XML and the published component chunks and verified against recordings of the live site. Sprites live in `public/portraits/`; do not regenerate this file from the chunks — that path was tried and is unreliable.
 - `src/sanity/client.js` — Sanity client + `urlFor()` image helper
-- `src/sanity/queries.js` — GROQ query (`getArticlesBySection`)
+- `src/sanity/queries.js` — GROQ queries (`getArticlesBySection`, `getLatestArticles`, `getArticleBySlug`, `getAboutPage`)
 - `i18n.js` — bilingual strings and section labels for `en` / `fr`
+- `scripts/sitemap.mjs` writes `dist/sitemap.xml` after `vite build`, and `scripts/vercel-build.mjs` is the Vercel build entry
 
 ### Routing and Bilingualism
 
-URL structure: `/:lang/:section` (e.g. `/en/fiction-poetry`, `/fr/literature-review`).
+URL structure: `/:lang/:section` and `/:lang/:section/:slug` (e.g. `/en/fiction-poetry`, `/fr/literature-review/<slug>`).
 
 - `/` redirects to `/en`; `/:lang` is the Latest page (articles whose `featured` names that language)
-- `/:lang/about` is the About page; Donate links out to `https://buymeacoffee.com/theneighbor`
+- `/:lang/about` is the About page, `/:lang/neighborhood` The Neighborhood; Donate links out to `https://buymeacoffee.com/theneighbor`
 - `lang` param is `en` or `fr`; `i18n.js` drives all translated labels and section listings
 - `Layout` reads `lang` from the URL and passes it to queries so only articles with the matching `language` field are fetched
 - The language selector opens a small row with the other language (as on Framer); choosing it navigates to the same section under the alternate lang prefix
@@ -75,11 +81,11 @@ Framer uses different breakpoints per page. The section pages' set (≥1200 / 90
 
 ### Sanity (`studio/`)
 
-- One document type: `article` (`studio/schemas/article.js`)
-- Core fields: `title`, `slug`, `language` (`en`/`fr`), `section`, `category`, `author`, `excerpt`, `mainImage`, `body`, `publishedAt`
+- Two document types: `article` (`studio/schemas/article.js`) and `aboutPage` (`studio/schemas/aboutPage.js`). There is one `aboutPage` per language, with fixed ids `about-en` / `about-fr`: `title`, `body`, `founders[]` (name + image).
+- Article core fields: `title`, `slug`, `language` (`en`/`fr`), `section`, `category`, `author`, `excerpt`, `mainImage`, `body`, `publishedAt`
 - Additional fields: `poems` (array of titled poem objects with block content), `translationSlug` (links to the translated version), `audioFile` (URL), `audioQuote`, `featured` (`NO`/`YES`/`English`/`French`)
 - `section` enum: `fiction-poetry`, `literature-review`, `the-arts`, `portraits` (The Neighborhood is frontend-only, not a Sanity section)
-- Studio sidebar: Language → Section → articles (writers never touch the language or section dropdowns directly)
+- Studio sidebar (`studio/structure.js`): Language (Français first) → the app's three rubriques → articles, plus the About page for that language. Essais & Critiques covers both `literature-review` and `the-arts`, so creating an article there asks which of the two it is. An initial-value template fills `language` and `section`, so writers never set those fields by hand. The rubrique list here duplicates `mobile/src/sections.js`; change both together.
 - Sanity project ID: `9hw8z0gm`, dataset: `production`
 
 ### Content migration (`import/`)
@@ -106,9 +112,9 @@ apostrophes, so prefer the scraper.
 
 ### Fonts
 
-- **NeighborFont** (proprietary) — served locally from `public/` as `.otf` files, declared via `@font-face` in `index.css`
+- **NeighborFont** (proprietary) — served locally from `public/` as `.otf` files, declared via `@font-face` in `index.css`. The app bundles its own copies in `mobile/assets/fonts/`.
 - **EB Garamond** + **Geist Mono** — loaded from Google Fonts via `<link>` in `index.html`
 
 ### CORS
 
-`localhost:5173` must be in the allowed CORS origins for the Sanity project (sanity.io/manage → API → CORS Origins) for the frontend to fetch data in development.
+`localhost:5173` must be in the allowed CORS origins for the Sanity project (sanity.io/manage → API → CORS Origins) for the frontend to fetch data in development. The mobile app is not a browser, so CORS doesn't apply to it.
