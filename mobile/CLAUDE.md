@@ -128,7 +128,8 @@ Navigation details that are easy to break:
   A page builds up only the first time it is shown (tabs stay mounted, so
   switching tabs and back shows it as it was), and when it slides in: a
   rubrique or an article each time it opens. Coming back to a page (the
-  Rubriques list included) shows it as it was.
+  Rubriques list included) shows it as it was. A Propos is the exception: it
+  builds up again, from the top, every time its tab is entered.
 - `theme.js` — colours (paper `#FFFFF2`, ink, red `#FF1919`), font families,
   and shared text and layout styles (`pageTitle`, `rubriquesTitle`, `menu`).
   The Rubriques list sets its block names ("1. Essais & Critiques") in

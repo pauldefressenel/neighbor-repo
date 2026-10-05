@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native'
-import { useLocalSearchParams } from 'expo-router'
+import { useLocalSearchParams, useNavigation } from 'expo-router'
 import { useScrollToTop } from 'expo-router/react-navigation'
 import { useReducedMotion } from 'react-native-reanimated'
 import { ArticleHeading } from '../../ArticleScreen'
@@ -29,7 +29,19 @@ export default function AProposScreen() {
   const [failed, setFailed] = useState(false)
   const scroll = useRef(null)
   useScrollToTop(scroll)
-  const shown = useRef(Date.now()).current
+  // Unlike every other page, A Propos builds up (APPEAR.article) each time
+  // its tab is entered, from the top: its content is remounted and the page
+  // scrolled back up. The tab's focus also fires on the first visit.
+  const navigation = useNavigation()
+  const [shown, setShown] = useState(() => Date.now())
+  useEffect(
+    () =>
+      navigation.addListener('focus', () => {
+        scroll.current?.scrollTo({ y: 0, animated: false })
+        setShown(Date.now())
+      }),
+    [navigation],
+  )
   const reduceMotion = useReducedMotion()
   const steps = APPEAR.article
 
@@ -51,21 +63,23 @@ export default function AProposScreen() {
       <Masthead />
       <AppearContext.Provider value={{ since: shown, still: reduceMotion }}>
         <ScrollView ref={scroll} style={styles.scroll} contentContainerStyle={styles.content}>
-          <ArticleHeading {...HEADING} />
-          {failed ? (
-            <View style={styles.center}>
-              <Text style={styles.message}>{t.pageError}</Text>
-              <Pressable onPress={load} accessibilityRole="button">
-                <Text style={styles.message}>{t.retry}</Text>
-              </Pressable>
-            </View>
-          ) : body === null ? (
-            <ActivityIndicator style={styles.center} color={colors.ink} />
-          ) : (
-            <Rise step={steps.body}>
-              <ArticleText body={body} />
-            </Rise>
-          )}
+          <View key={shown}>
+            <ArticleHeading {...HEADING} />
+            {failed ? (
+              <View style={styles.center}>
+                <Text style={styles.message}>{t.pageError}</Text>
+                <Pressable onPress={load} accessibilityRole="button">
+                  <Text style={styles.message}>{t.retry}</Text>
+                </Pressable>
+              </View>
+            ) : body === null ? (
+              <ActivityIndicator style={styles.center} color={colors.ink} />
+            ) : (
+              <Rise step={steps.body}>
+                <ArticleText body={body} />
+              </Rise>
+            )}
+          </View>
         </ScrollView>
       </AppearContext.Provider>
     </View>
