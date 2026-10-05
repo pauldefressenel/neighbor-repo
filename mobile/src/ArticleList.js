@@ -3,13 +3,14 @@ import { ActivityIndicator, FlatList, Pressable, RefreshControl, StyleSheet, Tex
 import { useScrollToTop } from 'expo-router/react-navigation'
 import { useReducedMotion } from 'react-native-reanimated'
 import ArticleCard from './ArticleCard'
+import PortraitCard from './PortraitCard'
 import { APPEAR, AppearContext, RiseLines, Rise } from './motion'
 import Rule from './Rule'
 import { i18n } from './i18n'
-import { colors, fonts, pageTitle, rubriquesTitle } from './theme'
+import { colors, fonts, rubriquesTitle } from './theme'
 
-// The article layout shared by A La Une and every rubrique: an underlined
-// title over a column of article cards, with pull to refresh. The title sits
+// The article layout shared by A La Une and every rubrique: a title over a
+// column of article cards, each with a line above it, with pull to refresh. The title sits
 // where the Rubriques list's does, and the page builds up as it appears
 // (APPEAR in motion.js). `fetchArticles` must be stable (useCallback).
 export default function ArticleList({ lang, title, fetchArticles }) {
@@ -54,21 +55,35 @@ export default function ArticleList({ lang, title, fetchArticles }) {
       keyExtractor={(a) => a._id}
       renderItem={({ item, index }) => (
         <AppearContext.Provider value={appearFor(index)}>
-          <ArticleCard {...item} />
+          {item.section === 'portraits' ? <PortraitCard {...item} /> : <ArticleCard {...item} />}
         </AppearContext.Provider>
       )}
       // The masthead's line between two cards, the last part of the one above
       // to rise in.
-      ItemSeparatorComponent={({ leadingItem }) => (
-        <AppearContext.Provider value={appearFor(articles.indexOf(leadingItem))}>
-          <Rise step={APPEAR.line} style={styles.separator}>
-            <Rule />
-          </Rise>
-        </AppearContext.Provider>
-      )}
+      // Two portraits in a row are set apart by space alone, as on the site.
+      ItemSeparatorComponent={({ leadingItem }) => {
+        const index = articles.indexOf(leadingItem)
+        if (leadingItem.section === 'portraits' && articles[index + 1]?.section === 'portraits') {
+          return <View style={styles.portraitGap} />
+        }
+        return (
+          <AppearContext.Provider value={appearFor(index)}>
+            <Rise step={APPEAR.line} style={styles.separator}>
+              <Rule />
+            </Rise>
+          </AppearContext.Provider>
+        )
+      }}
       ListHeaderComponent={
         <AppearContext.Provider value={appearFor(0)}>
-          <UnderlinedTitle style={titleStyle}>{title}</UnderlinedTitle>
+          <RiseLines style={titleStyle}>{title}</RiseLines>
+          {/* The first card gets the line every other card has above it.
+              Portraits are set apart by space alone, so they get none. */}
+          {articles?.length && articles[0].section !== 'portraits' ? (
+            <Rise step={APPEAR.firstLine} style={styles.firstSeparator}>
+              <Rule />
+            </Rise>
+          ) : null}
         </AppearContext.Provider>
       }
       ListEmptyComponent={
@@ -89,30 +104,30 @@ export default function ArticleList({ lang, title, fetchArticles }) {
 }
 
 // The Rubriques list's title, with the usual space down to the first card.
-const titleStyle = { ...rubriquesTitle, marginBottom: pageTitle.marginBottom }
-
-// The title shrink-wrapped and centred, so the rule under it is exactly as
-// wide as the text. The space below moves from the title to the pair.
-function UnderlinedTitle({ style, children }) {
-  const { marginBottom, ...title } = StyleSheet.flatten(style)
-  return (
-    <View style={{ alignSelf: 'center', marginBottom }}>
-      <RiseLines style={title}>{children}</RiseLines>
-      {/* Tucked up into the room the title keeps for its descenders. */}
-      <Rise step={APPEAR.underline} style={{ marginTop: -2 }}>
-        <Rule weight={1.4} round />
-      </Rise>
-    </View>
-  )
-}
+// The title, centred between the masthead's rule and the line above the
+// first card (with rubriquesTitle's marginTop).
+const titleStyle = { ...rubriquesTitle, marginBottom: 39.5 }
 
 const styles = StyleSheet.create({
   list: {
     flex: 1,
     backgroundColor: colors.paper,
   },
+  // Less room below the line than above it, so the next card's category
+  // sits midway between the line and its title (with ArticleCard's title
+  // margin).
   separator: {
-    marginVertical: 30,
+    marginTop: 30,
+    marginBottom: 17,
+  },
+  // The title keeps its own space below; the line under it matches the
+  // others' room below, so the first category is centred the same way.
+  firstSeparator: {
+    marginBottom: 17,
+  },
+  // The website's row gap between portraits on phones.
+  portraitGap: {
+    height: 90,
   },
   content: {
     paddingHorizontal: 20,

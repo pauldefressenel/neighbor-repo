@@ -15,12 +15,14 @@ export const fonts = {
   neighbor: 'NeighborFont-Regular',
   neighborMedium: 'NeighborFont-Medium',
   garamond: 'EBGaramond_400Regular',
+  garamondItalic: 'EBGaramond_400Regular_Italic',
   garamondMedium: 'EBGaramond_500Medium',
   garamondMediumItalic: 'EBGaramond_500Medium_Italic',
   monoBold: 'GeistMono_700Bold',
   mono: 'GeistMono_500Medium',
   newAmsterdam: 'NewAmsterdam_400Regular',
   paprika: 'Paprika_400Regular',
+  londrina: 'LondrinaSolid_300Light', // card categories
 }
 
 // The big centred title at the top of a page (Rubriques, a rubrique, …).
@@ -38,7 +40,9 @@ export const pageTitle = {
 // each rubrique), so the title sits in the same place from page to page. The
 // space below it is set by each page.
 export const rubriquesTitle = {
-  marginTop: 75,
+  // On an article page, this and ArticleList's titleStyle margin centre the
+  // title between the masthead's rule and the line above the first card.
+  marginTop: 41.5,
   // NeighborFont's descenders run below a tight line box, so the q needs room.
   paddingBottom: 4,
   textAlign: 'center',

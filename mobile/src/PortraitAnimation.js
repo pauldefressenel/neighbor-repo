@@ -11,9 +11,10 @@ import { SPRITES } from './portraitSprites'
 // CSS: percentages, 'px' strings and translates relative to the layer's own
 // size. Here they are resolved to plain numbers inside the component's box.
 
-// The slot is Framer's 110×110, drawn larger to suit the app's cards.
-export const PORTRAIT_SCALE = 1.4
+// Framer's 110×110 slot. PORTRAIT_SCALE 1 draws it at the website's size.
 const SLOT = 110
+export const PORTRAIT_SCALE = 1
+export const PORTRAIT_SIZE = SLOT * PORTRAIT_SCALE
 
 export const hasPortrait = (slug) => Boolean(portraitSpec(slug))
 
@@ -120,8 +121,8 @@ export default function PortraitAnimation({ slug, alt }) {
 
 const styles = StyleSheet.create({
   frame: {
-    width: SLOT * PORTRAIT_SCALE,
-    height: SLOT * PORTRAIT_SCALE,
+    width: PORTRAIT_SIZE,
+    height: PORTRAIT_SIZE,
     alignSelf: 'center',
     alignItems: 'center',
     justifyContent: 'center',

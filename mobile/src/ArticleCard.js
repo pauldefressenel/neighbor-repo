@@ -1,7 +1,6 @@
 import { StyleSheet, Text, View } from 'react-native'
 import { Image } from 'expo-image'
 import BalancedText from './BalancedText'
-import PortraitAnimation, { PORTRAIT_SCALE, hasPortrait } from './PortraitAnimation'
 import { APPEAR, Rise } from './motion'
 import { urlFor } from './sanity'
 import { colors, fonts } from './theme'
@@ -16,23 +15,23 @@ const frenchDate = (iso) => {
 }
 
 // An article as a centred title page: category, title and excerpt, then the
-// illustration, then the byline and date. A portrait's illustration is its
-// animated sprite (or, without one, the whole drawing in a square) rather
-// than a 2:1 crop. Inside a list that sets
+// illustration, then the byline and date. Portraits have their own card
+// (PortraitCard.js). Inside a list that sets
 // AppearContext, its parts rise in one after another.
-export default function ArticleCard({ category, title, excerpt, author, mainImage, imageAspect, publishedAt, slug, section }) {
+export default function ArticleCard({ category, title, excerpt, author, mainImage, imageAspect, publishedAt }) {
   const date = publishedAt ? frenchDate(publishedAt) : null
   return (
     <View style={styles.card}>
       <Rise step={APPEAR.top}>
         {category ? <Text style={styles.category}>{category}</Text> : null}
-        <BalancedText style={styles.title}>{title}</BalancedText>
+        {/* A one-line title wider than 80% of the card goes onto two lines. */}
+        <BalancedText style={styles.title} maxFill={0.8}>{title}</BalancedText>
       </Rise>
       <Rise step={APPEAR.bottom}>
-        {excerpt ? <Text style={styles.excerpt}>{excerpt}</Text> : null}
+        {excerpt ? <BalancedText style={styles.excerpt}>{excerpt}</BalancedText> : null}
       </Rise>
       <Rise step={APPEAR.image}>
-        <Illustration title={title} mainImage={mainImage} imageAspect={imageAspect} slug={slug?.current} section={section} />
+        <Illustration title={title} mainImage={mainImage} imageAspect={imageAspect} />
       </Rise>
       <Rise step={APPEAR.bottom}>
         {author ? <Text style={styles.author}>de {author}</Text> : null}
@@ -45,16 +44,11 @@ export default function ArticleCard({ category, title, excerpt, author, mainImag
 // The vignettes' shared proportions (about 1818×572), for the placeholder.
 const VIGNETTE_ASPECT = 1818 / 572
 
-function Illustration({ title, mainImage, imageAspect, slug, section }) {
-  if (hasPortrait(slug)) {
-    return <View style={styles.portrait}><PortraitAnimation slug={slug} alt={title} /></View>
-  }
+function Illustration({ title, mainImage, imageAspect }) {
   if (!mainImage) return <View style={[styles.image, styles.placeholder, { aspectRatio: VIGNETTE_ASPECT }]} />
-  return section === 'portraits'
-    ? <Image style={[styles.portrait, styles.portraitStill]} source={urlFor(mainImage).width(400).url()} contentFit="contain" accessibilityLabel={title} transition={200} />
-    // Full width, and as tall as the drawing's own proportions make it
-    // (from Sanity's metadata), so nothing is cropped.
-    : <Image style={[styles.image, { aspectRatio: imageAspect ?? VIGNETTE_ASPECT }]} source={urlFor(mainImage).width(1200).url()} contentFit="contain" accessibilityLabel={title} transition={200} />
+  // Full width, and as tall as the drawing's own proportions make it
+  // (from Sanity's metadata), so nothing is cropped.
+  return <Image style={[styles.image, { aspectRatio: imageAspect ?? VIGNETTE_ASPECT }]} source={urlFor(mainImage).width(1200).url()} contentFit="contain" accessibilityLabel={title} transition={200} />
 }
 
 const centred = { textAlign: 'center', color: colors.ink }
@@ -65,28 +59,29 @@ const styles = StyleSheet.create({
   },
   category: {
     ...centred,
-    fontFamily: fonts.newAmsterdam,
+    fontFamily: fonts.londrina,
     fontSize: 21,
-    letterSpacing: 1.2,
+    letterSpacing: 2.5,
     color: colors.red,
     textTransform: 'uppercase',
   },
   title: {
     ...centred,
-    marginTop: 8,
-    // A 0.9em line box is shorter than NeighborFont's letters, and iOS clips
-    // to the box: the padding gives the tops of the first line and the
+    // Centres the category between the line above the card and the title
+    // (with ArticleList's separator margins).
+    marginTop: 21,
+    // A 1em line box is about as tall as NeighborFont's letters, and iOS
+    // clips to the box: the padding gives the tops of the first line and the
     // descenders of the last somewhere to go.
     paddingTop: 8,
     paddingBottom: 4,
     fontFamily: fonts.neighbor,
     fontSize: 36,
-    lineHeight: 36 * 0.9,
+    lineHeight: 36,
     letterSpacing: 36 * -0.03,
   },
   excerpt: {
     ...centred,
-    marginTop: 6,
     paddingHorizontal: 12,
     fontFamily: fonts.garamond,
     fontSize: 20,
@@ -96,18 +91,10 @@ const styles = StyleSheet.create({
   image: {
     width: '100%',
     alignSelf: 'center',
-    marginVertical: 15,
+    marginVertical: 22,
   },
   placeholder: {
     backgroundColor: colors.placeholder,
-  },
-  portrait: {
-    alignSelf: 'center',
-    marginVertical: 15,
-  },
-  portraitStill: {
-    width: 110 * PORTRAIT_SCALE,
-    height: 110 * PORTRAIT_SCALE,
   },
   author: {
     ...centred,
@@ -115,10 +102,10 @@ const styles = StyleSheet.create({
     fontSize: 21,
     lineHeight: 24,
   },
-  // The author's type, in italic.
+  // The author's size, in a lighter italic.
   date: {
     ...centred,
-    fontFamily: fonts.garamondMediumItalic,
+    fontFamily: fonts.garamondItalic,
     fontSize: 21,
     lineHeight: 24,
   },

@@ -66,12 +66,22 @@ Navigation details that are easy to break:
   `getLatestArticles`, `getSectionArticles`, and `prefetchSectionArticles`. A
   prefetch is used once by the next fetch for that rubrique; pull to refresh
   fetches again.
-- `ArticleList.js` — shared by A La Une and each rubrique: a title, a FlatList
-  of `ArticleCard`s, pull to refresh, and a retry message on error.
-  `fetchArticles` must be stable (`useCallback`).
-- `ArticleCard.js` — a centred title page: category, balanced title, excerpt,
-  2:1 image (`expo-image`), byline, and the date in French, formatted by hand
+- `ArticleList.js` — shared by A La Une and each rubrique: a page title (not
+  underlined), a FlatList of cards, pull to refresh, and a retry message on
+  error. `fetchArticles` must be stable (`useCallback`). Every article card,
+  the first included, has the hand-drawn `Rule` above it. Two portraits in a
+  row get 90px of space instead.
+- `ArticleCard.js` — a centred title page: category, title, excerpt,
+  illustration, "de <author>", and the date in French, formatted by hand
   rather than with `Intl`.
+  - The title is balanced, and `maxFill={0.8}` breaks a single line wider
+    than 80% of the card onto two lines. Its line height is 1em.
+  - The excerpt is balanced too, and sits right under the title with no gap.
+  - The illustration is full width, with its height from the image's own
+    proportions (`imageAspect`, from Sanity's metadata), so it is never
+    cropped. It has 22px above and below.
+  - Category: Londrina Solid Light, red, letter-spacing 2.5.
+  - Date: EB Garamond regular italic, lighter than the author's medium.
 - `Masthead.js` — the fixed top bar: the wordmark between two equal slots,
   with an optional back arrow that fades with the page transition.
 - `TabBar.js` — the custom bottom bar: hand-drawn PNG icons from
@@ -79,7 +89,7 @@ Navigation details that are easy to break:
 - `Rule.js` — the hand-drawn rule (from the repo's `assets/path.svg`), drawn as
   SVG at any width.
 - `BalancedText.js` — `text-wrap: balance` for React Native, found by binary
-  searching the width.
+  searching the width. `maxFill` splits a too-wide single line into two.
 - `motion.js` — all animation: `PAGE` (the crossfade), `PRESS` and
   `FadePressable` (touch feedback), and `APPEAR` (the delays and springs for
   how a page builds up). `Rise` and `RiseLines` play those steps when inside
@@ -95,19 +105,46 @@ Navigation details that are easy to break:
   is written as CSS (percentages, `'px'` strings, translates relative to the
   layer's size), and `layerStyle` resolves it to numbers. A NaN that reaches
   expo-image crashes Expo Go natively, so keep every value finite. Drawn at
-  `PORTRAIT_SCALE` (1.4) times Framer's 110px slot. `ArticleCard` puts it
-  where the picture goes. A portrait with no animation shows its whole
-  `mainImage` in a square instead of the 2:1 crop.
+  Framer's 110px slot, as on the site (`PORTRAIT_SCALE` 1; tried 1.4 and
+  0.75, both rejected).
+- `PortraitCard.js` — the website's portrait card: the animation over a 300px
+  column of category, title, excerpt and author, with the site's sizes and
+  gaps (no date). `ArticleList` uses it for any article whose `section` is
+  `portraits`, and puts 90px of space rather than a rule between two
+  portraits. A portrait with no animation shows its whole `mainImage` at
+  `PORTRAIT_SIZE`.
 - `portraitSprites.js` — `require()` and pixel size for each sprite (Metro
   needs static requires; the sizes give height-only layers their width). A new
   sprite needs a line here.
 - `ComingSoon.js` — the placeholder screen.
 
+## Spacing that depends on two places
+
+These were measured in the simulator. If you change one half, re-measure and
+change the other half too.
+
+- **The page title is centred** between the masthead's rule and the line above
+  the first card, about 55pt each side. The two halves are
+  `rubriquesTitle.marginTop` in `theme.js` (41.5) and `titleStyle.marginBottom`
+  in `ArticleList.js` (39.5). `rubriquesTitle` also places the Rubriques list's
+  and A Propos's titles, so all tabs move together.
+- **Each card's category is centred** between the line above the card and the
+  title, about 33.7pt each side. The two halves are the separator's
+  `marginBottom` (17) in `ArticleList.js`, together with `firstSeparator`
+  for the first card, and the title's `marginTop` (21) in `ArticleCard.js`.
+
+To measure, screenshot the simulator (`xcrun simctl io booted screenshot`)
+and look for the rows of ink and red. A second Metro server on another port
+(`CI=1 npx expo start --port 8082`, opened with
+`xcrun simctl openurl booted exp://127.0.0.1:8082/--/<route>`) leaves the
+user's own server alone.
+
 ## Conventions
 
 - Fonts: in React Native each weight is its own family. Use the names in
   `theme.js` `fonts`, not `fontWeight`. NeighborFont `.otf` files are bundled
-  from `assets/fonts/`; the others come from `@expo-google-fonts/*`.
+  from `assets/fonts/`; the others come from `@expo-google-fonts/*`, loaded in
+  `app/_layout.js`. A new font needs both.
 - Put colours, fonts and timings in `theme.js` and `motion.js` rather than
   inline values.
 - Comments explain *why* (often a bug that was hit) in full sentences; keep

@@ -7,7 +7,10 @@ import { Text, View } from 'react-native'
 // binary search, a few frames) for the narrowest that keeps that count. It is
 // shown at that width, so its lines come out about the same length. Until the
 // search ends it shows at the full width. For centred text.
-export default function BalancedText({ style, children }) {
+//
+// With `maxFill` (a fraction, e.g. 0.8), a single line wider than that share
+// of the width is broken into two balanced lines instead.
+export default function BalancedText({ style, children, maxFill }) {
   const [full, setFull] = useState(0) // the width available
   const [count, setCount] = useState(0) // lines at the full width
   const [range, setRange] = useState(null) // [too narrow, wide enough]
@@ -28,7 +31,14 @@ export default function BalancedText({ style, children }) {
   const onProbe = (e) => {
     const lines = e.nativeEvent.lines.length
     if (!range) {
-      if (lines <= 1) return setWidth(full)
+      if (lines <= 1) {
+        const line = e.nativeEvent.lines[0]
+        const tooLong = maxFill && line && line.width > maxFill * full && /\s/.test(line.text.trim())
+        if (!tooLong) return setWidth(full)
+        // Search for the narrowest width that keeps it to two lines.
+        setCount(2)
+        return setRange([Math.floor(full / 2), full])
+      }
       setCount(lines)
       return setRange([Math.floor(full / lines), full])
     }
