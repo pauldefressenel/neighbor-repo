@@ -1,36 +1,49 @@
-import { Pressable, StyleSheet, Text, View } from 'react-native'
-import Svg, { Path } from 'react-native-svg'
+import { useRef } from 'react'
+import { Animated, StyleSheet, Text, View } from 'react-native'
+import { useReducedMotion } from 'react-native-reanimated'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import Rule from './Rule'
-import { JoinIcon } from './TabBar'
+import { FadePressable, PAGE, PAGE_REDUCED, useFade } from './motion'
 import { colors, fonts } from './theme'
 
 // The bar at the top of every screen. It sits outside the scrolling content
 // so it stays put, and spans the full width so its hand-drawn rule runs edge
 // to edge. The wordmark is centred between two equal slots: an optional back
-// arrow (`onBack`) on the left and the join button on the right.
-export default function Masthead({ onBack }) {
+// arrow (`onBack`) on the left and an empty one on the right. The arrow
+// fades in and out with the page transition rather than popping, and keeps
+// its last handler while it fades so the slot never jumps.
+export default function Masthead({ onBack, backLabel = 'Retour' }) {
   const insets = useSafeAreaInsets()
+  const lastBack = useRef(onBack)
+  if (onBack) lastBack.current = onBack
+  const backOpacity = useFade(!!onBack, useReducedMotion() ? PAGE_REDUCED : PAGE)
   return (
     <View style={styles.masthead}>
       <View style={[styles.row, { paddingTop: insets.top + 12 }]}>
         <View style={styles.slot}>
-          {onBack ? (
-            <Pressable onPress={onBack} hitSlop={12} accessibilityRole="button" accessibilityLabel="Retour">
-              <Svg width={24} height={24} viewBox="0 0 24 24" fill="none" stroke={colors.ink} strokeWidth={1.6} strokeLinecap="round" strokeLinejoin="round">
-                <Path d="M15 5l-7 7 7 7" />
-              </Svg>
-            </Pressable>
+          {lastBack.current ? (
+            <Animated.View
+              style={{ opacity: backOpacity }}
+              pointerEvents={onBack ? 'auto' : 'none'}
+              aria-hidden={!onBack}
+            >
+              <FadePressable
+                onPress={() => lastBack.current?.()}
+                disabled={!onBack}
+                hitSlop={12}
+                accessibilityRole="button"
+                accessibilityLabel={backLabel}
+              >
+                {/* The Rubriques list's chevron, mirrored to point back. */}
+                <Text style={styles.back}>&gt;</Text>
+              </FadePressable>
+            </Animated.View>
           ) : null}
         </View>
         <Text style={styles.logo}>The Neighbor</Text>
-        {/* Destination to be decided; the app is French-only for now, so the
-            language switch is gone. */}
-        <View style={[styles.slot, styles.end]}>
-          <Pressable hitSlop={12} accessibilityRole="button" accessibilityLabel="Rejoindre">
-            <JoinIcon size={24} />
-          </Pressable>
-        </View>
+        {/* Empty, as wide as the back arrow's slot, so the wordmark stays
+            centred. */}
+        <View style={styles.slot} />
       </View>
       <Rule />
     </View>
@@ -50,8 +63,12 @@ const styles = StyleSheet.create({
   slot: {
     width: 32,
   },
-  end: {
-    alignItems: 'flex-end',
+  back: {
+    fontFamily: fonts.paprika,
+    fontSize: 23,
+    color: colors.ink,
+    transform: [{ scaleX: -1 }],
+    alignSelf: 'flex-start',
   },
   logo: {
     flex: 1,

@@ -28,13 +28,14 @@ export const getLatestArticles = (language) =>
       category,
       author,
       excerpt,
-      mainImage
+      mainImage,
+      publishedAt
     }`,
     { language, featured: FEATURED_FLAG[language] ?? FEATURED_FLAG.en }
   )
 
 // Every article in one of the app's rubriques (see sections.js), newest first.
-export const getSectionArticles = (language, sections) =>
+const fetchSectionArticles = (language, sections) =>
   client.fetch(
     `*[_type == "article" && language == $language && section in $sections]
       | order(publishedAt desc) {
@@ -45,7 +46,26 @@ export const getSectionArticles = (language, sections) =>
       category,
       author,
       excerpt,
-      mainImage
+      mainImage,
+      publishedAt
     }`,
     { language, sections }
   )
+
+// The Rubriques list prefetches each rubrique so its articles are ready by
+// the time the page opens. A prefetch is used once, by the next
+// getSectionArticles for that rubrique; pull to refresh fetches anew.
+const prefetched = new Map()
+const prefetchKey = (language, sections) => `${language}:${sections.join(',')}`
+
+export const prefetchSectionArticles = (language, sections) => {
+  const key = prefetchKey(language, sections)
+  if (!prefetched.has(key)) prefetched.set(key, fetchSectionArticles(language, sections).catch(() => null))
+}
+
+export const getSectionArticles = async (language, sections) => {
+  const key = prefetchKey(language, sections)
+  const early = prefetched.get(key)
+  prefetched.delete(key)
+  return (await early) ?? fetchSectionArticles(language, sections)
+}

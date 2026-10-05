@@ -1,36 +1,75 @@
-import { Pressable, StyleSheet, Text, View } from 'react-native'
-import { router, useLocalSearchParams } from 'expo-router'
-import Masthead from '../../../Masthead'
+import { useCallback, useEffect, useRef, useState } from 'react'
+import { StyleSheet, Text, View } from 'react-native'
+import { router, useFocusEffect, useGlobalSearchParams, useNavigation } from 'expo-router'
+import { useReducedMotion } from 'react-native-reanimated'
+import { APPEAR, AppearContext, FadePressable, PRESS, Rise, RiseLines } from '../../../motion'
 import Rule from '../../../Rule'
+import { prefetchSectionArticles } from '../../../sanity'
 import { SECTIONS } from '../../../sections'
-import { colors, fonts } from '../../../theme'
+import { colors, fonts, menu as menuStyle } from '../../../theme'
 
-// The rubriques as a numbered table of contents, each one ruled off with a smaller copy of the masthead's line.
+// The rubriques as a numbered table of contents, each one ruled off with a
+// smaller copy of the masthead's line.
 export default function RubriquesScreen() {
-  const { lang } = useLocalSearchParams()
+  // From the URL: this stack's screens don't inherit the tab's params, and
+  // an undefined lang made every rubrique link to /undefined/…, which
+  // redirected to A La Une.
+  const { lang } = useGlobalSearchParams()
+
+  // One rubrique per tap: further taps are ignored until the list is back in
+  // focus, so quick double taps can't stack two rubriques.
+  const opening = useRef(false)
+  useFocusEffect(useCallback(() => { opening.current = false }, []))
+
+  // Each rubrique's articles start loading while the list is on screen.
+  useFocusEffect(
+    useCallback(() => {
+      SECTIONS.forEach((section) => prefetchSectionArticles(lang, section.sanity))
+    }, [lang]),
+  )
+  const open = (slug) => {
+    if (opening.current) return
+    opening.current = true
+    router.navigate(`/${lang}/rubriques/${slug}`)
+  }
+
+  // The list builds up (APPEAR in motion.js) each time the Rubriques tab is
+  // entered, by remounting it. Coming back from a rubrique doesn't count:
+  // the stack's focus only changes when the tab does.
+  const navigation = useNavigation()
+  const [entered, setEntered] = useState(() => Date.now())
+  useEffect(() => navigation.getParent()?.addListener('focus', () => setEntered(Date.now())), [navigation])
+  const reduceMotion = useReducedMotion()
+  const menu = APPEAR.menu
 
   return (
     <View style={styles.screen}>
-      <Masthead />
-      <View style={styles.body}>
-        <Text style={styles.title}>Rubriques</Text>
-        {SECTIONS.map((section, i) => (
-          <Pressable
-            key={section.slug}
-            style={({ pressed }) => [styles.row, pressed && styles.pressed]}
-            onPress={() => router.push(`/${lang}/rubriques/${section.slug}`)}
-            accessibilityRole="link"
-            accessibilityLabel={section.label}
-          >
-            <View style={styles.line}>
-              <Text style={styles.name}>{i + 1}. {section.label}</Text>
-              <Text style={styles.chevron}>&gt;</Text>
-            </View>
-            <Text style={styles.subtitle}>{section.subtitle}</Text>
-            <Rule style={styles.rule} />
-          </Pressable>
-        ))}
-      </View>
+      <AppearContext.Provider value={{ since: entered, still: reduceMotion }}>
+        <View key={entered} style={styles.body}>
+          <RiseLines style={styles.title} step={menu.title}>Rubriques</RiseLines>
+          {SECTIONS.map((section, i) => (
+            <FadePressable
+              key={section.slug}
+              style={styles.row}
+              pressScale={PRESS.scale}
+              onPress={() => open(section.slug)}
+              accessibilityRole="link"
+              accessibilityLabel={section.label}
+            >
+              <Rise step={menu.name} extraDelay={i * menu.stagger} style={styles.line}>
+                <Text style={styles.name}>{i + 1}. {section.label}</Text>
+                <Text style={styles.chevron}>&gt;</Text>
+              </Rise>
+              <Rise step={menu.subtitle} extraDelay={i * menu.stagger}>
+                <Text style={styles.subtitle}>{section.subtitle}</Text>
+              </Rise>
+              <Rise step={menu.rule} extraDelay={i * menu.stagger}>
+                <Rule style={styles.rule} />
+              </Rise>
+            </FadePressable>
+          ))}
+        </View>
+      </AppearContext.Provider>
     </View>
   )
 }
@@ -40,28 +79,9 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: colors.paper,
   },
-  body: {
-    flex: 1,
-    paddingHorizontal: 16,
-  },
-  title: {
-    marginTop: 75,
-    marginBottom: 73,
-    // NeighborFont's descenders run below a tight line box, so the q needs room.
-    paddingBottom: 4,
-    textAlign: 'center',
-    fontFamily: fonts.neighbor,
-    fontSize: 35,
-    lineHeight: 50,
-    letterSpacing: -0.35,
-    color: colors.ink,
-  },
-  row: {
-    marginBottom: 30,
-  },
-  pressed: {
-    opacity: 0.5,
-  },
+  body: menuStyle.body,
+  title: menuStyle.title,
+  row: menuStyle.block,
   // The chevron sits on the name's baseline, at the right edge.
   line: {
     flexDirection: 'row',
@@ -69,27 +89,12 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     gap: 12,
   },
-  name: {
-    flexShrink: 1,
-    fontFamily: fonts.neighborMedium,
-    fontSize: 30,
-    lineHeight: 36,
-    letterSpacing: -0.3,
-    color: colors.ink,
-  },
+  name: menuStyle.name,
   chevron: {
     fontFamily: fonts.paprika,
     fontSize: 23,
     color: colors.ink,
   },
-  subtitle: {
-    fontFamily: fonts.newAmsterdam,
-    fontSize: 15,
-    letterSpacing: 0.45,
-    textTransform: 'uppercase',
-    color: colors.red,
-  },
-  rule: {
-    marginTop: 8,
-  },
+  subtitle: menuStyle.subtitle,
+  rule: menuStyle.rule,
 })

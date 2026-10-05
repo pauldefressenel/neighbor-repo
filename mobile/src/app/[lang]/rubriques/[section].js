@@ -1,13 +1,13 @@
 import { useCallback } from 'react'
 import { View } from 'react-native'
-import { Redirect, router, useLocalSearchParams } from 'expo-router'
+import { Redirect, useLocalSearchParams } from 'expo-router'
 import ArticleList from '../../../ArticleList'
-import Masthead from '../../../Masthead'
 import { getSectionArticles } from '../../../sanity'
 import { findSection } from '../../../sections'
 import { colors } from '../../../theme'
 
-// One rubrique's articles, newest first.
+// One rubrique's articles, newest first. The masthead and its back arrow
+// come from rubriques/_layout.js.
 export default function SectionScreen() {
   const { lang, section: slug } = useLocalSearchParams()
   const section = findSection(slug)
@@ -17,7 +17,6 @@ export default function SectionScreen() {
 
   return (
     <View style={{ flex: 1, backgroundColor: colors.paper }}>
-      <Masthead onBack={() => (router.canGoBack() ? router.back() : router.replace(`/${lang}/rubriques`))} />
       <ArticleList lang={lang} title={section.label} fetchArticles={fetchArticles} />
     </View>
   )

@@ -5,7 +5,6 @@ export const colors = {
   ink: '#1a1a1a',
   red: '#FF1919',
   placeholder: '#7B61FF',
-  icon: '#6b6b6b', // tab bar icons
   water: '#A6D2F7', // rivers between articles
   bank: '#9E9E9E',
 }
@@ -17,6 +16,7 @@ export const fonts = {
   neighborMedium: 'NeighborFont-Medium',
   garamond: 'EBGaramond_400Regular',
   garamondMedium: 'EBGaramond_500Medium',
+  garamondMediumItalic: 'EBGaramond_500Medium_Italic',
   monoBold: 'GeistMono_700Bold',
   mono: 'GeistMono_500Medium',
   newAmsterdam: 'NewAmsterdam_400Regular',
@@ -32,4 +32,67 @@ export const pageTitle = {
   textAlign: 'center',
   marginTop: 30,
   marginBottom: 15,
+}
+
+// The title of the Rubriques list and of every article page (A La Une and
+// each rubrique), so the title sits in the same place from page to page. The
+// space below it is set by each page.
+export const rubriquesTitle = {
+  marginTop: 75,
+  // NeighborFont's descenders run below a tight line box, so the q needs room.
+  paddingBottom: 4,
+  textAlign: 'center',
+  fontFamily: fonts.neighbor,
+  fontSize: 35,
+  lineHeight: 50,
+  letterSpacing: -0.35,
+  color: colors.ink,
+}
+
+// The Rubriques list's layout, shared with A Propos: a page of titled blocks,
+// each with a small red subtitle and ruled off below.
+export const menu = {
+  body: {
+    flex: 1,
+    paddingHorizontal: 22,
+  },
+  title: {
+    ...rubriquesTitle,
+    marginBottom: 73,
+  },
+  block: {
+    marginBottom: 36,
+  },
+  name: {
+    flexShrink: 1,
+    // Room for the q's tail below NeighborFont's tight line box, taken back
+    // by the negative margin so the gaps around the name stay as they are.
+    paddingBottom: 6,
+    marginBottom: -6,
+    fontFamily: fonts.neighbor,
+    fontSize: 30,
+    lineHeight: 36,
+    letterSpacing: -0.3,
+    color: colors.ink,
+  },
+  // Set in capitals, so its text carries no accents.
+  subtitle: {
+    marginTop: 4,
+    fontFamily: fonts.newAmsterdam,
+    fontSize: 17,
+    letterSpacing: 0.45,
+    textTransform: 'uppercase',
+    color: colors.red,
+  },
+  // A block's running text, under its subtitle.
+  text: {
+    marginTop: 8,
+    fontFamily: fonts.garamond,
+    fontSize: 20,
+    lineHeight: 24,
+    color: colors.ink,
+  },
+  rule: {
+    marginTop: 6,
+  },
 }
