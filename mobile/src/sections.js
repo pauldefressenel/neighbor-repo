@@ -5,7 +5,7 @@
 // line under each name there. It is set in capitals, so it has no accents.
 export const SECTIONS = [
   { slug: 'essais-critiques', label: 'Essais & Critiques', subtitle: 'Livres, Cinema, Arts Croises', sanity: ['literature-review', 'the-arts'] },
-  { slug: 'prose-poesie', label: 'Prose & Poésie', subtitle: 'Courtes Nouvelles, Poemes', sanity: ['fiction-poetry'] },
+  { slug: 'prose-poesie', label: 'Prose & Poésie', subtitle: 'Nouvelles, Récits, Poèmes', sanity: ['fiction-poetry'] },
   { slug: 'portraits', label: 'Portraits', subtitle: 'Artistes, Amis', sanity: ['portraits'] },
 ]
 

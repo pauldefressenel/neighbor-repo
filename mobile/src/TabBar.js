@@ -6,14 +6,14 @@ import { colors, fonts } from './theme'
 // the tab's route name in app/[lang]/_layout.js; each is drawn at its own
 // aspect ratio and height.
 const icons = {
-  index: { source: require('../assets/icons/a-la-une.png'), ratio: 416 / 344, height: 22 },
+  '(couverture)': { source: require('../assets/icons/a-la-une.png'), ratio: 416 / 344, height: 22 },
   rubriques: { source: require('../assets/icons/rubriques.png'), ratio: 312 / 389, height: 20 },
   'a-propos': { source: require('../assets/icons/a-propos.png'), ratio: 282 / 344, height: 22 },
 }
 
 // French-only for now, like the rest of the app's chrome.
 const LABELS = {
-  index: 'En Couverture',
+  '(couverture)': 'En Couverture',
   rubriques: 'Rubriques',
   'a-propos': 'A Propos',
 }

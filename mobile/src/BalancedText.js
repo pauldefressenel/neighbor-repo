@@ -1,12 +1,13 @@
 import { useState } from 'react'
-import { Text, View } from 'react-native'
+import { StyleSheet, Text, View } from 'react-native'
 
 // Text with balanced lines, like CSS `text-wrap: balance` (Framer's
 // "Balance"), which React Native lacks. The text is laid out invisibly at the
 // full width to count its lines, then at narrower and narrower widths (a
 // binary search, a few frames) for the narrowest that keeps that count. It is
 // shown at that width, so its lines come out about the same length. Until the
-// search ends it shows at the full width. For centred text.
+// search ends it shows at the full width. The narrowed text sits centred, or
+// on the left when its style sets `textAlign: 'left'`.
 //
 // With `maxFill` (a fraction, e.g. 0.8), a single line wider than that share
 // of the width is broken into two balanced lines instead.
@@ -15,6 +16,7 @@ export default function BalancedText({ style, children, maxFill }) {
   const [count, setCount] = useState(0) // lines at the full width
   const [range, setRange] = useState(null) // [too narrow, wide enough]
   const [width, setWidth] = useState(null) // the answer
+  const alignSelf = StyleSheet.flatten(style)?.textAlign === 'left' ? 'flex-start' : 'center'
 
   const onLayout = (e) => {
     const w = Math.floor(e.nativeEvent.layout.width)
@@ -49,7 +51,7 @@ export default function BalancedText({ style, children, maxFill }) {
 
   return (
     <View onLayout={onLayout}>
-      <Text style={[style, width ? { width, alignSelf: 'center' } : null]}>{children}</Text>
+      <Text style={[style, width ? { width, alignSelf } : null]}>{children}</Text>
       {probe ? (
         <Text
           key={probe}

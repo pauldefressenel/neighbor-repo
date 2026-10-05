@@ -3,27 +3,31 @@ import { Animated, StyleSheet, Text, View } from 'react-native'
 import { useReducedMotion } from 'react-native-reanimated'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import Rule from './Rule'
-import { FadePressable, PAGE, PAGE_REDUCED, useFade } from './motion'
+import { FadePressable, PAGE_REDUCED, useFade, usePop } from './motion'
 import { colors, fonts } from './theme'
 
 // The bar at the top of every screen. It sits outside the scrolling content
 // so it stays put, and spans the full width so its hand-drawn rule runs edge
 // to edge. The wordmark is centred between two equal slots: an optional back
 // arrow (`onBack`) on the left and an empty one on the right. The arrow
-// fades in and out with the page transition rather than popping, and keeps
-// its last handler while it fades so the slot never jumps.
+// pops in as a rubrique opens (BACK_POP in motion.js), or just fades with
+// Reduce Motion on, and keeps its last handler while it goes so the slot
+// never jumps.
 export default function Masthead({ onBack, backLabel = 'Retour' }) {
   const insets = useSafeAreaInsets()
   const lastBack = useRef(onBack)
   if (onBack) lastBack.current = onBack
-  const backOpacity = useFade(!!onBack, useReducedMotion() ? PAGE_REDUCED : PAGE)
+  const reduceMotion = useReducedMotion()
+  const pop = usePop(!!onBack)
+  const fade = useFade(!!onBack, PAGE_REDUCED)
+  const backStyle = reduceMotion ? { opacity: fade } : pop
   return (
     <View style={styles.masthead}>
       <View style={[styles.row, { paddingTop: insets.top + 12 }]}>
         <View style={styles.slot}>
           {lastBack.current ? (
             <Animated.View
-              style={{ opacity: backOpacity }}
+              style={backStyle}
               pointerEvents={onBack ? 'auto' : 'none'}
               aria-hidden={!onBack}
             >

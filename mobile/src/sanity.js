@@ -71,3 +71,48 @@ export const getSectionArticles = async (language, sections) => {
   prefetched.delete(key)
   return (await early) ?? fetchSectionArticles(language, sections)
 }
+
+// One article in full, by slug alone, as on the website (getArticleBySlug in
+// src/sanity/queries.js).
+const fetchArticle = (slug) =>
+  client.fetch(
+    `*[_type == "article" && slug.current == $slug][0] {
+      _id,
+      title,
+      slug,
+      section,
+      category,
+      author,
+      publishedAt,
+      body,
+      poems
+    }`,
+    { slug }
+  )
+
+// Opening an article from a card hands over what the card already has, so
+// the article's title and byline show at once, and starts loading the rest
+// while the page slides in. As with prefetched rubriques, a load is used
+// once, by the next getArticle for that slug.
+const cards = new Map()
+const loading = new Map()
+
+export const openArticle = (article) => {
+  const slug = article.slug?.current
+  if (!slug) return
+  cards.set(slug, article)
+  if (!loading.has(slug)) loading.set(slug, fetchArticle(slug).catch(() => null))
+}
+
+export const articleCard = (slug) => cards.get(slug) ?? null
+
+export const getArticle = async (slug) => {
+  const early = loading.get(slug)
+  loading.delete(slug)
+  return (await early) ?? fetchArticle(slug)
+}
+
+// The About page's text: one `aboutPage` document per language, with a fixed
+// id (studio/schemas/aboutPage.js). Mirrors getAboutPage on the website.
+export const getAboutPage = (language) =>
+  client.fetch(`*[_type == "aboutPage" && _id == $id][0] { title, body }`, { id: `about-${language}` })

@@ -4,6 +4,7 @@ import { Image } from 'expo-image'
 import { useIsFocused } from 'expo-router/react-navigation'
 import { useReducedMotion } from 'react-native-reanimated'
 import { portraitSpec } from '../../src/portraits'
+import { useHeld } from './motion'
 import { SPRITES } from './portraitSprites'
 
 // The website's portrait player (src/PortraitAnimation.jsx) for React Native,
@@ -11,9 +12,10 @@ import { SPRITES } from './portraitSprites'
 // CSS: percentages, 'px' strings and translates relative to the layer's own
 // size. Here they are resolved to plain numbers inside the component's box.
 
-// Framer's 110×110 slot. PORTRAIT_SCALE 1 draws it at the website's size.
+// Framer's 110×110 slot. PORTRAIT_SCALE 1 draws it at the website's size; the
+// app draws it a little smaller, at 100pt (1.4, 1, 0.85 and 0.75 were tried).
 const SLOT = 110
-export const PORTRAIT_SCALE = 1
+export const PORTRAIT_SCALE = 100 / SLOT
 export const PORTRAIT_SIZE = SLOT * PORTRAIT_SCALE
 
 export const hasPortrait = (slug) => Boolean(portraitSpec(slug))
@@ -82,10 +84,12 @@ function useLoops(spec, running) {
 }
 
 // One of the seven portrait loops in its slot. It plays only while its
-// screen is in front, and holds its first frame with Reduce Motion on.
+// screen is in front, stops on its current frame while its card is pressed,
+// and holds its first frame with Reduce Motion on.
 export default function PortraitAnimation({ slug, alt }) {
   const spec = portraitSpec(slug)
-  const running = useIsFocused() && !useReducedMotion()
+  // Paused while its card is held, and whenever its screen isn't in front.
+  const running = useIsFocused() && !useReducedMotion() && !useHeld()
   const step = useStepCycle(spec, running)
   const toggled = useLoops(spec, running)
   if (!spec) return null
@@ -127,12 +131,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  // Zorba's smaller box sits at the top of the slot, as on the site.
+  // Zorba's smaller box (94×91) stands on the bottom of the slot, as every
+  // other figure does, so all of them sit the same distance above the
+  // category. The website puts it at the top, which left Zorba 19 units
+  // further from the text than the rest.
   slot: {
     width: SLOT,
     height: SLOT,
     alignItems: 'center',
-    justifyContent: 'flex-start',
+    justifyContent: 'flex-end',
     transform: [{ scale: PORTRAIT_SCALE }],
   },
 })

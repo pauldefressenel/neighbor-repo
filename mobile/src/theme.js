@@ -2,7 +2,7 @@
 export const colors = {
   paper: '#FFFFF2',
   bar: '#FFFFF2', // fill of the top masthead and the bottom menu
-  ink: '#1a1a1a',
+  ink: '#000000', // full black; the website's text is #1a1a1a
   red: '#FF1919',
   placeholder: '#7B61FF',
   water: '#A6D2F7', // rivers between articles
@@ -50,6 +50,17 @@ export const titleType = {
   color: colors.ink,
 }
 
+// The red category over an article card, also the Rubriques list's and A
+// Propos's subtitles: 18pt, -0.05em letter-spacing, 1.1em line height.
+export const categoryType = {
+  fontFamily: fonts.averia,
+  fontSize: 18,
+  lineHeight: 18 * 1.1,
+  letterSpacing: 18 * -0.05,
+  color: colors.red,
+  textTransform: 'uppercase',
+}
+
 export const rubriquesTitle = {
   ...titleType,
   // With ArticleList's titleStyle margin, sets the space above and below the
@@ -60,8 +71,8 @@ export const rubriquesTitle = {
   textAlign: 'center',
 }
 
-// The Rubriques list's layout, shared with A Propos: a page of titled blocks,
-// each with a small red subtitle and ruled off below.
+// The Rubriques list's layout: a page of titled blocks, each with a small red
+// subtitle and ruled off below.
 export const menu = {
   body: {
     flex: 1,
@@ -72,36 +83,24 @@ export const menu = {
     marginBottom: 73,
   },
   block: {
-    marginBottom: 36,
+    marginBottom: 56,
   },
+  // In the page title's type, number included.
   name: {
+    ...titleType,
     flexShrink: 1,
     // Room for the q's tail below NeighborFont's tight line box, taken back
     // by the negative margin so the gaps around the name stay as they are.
     paddingBottom: 6,
     marginBottom: -6,
-    fontFamily: fonts.neighbor,
-    fontSize: 30,
-    lineHeight: 36,
-    letterSpacing: -0.3,
-    color: colors.ink,
   },
-  // Set in capitals, so its text carries no accents.
+  // In the card categories' type, smaller.
   subtitle: {
+    ...categoryType,
+    fontSize: 16,
+    lineHeight: 16 * 1.1,
+    letterSpacing: 16 * -0.05,
     marginTop: 4,
-    fontFamily: fonts.newAmsterdam,
-    fontSize: 17,
-    letterSpacing: 0.45,
-    textTransform: 'uppercase',
-    color: colors.red,
-  },
-  // A block's running text, under its subtitle.
-  text: {
-    marginTop: 8,
-    fontFamily: fonts.garamond,
-    fontSize: 20,
-    lineHeight: 24,
-    color: colors.ink,
   },
   rule: {
     marginTop: 6,

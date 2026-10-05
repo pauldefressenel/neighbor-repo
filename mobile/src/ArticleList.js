@@ -1,21 +1,23 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { ActivityIndicator, FlatList, Pressable, RefreshControl, StyleSheet, Text, View } from 'react-native'
+import { router, useFocusEffect } from 'expo-router'
 import { useScrollToTop } from 'expo-router/react-navigation'
 import { useReducedMotion } from 'react-native-reanimated'
 import ArticleCard from './ArticleCard'
 import Dinkus from './Dinkus'
 import PortraitCard from './PortraitCard'
-import { APPEAR, AppearContext, RiseLines, Rise } from './motion'
+import { APPEAR, AppearContext, FadePressable, PRESS, RiseLines, Rise } from './motion'
 import Rule from './Rule'
 import { i18n } from './i18n'
+import { openArticle } from './sanity'
 import { colors, fonts, rubriquesTitle } from './theme'
 
 // The article layout shared by En Couverture and every rubrique: a title over
 // a column of article cards with a line between each two, and pull to
 // refresh. The title sits where the Rubriques list's does, and the page builds
 // up as it appears (APPEAR in motion.js). `fetchArticles` must be stable
-// (useCallback).
-export default function ArticleList({ lang, title, fetchArticles }) {
+// (useCallback). Tapping a card opens `articleHref(article)`.
+export default function ArticleList({ lang, title, fetchArticles, articleHref }) {
   const t = i18n[lang] ?? i18n.en
   const [articles, setArticles] = useState(null)
   const [failed, setFailed] = useState(false)
@@ -26,6 +28,27 @@ export default function ArticleList({ lang, title, fetchArticles }) {
   const mounted = useRef(Date.now()).current
   const reduceMotion = useReducedMotion()
   const appearFor = (index) => ({ since: mounted, still: reduceMotion || index >= APPEAR.max })
+
+  // One article per tap: further taps are ignored until the list is back in
+  // focus, so quick double taps can't stack two articles.
+  const opening = useRef(false)
+  useFocusEffect(useCallback(() => { opening.current = false }, []))
+  // The scroll bar hides as soon as an article starts sliding over the list.
+  // iOS shows it for a moment whenever the list grows, as it does when the
+  // articles and their images first arrive, and it slid out with the list.
+  const [focused, setFocused] = useState(true)
+  useFocusEffect(
+    useCallback(() => {
+      setFocused(true)
+      return () => setFocused(false)
+    }, []),
+  )
+  const open = (article) => {
+    if (opening.current || !article.slug?.current) return
+    opening.current = true
+    openArticle(article)
+    router.navigate(articleHref(article))
+  }
 
   const load = useCallback(async () => {
     setFailed(false)
@@ -41,6 +64,26 @@ export default function ArticleList({ lang, title, fetchArticles }) {
     load()
   }, [load])
 
+  // The masthead's line between two cards, the last part of the one above
+  // to rise in, between portraits too. Kept as one component across renders: written inline, it was a new
+  // component on every render (coming back to the tab is one), so every line
+  // was remounted and rose in again. It reads the articles through a ref so
+  // a pull to refresh doesn't make it new either.
+  const latest = useRef(articles)
+  latest.current = articles
+  const Separator = useCallback(
+    ({ leadingItem }) => {
+      const index = latest.current.indexOf(leadingItem)
+      return (
+        <AppearContext.Provider value={{ since: mounted, still: reduceMotion || index >= APPEAR.max }}>
+          <Rise step={APPEAR.line} style={styles.separator}>
+            <Rule />
+          </Rise>
+        </AppearContext.Provider>
+      )
+    },
+    [mounted, reduceMotion],
+  )
 
   const refresh = async () => {
     setRefreshing(true)
@@ -53,28 +96,17 @@ export default function ArticleList({ lang, title, fetchArticles }) {
       ref={list}
       style={styles.list}
       contentContainerStyle={styles.content}
+      showsVerticalScrollIndicator={focused}
       data={articles ?? []}
       keyExtractor={(a) => a._id}
       renderItem={({ item, index }) => (
         <AppearContext.Provider value={appearFor(index)}>
-          {item.section === 'portraits' ? <PortraitCard {...item} /> : <ArticleCard {...item} />}
+          <FadePressable onPress={() => open(item)} pressScale={PRESS.scale} pressOpacity={1} scaleChildren={item.section === 'portraits'} accessibilityRole="link" accessibilityLabel={item.title}>
+            {item.section === 'portraits' ? <PortraitCard {...item} /> : <ArticleCard {...item} />}
+          </FadePressable>
         </AppearContext.Provider>
       )}
-      // The masthead's line between two cards, the last part of the one above
-      // to rise in. Two portraits in a row are set apart by space alone, as on the site.
-      ItemSeparatorComponent={({ leadingItem }) => {
-        const index = articles.indexOf(leadingItem)
-        if (leadingItem.section === 'portraits' && articles[index + 1]?.section === 'portraits') {
-          return <View style={styles.portraitGap} />
-        }
-        return (
-          <AppearContext.Provider value={appearFor(index)}>
-            <Rise step={APPEAR.line} style={styles.separator}>
-              <Rule />
-            </Rise>
-          </AppearContext.Provider>
-        )
-      }}
+      ItemSeparatorComponent={Separator}
       ListHeaderComponent={
         <AppearContext.Provider value={appearFor(0)}>
           <RiseLines style={titleStyle}>{title}</RiseLines>
@@ -113,16 +145,12 @@ const styles = StyleSheet.create({
   dinkus: {
     marginBottom: 17,
   },
-  // The line sits 42pt below the date above it and 42pt above the next
+  // The line sits 54pt below the date above it and 54pt above the next
   // category, measured to the letters: the fonts' own line boxes already
-  // hold 6.3pt and 4.1pt of that.
+  // hold 6.3pt and 4.1pt of that. (It was 42pt.)
   separator: {
-    marginTop: 35.7,
-    marginBottom: 37.9,
-  },
-  // The website's row gap between portraits on phones.
-  portraitGap: {
-    height: 90,
+    marginTop: 47.7,
+    marginBottom: 49.9,
   },
   content: {
     paddingHorizontal: 20,

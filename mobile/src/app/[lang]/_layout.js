@@ -17,7 +17,7 @@ export default function TabsLayout() {
     >
       {/* Each tab starts out knowing the language: a tab first opened from
           the bar otherwise has no params at all. */}
-      <Tabs.Screen name="index" initialParams={{ lang }} />
+      <Tabs.Screen name="(couverture)" initialParams={{ lang }} />
       <Tabs.Screen name="rubriques" initialParams={{ lang }} />
       <Tabs.Screen name="a-propos" initialParams={{ lang }} />
     </Tabs>

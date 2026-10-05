@@ -23,10 +23,12 @@ submitted yet.
   "de <author>", the A Propos copy) is hard-coded in French. The `[lang]`
   segment is there so English can come later; `i18n.js` holds only the few
   strings that already exist in both languages.
-- **No article screen yet.** Cards are not tappable; the lists show titles,
-  excerpts and images only.
-- **A Propos uses placeholder copy** in `a-propos.js`. The real text belongs in
-  the Studio's `about-fr` document (`aboutPage` type) and is not fetched yet.
+- **Articles** open from any card (`ArticleScreen.js`), laid out like the
+  website's article page. Audio readings (`audioFile`) aren't played yet.
+- **A Propos** shows the text of the Studio's `about-fr` document
+  (`aboutPage` type), set like an article: the title where an article's
+  heading starts, then `ArticleText`. The founders' avatars in that document
+  are not shown.
 - The design is mocked in Framer (e.g. "Mobile — Rubriques Playground"); timings
   and springs in `motion.js` are transcribed from it.
 
@@ -35,12 +37,15 @@ submitted yet.
 ```
 _layout.js                  fonts, splash screen, a <Slot> (not a Stack) inside GestureHandlerRootView
 index.js                    → /fr
-[lang]/_layout.js           Tabs with the custom TabBar: index, rubriques, a-propos (in that order)
-[lang]/index.js             En Couverture — articles whose `featured` is "French"
-[lang]/rubriques/_layout.js JS Stack with a crossfade; owns the Masthead and its back arrow
-[lang]/rubriques/index.js   the three rubriques as a table of contents; prefetches each one
-[lang]/rubriques/[section].js one rubrique's articles (slug from sections.js)
-[lang]/a-propos.js          About, laid out like the Rubriques list
+[lang]/_layout.js           Tabs with the custom TabBar: (couverture), rubriques, a-propos (in that order)
+[lang]/(couverture)/_layout.js         a PageStack (PageStack.js)
+[lang]/(couverture)/index.js           En Couverture (/fr) — articles whose `featured` is "French"
+[lang]/(couverture)/articles/[slug].js an article opened from En Couverture (/fr/articles/<slug>)
+[lang]/rubriques/_layout.js            a PageStack
+[lang]/rubriques/index.js              the three rubriques as a table of contents; prefetches each one
+[lang]/rubriques/[section]/index.js    one rubrique's articles (slug from sections.js)
+[lang]/rubriques/[section]/[slug].js   an article opened from a rubrique
+[lang]/a-propos.js          About: the about-<lang> text, set like an article
 [lang]/voisinage.js         "coming soon" stand-in; not in the tab bar
 ```
 
@@ -50,9 +55,10 @@ Navigation details that are easy to break:
 - Screens inside the rubriques stack don't inherit the tab's params. Read
   `lang` with `useGlobalSearchParams()`, not `useLocalSearchParams()`. When it
   was read locally, links went to `/undefined/…`.
-- The rubriques stack is `expo-router/js-stack` (not the native stack), and
-  the tabs are `expo-router/js-tabs`. The JS stack lets the transition use a
-  custom easing.
+- En Couverture and Rubriques are each a `PageStack`: `expo-router/js-stack`
+  (not the native stack), so the slide can use a custom easing, with the
+  Masthead above it. The tabs are `expo-router/js-tabs`. The back arrow shows
+  on any route deeper than the tab's own (`useSegments().length > 2`).
 - Pressing the current tab again scrolls its list to the top, or pops a
   rubrique back to the list (`useScrollToTop` in `ArticleList`).
 
@@ -63,15 +69,35 @@ Navigation details that are easy to break:
   `src/sections.js` (the website) and `studio/structure.js` duplicate this
   list, so change all three together.
 - `sanity.js` — client (same project, dataset `production`, CDN on), `urlFor`,
-  `getLatestArticles`, `getSectionArticles`, and `prefetchSectionArticles`. A
+  `getLatestArticles`, `getSectionArticles`, `prefetchSectionArticles`,
+  `openArticle` / `getArticle` and `getAboutPage`. A
   prefetch is used once by the next fetch for that rubrique; pull to refresh
   fetches again.
+- `PageStack.js` — a tab's stack: the Masthead (back arrow included) and the
+  sliding transition.
+- `ArticleText.js` — the running text of an article and of A Propos:
+  paragraphs, the drop cap, poems, e-mail links, and `readingMinutes`.
+- `ArticleScreen.js` — an article, after the website's `ArticlePage`: title,
+  author and date centred, then the body (EB Garamond 21pt on 31pt lines,
+  paragraphs 1.4em apart), then any poems. Only `normal` blocks and the `em`
+  mark occur in the dataset; `strong` and `citation` are handled anyway. Hyphenation was tried and rejected. The
+  first paragraph opens on a red NeighborFont drop cap over two lines: the
+  paragraph is laid out invisibly at the width beside the letter, and the
+  lines that fit there are drawn beside it, the rest full width below.
+  `DROP.size` and `DROP.drop` were set in the simulator (64 and -7 for
+  21pt text, 57 and -6 for 31pt lines, re-measured on an L, whose foot
+  shows the baseline plainly; scaling them by proportion drifted) so the
+  letter's top meets the first line's capitals and its foot sits on the
+  second line. The cap overflows a two-line box, since iOS clips a glyph to
+  its line box. Opening a card calls `openArticle` (sanity.js), which keeps
+  the card's fields so the title and byline draw at once, and starts loading
+  the body while the page slides in.
 - `ArticleList.js` — shared by En Couverture and each rubrique: a page title
   closed by a dinkus (`Dinkus.js`), a FlatList of cards, pull to refresh, and
   a retry message on error. `fetchArticles` must be stable (`useCallback`). Between two article
-  cards is the hand-drawn `Rule`, 42pt from the date above and from the
+  cards is the hand-drawn `Rule`, 54pt from the date above and from the
   category below (measured to the letters). The first card has no line above
-  it. Two portraits in a row get 90px of space instead.
+  it. Portraits are ruled off the same way.
 - `ArticleCard.js` — a centred title page: category, title, excerpt,
   illustration, "de <author>", and the date in French, formatted by hand
   rather than with `Intl`.
@@ -88,19 +114,26 @@ Navigation details that are easy to break:
     1.1em line height.
   - Date: EB Garamond regular italic, lighter than the author's medium.
 - `Masthead.js` — the fixed top bar: the wordmark between two equal slots,
-  with an optional back arrow that fades with the page transition.
+  with an optional back arrow that pops in (`BACK_POP`, `usePop`) as a rubrique opens.
 - `TabBar.js` — the custom bottom bar: hand-drawn PNG icons from
   `assets/icons/`, ink labels, and a red dot under the current tab.
 - `Rule.js` — the hand-drawn rule (from the repo's `assets/path.svg`), drawn as
   SVG at any width.
 - `BalancedText.js` — `text-wrap: balance` for React Native, found by binary
   searching the width. `maxFill` splits a too-wide single line into two.
-- `motion.js` — all animation: `PAGE` (the crossfade), `PRESS` and
+- `motion.js` — all animation: `PAGE` (the slide between the list and a rubrique; `slide: false` for the old crossfade), `PRESS` and
   `FadePressable` (touch feedback), and `APPEAR` (the delays and springs for
   how a page builds up). `Rise` and `RiseLines` play those steps when inside
   an `AppearContext`. Every animation honours Reduce Motion.
+  A page builds up only the first time it is shown (tabs stay mounted, so
+  switching tabs and back shows it as it was), and when it slides in: a
+  rubrique or an article each time it opens. Coming back to a page (the
+  Rubriques list included) shows it as it was.
 - `theme.js` — colours (paper `#FFFFF2`, ink, red `#FF1919`), font families,
   and shared text and layout styles (`pageTitle`, `rubriquesTitle`, `menu`).
+  The Rubriques list sets its block names ("1. Essais & Critiques") in
+  `titleType`, like the page title, and their red subtitles in
+  `categoryType`, like the cards' categories, but at 16pt.
 - `rivers.js` / `River.js` — wavy "river" separators between articles,
   currently off (`SHOW_RIVERS = false`, plain spacing instead).
 - `PortraitAnimation.js` — the website's portrait player ported to React
@@ -110,14 +143,13 @@ Navigation details that are easy to break:
   is written as CSS (percentages, `'px'` strings, translates relative to the
   layer's size), and `layerStyle` resolves it to numbers. A NaN that reaches
   expo-image crashes Expo Go natively, so keep every value finite. Drawn at
-  Framer's 110px slot, as on the site (`PORTRAIT_SCALE` 1; tried 1.4 and
-  0.75, both rejected).
-- `PortraitCard.js` — the website's portrait card: the animation over a 300px
-  column of category, title, excerpt and author, with the site's sizes and
-  gaps (no date). `ArticleList` uses it for any article whose `section` is
-  `portraits`, and puts 90px of space rather than a rule between two
-  portraits. A portrait with no animation shows its whole `mainImage` at
-  `PORTRAIT_SIZE`.
+  100pt, in Framer's 110px slot scaled down (`PORTRAIT_SCALE`; 1.4, 1, 0.85
+  and 0.75 were tried).
+- `PortraitCard.js` — a portrait: the same `ArticleCard` as every other
+  article, with the animation passed as `picture`, at the top of the card
+  (above the category) rather than in the illustration's place. (It was the website's own portrait card, a 300px column in other
+  sizes, until it was brought in line with the other rubriques.) A portrait
+  with no animation shows its whole `mainImage` at `PORTRAIT_SIZE`.
 - `portraitSprites.js` — `require()` and pixel size for each sprite (Metro
   needs static requires; the sizes give height-only layers their width). A new
   sprite needs a line here.
@@ -137,8 +169,8 @@ change the other half too.
   (`titleStyle.marginBottom`, 22.7) and 36pt from the dinkus to the first
   category (`styles.dinkus.marginBottom`, 17), both measured to the letters. `rubriquesTitle` also places the
   Rubriques list's and A Propos's titles, so all tabs move together.
-- **The line between cards** sits 42pt from the date above and 42pt from the
-  category below. The separator's margins in `ArticleList.js` (35.7 / 37.9)
+- **The line between cards** sits 54pt from the date above and 54pt from the
+  category below. The separator's margins in `ArticleList.js` (47.7 / 49.9)
   only make up the difference, because the date's and category's line boxes
   already hold 6.3pt and 4.1pt (the latter for Averia Libre at 18pt).
 - **Category → title** is 15pt between the letters, set by the title's
@@ -150,7 +182,9 @@ To measure, screenshot the simulator (`xcrun simctl io booted screenshot`)
 and look for the rows of ink and red. A second Metro server on another port
 (`CI=1 npx expo start --port 8082`, opened with
 `xcrun simctl openurl booted exp://127.0.0.1:8082/--/<route>`) leaves the
-user's own server alone.
+user's own server alone. `CI=1` turns off file watching, so that server keeps
+serving the bundle it built at startup: restart it (and Expo Go) after every
+edit, or the screenshot shows the old code.
 
 ## Conventions
 

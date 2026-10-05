@@ -1,6 +1,6 @@
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useRef } from 'react'
 import { StyleSheet, Text, View } from 'react-native'
-import { router, useFocusEffect, useGlobalSearchParams, useNavigation } from 'expo-router'
+import { router, useFocusEffect, useGlobalSearchParams } from 'expo-router'
 import { useReducedMotion } from 'react-native-reanimated'
 import { APPEAR, AppearContext, FadePressable, PRESS, Rise, RiseLines } from '../../../motion'
 import Rule from '../../../Rule'
@@ -33,19 +33,17 @@ export default function RubriquesScreen() {
     router.navigate(`/${lang}/rubriques/${slug}`)
   }
 
-  // The list builds up (APPEAR in motion.js) each time the Rubriques tab is
-  // entered, by remounting it. Coming back from a rubrique doesn't count:
-  // the stack's focus only changes when the tab does.
-  const navigation = useNavigation()
-  const [entered, setEntered] = useState(() => Date.now())
-  useEffect(() => navigation.getParent()?.addListener('focus', () => setEntered(Date.now())), [navigation])
+  // The list builds up (APPEAR in motion.js) once, the first time it is
+  // shown. (Playing it again on coming back from a rubrique was tried and
+  // rejected.)
+  const shown = useRef(Date.now()).current
   const reduceMotion = useReducedMotion()
   const menu = APPEAR.menu
 
   return (
     <View style={styles.screen}>
-      <AppearContext.Provider value={{ since: entered, still: reduceMotion }}>
-        <View key={entered} style={styles.body}>
+      <AppearContext.Provider value={{ since: shown, still: reduceMotion }}>
+        <View style={styles.body}>
           <RiseLines style={styles.title} step={menu.title}>Rubriques</RiseLines>
           {SECTIONS.map((section, i) => (
             <FadePressable
