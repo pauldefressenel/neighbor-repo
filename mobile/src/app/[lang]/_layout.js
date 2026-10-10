@@ -19,8 +19,8 @@ export default function TabsLayout() {
           the bar otherwise has no params at all. */}
       <Tabs.Screen name="(couverture)" initialParams={{ lang }} />
       <Tabs.Screen name="rubriques" initialParams={{ lang }} />
-      <Tabs.Screen name="a-propos" initialParams={{ lang }} />
       <Tabs.Screen name="voisinage" initialParams={{ lang }} />
+      <Tabs.Screen name="a-propos" initialParams={{ lang }} />
     </Tabs>
   )
 }

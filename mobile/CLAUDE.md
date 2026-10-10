@@ -19,7 +19,10 @@ submitted yet.
 
 ## Scope today
 
-- **French first.** `/` redirects to `/fr`, and the chrome (tab labels, dates,
+- **French first.** `/` goes to `/fr` when the phone's language is French or
+  its region a French-speaking country (`app/index.js`, with
+  `expo-localization`; the country list duplicates the website's
+  `middleware.js`), else to `/en`. The chrome (tab labels, dates,
   "de <author>", the A Propos copy) is hard-coded in French. The masthead's
   language selector switches to `/en`, which fetches the English articles
   and About page but keeps the French chrome; `i18n.js` holds only the few
@@ -37,8 +40,8 @@ submitted yet.
 
 ```
 _layout.js                  fonts, splash screen, the AccountProvider, a <Slot> (not a Stack) inside GestureHandlerRootView
-index.js                    → /fr
-[lang]/_layout.js           Tabs with the custom TabBar: (couverture), rubriques, a-propos, voisinage (in that order)
+index.js                    → /fr or /en, from the phone's language and region
+[lang]/_layout.js           Tabs with the custom TabBar: (couverture), rubriques, voisinage, a-propos (in that order)
 [lang]/(couverture)/_layout.js         a PageStack (PageStack.js)
 [lang]/(couverture)/index.js           En Couverture (/fr) — articles whose `featured` is "French"
 [lang]/(couverture)/articles/[slug].js an article opened from En Couverture (/fr/articles/<slug>)
@@ -108,6 +111,8 @@ Navigation details that are easy to break:
     `maxFill={0.8}` breaks a single line wider than 80% of the card onto two
     lines.
   - The excerpt is balanced too, and sits right under the title with no gap.
+    It is 20pt in from each side of the card (it was 60pt, a 240pt column
+    whose short lines made it run long).
   - The illustration is full width, with its height from the image's own
     proportions (`imageAspect`, from Sanity's metadata), so it is never
     cropped. It has 22px above and below.
@@ -116,17 +121,24 @@ Navigation details that are easy to break:
   - Date: EB Garamond regular italic, lighter than the author's medium.
 - `Masthead.js` — the fixed top bar: the wordmark between two equal slots,
   with an optional back arrow that pops in (`BACK_POP`, `usePop`) as a rubrique opens,
-  and the language selector on the right ("Fr", which shows "En" beside it
-  in red). Switching keeps the page, except that an article goes back to the
+  and the language on the right: "FR EN" side by side in the cards' category
+  type at 16pt, the current one in ink, the other faint; a tap switches.
+  The two slots are 64pt wide to hold it, the language ends 28pt from the
+  edge, and it stands on the wordmark's baseline.
+  (It replaced "Fr" opening a red "En" beside it.) Switching keeps the page, except that an article goes back to the
   list it was opened from (article slugs differ between languages).
 - `account.js` — signing up (an e-mail address and the newsletter tick box),
   which opens Voisinage's games. A design mock-up for now: the account lives
   in memory and nothing is sent. Provided above `[lang]`, so switching
   language keeps it.
-- `DrawnIcons.js` — SVG stand-ins (Voisinage's house, the tick box) until
-  hand-drawn PNGs exist.
-- `TabBar.js` — the custom bottom bar: hand-drawn PNG icons from
-  `assets/icons/`, ink labels, and a red dot under the current tab.
+- `DrawnIcons.js` — `TabIcon`, the tab bar's four icons (a crown for A La
+  Une, a ticket for Rubriques, three people for Voisinage, a palette for
+  A Propos), and the sign-up tick box. The icons' lines are gently bent so
+  they look hand-drawn (wobble, open loops and uneven weight were tried and
+  rejected). Their paths and sizes are generated into `tabIcons.js` by the
+  repo-root `assets/icons/make-icons.py`, which also writes the `.svg`
+  copies beside it: change the script and run it, never the outputs.
+- `TabBar.js` — the custom bottom bar: the icons from `DrawnIcons.js`, labels in the cards' category type (ink, 14pt, -0.06em), and a red dot under the current tab.
 - `Rule.js` — the hand-drawn rule (from the repo's `assets/path.svg`), drawn as
   SVG at any width.
 - `BalancedText.js` — `text-wrap: balance` for React Native, found by binary
@@ -206,8 +218,9 @@ edit, or the screenshot shows the old code.
   inline values.
 - Comments explain *why* (often a bug that was hit) in full sentences; keep
   that style.
-- The repo-root `assets/icons/` are working copies of the tab icons. The
-  bundled ones are in `mobile/assets/icons/`.
+- The repo-root `assets/icons/` holds `make-icons.py`, the `.svg` copies it
+  writes, and the earlier hand-drawn PNGs. The app draws the icons from
+  `tabIcons.js`, which the same script writes.
 
 ---
 

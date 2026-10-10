@@ -1,25 +1,23 @@
-import { Image, Pressable, StyleSheet, Text, View } from 'react-native'
+import { Pressable, StyleSheet, Text, View } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
-import { HouseIcon } from './DrawnIcons'
-import { colors, fonts } from './theme'
+import { TabIcon } from './DrawnIcons'
+import { categoryType, colors } from './theme'
 
-// Hand-drawn black strokes on transparent PNGs, always drawn in ink. Keyed by
-// the tab's route name in app/[lang]/_layout.js; each is drawn at its own
-// aspect ratio and height. Voisinage has no drawing yet, so it draws an SVG
-// stand-in (`Icon`) instead.
+// Each tab's icon (DrawnIcons.js), always drawn in ink. Keyed by the tab's
+// route name in app/[lang]/_layout.js.
 const icons = {
-  '(couverture)': { source: require('../assets/icons/a-la-une.png'), ratio: 416 / 344, height: 22 },
-  rubriques: { source: require('../assets/icons/rubriques.png'), ratio: 312 / 389, height: 20 },
-  'a-propos': { source: require('../assets/icons/a-propos.png'), ratio: 282 / 344, height: 22 },
-  voisinage: { Icon: HouseIcon },
+  '(couverture)': 'a-la-une',
+  rubriques: 'rubriques',
+  voisinage: 'voisinage',
+  'a-propos': 'a-propos',
 }
 
 // French-only for now, like the rest of the app's chrome.
 const LABELS = {
   '(couverture)': 'A La Une',
   rubriques: 'Rubriques',
-  'a-propos': 'A Propos',
   voisinage: 'Voisinage',
+  'a-propos': 'A Propos',
 }
 
 // Rendered by the Tabs navigator (its `tabBar` prop). Icons and labels are
@@ -48,14 +46,7 @@ export default function TabBar({ state, navigation }) {
             accessibilityLabel={LABELS[route.name]}
           >
             <View style={styles.icon}>
-              {icon.Icon ? (
-                <icon.Icon />
-              ) : (
-                <Image
-                  source={icon.source}
-                  style={{ height: icon.height, width: icon.height * icon.ratio, tintColor: colors.ink }}
-                />
-              )}
+              <TabIcon name={icon} />
             </View>
             <Text style={styles.label}>{LABELS[route.name]}</Text>
             <View style={[styles.dot, focused && styles.dotOn]} />
@@ -67,8 +58,11 @@ export default function TabBar({ state, navigation }) {
 }
 
 const styles = StyleSheet.create({
+  // Inset from the screen's sides, so the four tabs sit closer together
+  // than they would spread across the full width.
   bar: {
     flexDirection: 'row',
+    paddingHorizontal: 28,
     backgroundColor: colors.bar,
     borderTopWidth: 1,
     borderTopColor: colors.ink,
@@ -78,16 +72,23 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingTop: 14,
     paddingBottom: 6,
-    gap: 3,
+    gap: 6,
   },
-  // As tall as the tallest icon, so the labels line up across tabs.
+  // Every icon stands on the same line, the bottom of this box, rather than
+  // being centred in it; their viewBoxes are cropped to the ink
+  // (make-icons.py) so that line is where each drawing ends.
   icon: {
-    height: 22,
-    justifyContent: 'center',
+    height: 25,
+    justifyContent: 'flex-end',
   },
+  // The cards' category type, but in ink, at 14pt, and tightened a little
+  // more (-0.06em against their -0.05em). (16pt, read off the mock-up, was
+  // too big; 12 and 13pt too small.)
   label: {
-    fontFamily: fonts.garamond,
-    fontSize: 16,
+    ...categoryType,
+    fontSize: 14,
+    lineHeight: 14 * 1.1,
+    letterSpacing: 14 * -0.06,
     color: colors.ink,
   },
   // Always laid out, so the bar doesn't shift when the selection moves.

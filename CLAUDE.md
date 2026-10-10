@@ -31,6 +31,7 @@ node import/import-framer.mjs                        # dry run: prints the plan,
 SANITY_TOKEN=<token> node import/import-framer.mjs --write
 SANITY_TOKEN=<token> node import/seed-about.mjs      # (re)seed the about-en / about-fr documents
 SANITY_TOKEN=<token> node import/assign-vignettes.mjs <dir> --write  # set main images from numbered vignettes (dry run without --write)
+SUPABASE_URL=<url> SUPABASE_SECRET_KEY=<secret> node import/import-neighbours.mjs --write  # the 128 neighbours from the old project's backups (dry run without --write)
 ```
 
 ## Architecture
@@ -120,6 +121,10 @@ and in the app.
 `Articles.csv` / `import.mjs` are the earlier one-off CSV import. That export
 dropped pull-quote and attribution paragraphs and mangled typographic
 apostrophes, so prefer the scraper.
+
+### Supabase (`supabase/`)
+
+The neighbours' accounts live in a Supabase project (`btwgwcmxercrdrncqerp`), separate from Sanity: Sanity holds the articles, Supabase the readers. `supabase/migrations/` holds its schema as SQL, applied by hand (SQL Editor) for now; GitHub isn't linked. `profiles` (one per auth user, private to its owner), the public `neighbours` view (first name, avatar, country, activity), and two buckets: `avatars` (public) and `photos` (private, per user). The 128 neighbours come from an earlier project (paused, exported from the dashboard) through `import/import-neighbours.mjs`, which reads the two backups from `~/Downloads`; those backups and anything extracted from them hold e-mail addresses and stay out of the repo. The avatars are personal portraits drawn from each neighbour's photo, not a set to choose from. The old `NeighborhoodPage.jsx` and the Framer Wall read the earlier project through `the-neighbor.onrender.com/community`, which no longer answers.
 
 ### Fonts
 

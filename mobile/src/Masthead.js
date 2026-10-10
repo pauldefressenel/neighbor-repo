@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react'
+import { useRef } from 'react'
 import { Animated, StyleSheet, Text, View } from 'react-native'
 import { router, useGlobalSearchParams, usePathname } from 'expo-router'
 import { useReducedMotion } from 'react-native-reanimated'
@@ -6,7 +6,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { i18n } from './i18n'
 import Rule from './Rule'
 import { FadePressable, PAGE_REDUCED, useFade, usePop } from './motion'
-import { colors, fonts } from './theme'
+import { categoryType, colors, fonts } from './theme'
 
 // The bar at the top of every screen. It sits outside the scrolling content
 // so it stays put, and spans the full width so its hand-drawn rule runs edge
@@ -58,23 +58,19 @@ export default function Masthead({ onBack, backLabel = 'Retour' }) {
   )
 }
 
-// The current language, which opens a row with the other one, as on the
-// website (Layout.jsx). The other language shows to its left, in red,
-// between it and the wordmark: hung below the masthead it would sit outside
-// the masthead's bounds, where iOS doesn't deliver touches. Choosing it
-// shows the same page in that language. Article slugs differ between
-// languages, so from an article it goes to the list the article was opened
-// from. The account (account.js) sits above the [lang] segment, so it
-// survives the switch.
+// Both languages side by side, FR then EN: the current one in ink, the
+// other faint (the current one in red, the other in ink, was tried). A tap
+// anywhere on the pair shows the same page in the other language (it
+// replaced a selector that opened a row with the other language beside it). Article slugs differ between languages, so from an
+// article it goes to the list the article was opened from. The account
+// (account.js) sits above the [lang] segment, so it survives the switch.
 function Language() {
   const { lang } = useGlobalSearchParams()
   const pathname = usePathname()
-  const [open, setOpen] = useState(false)
   const t = i18n[lang] ?? i18n.fr
   const other = t.switchTo
 
   const choose = () => {
-    setOpen(false)
     const parts = pathname.split('/').filter(Boolean).slice(1)
     let rest = parts
     if (parts[0] === 'articles') rest = []
@@ -83,24 +79,16 @@ function Language() {
   }
 
   return (
-    <View>
-      <FadePressable
-        onPress={() => setOpen(!open)}
-        hitSlop={12}
-        accessibilityRole="button"
-        accessibilityLabel={t.language}
-        accessibilityState={{ expanded: open }}
-      >
-        <Text style={styles.language}>{lang === 'en' ? 'En' : 'Fr'}</Text>
-      </FadePressable>
-      {open ? (
-        <View style={styles.otherLanguage}>
-          <FadePressable onPress={choose} hitSlop={12} accessibilityRole="button" accessibilityLabel={i18n[other].language}>
-            <Text style={[styles.language, styles.otherText]}>{other === 'en' ? 'En' : 'Fr'}</Text>
-          </FadePressable>
-        </View>
-      ) : null}
-    </View>
+    <FadePressable
+      onPress={choose}
+      hitSlop={12}
+      accessibilityRole="button"
+      accessibilityLabel={i18n[other].language}
+      style={styles.languages}
+    >
+      <Text style={[styles.language, lang === 'en' && styles.faint]}>FR</Text>
+      <Text style={[styles.language, lang !== 'en' && styles.faint]}>EN</Text>
+    </FadePressable>
   )
 }
 
@@ -114,25 +102,35 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingBottom: 12,
   },
+  // Wide enough for "FR EN" and its inset; both slots share it so the
+  // wordmark stays centred.
   slot: {
-    width: 32,
+    width: 64,
   },
+  // The language and the wordmark stand on the same baseline (both
+  // `alignSelf: 'baseline'`), rather than being centred against each
+  // other; the back arrow's slot stays centred in the row.
+  // 8pt further in than the row's 20pt padding, so the language ends 28pt
+  // from the screen's edge.
   languageSlot: {
     alignItems: 'flex-end',
+    alignSelf: 'baseline',
+    paddingRight: 8,
   },
+  // The cards' category type, in ink, at 16pt.
   language: {
-    fontFamily: fonts.garamondMedium,
-    fontSize: 19,
+    ...categoryType,
+    fontSize: 16,
+    lineHeight: 16 * 1.1,
+    letterSpacing: 16 * -0.05,
     color: colors.ink,
   },
-  otherLanguage: {
-    position: 'absolute',
-    top: 0,
-    right: '100%',
-    marginRight: 14,
+  languages: {
+    flexDirection: 'row',
+    gap: 7,
   },
-  otherText: {
-    color: colors.red,
+  faint: {
+    color: colors.faint,
   },
   back: {
     fontFamily: fonts.paprika,
@@ -142,6 +140,7 @@ const styles = StyleSheet.create({
     alignSelf: 'flex-start',
   },
   logo: {
+    alignSelf: 'baseline',
     flex: 1,
     textAlign: 'center',
     fontFamily: fonts.neighbor,

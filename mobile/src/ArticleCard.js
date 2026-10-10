@@ -74,10 +74,11 @@ const styles = StyleSheet.create({
     paddingTop: 8,
     paddingBottom: 4,
   },
-  // A narrow column (about 240pt on a phone), so it breaks into short lines.
+  // About 320pt on a phone, so it takes fewer lines. (It was a 240pt column,
+  // 60pt in from each side, whose short lines made the excerpt run long.)
   excerpt: {
     ...centred,
-    paddingHorizontal: 60,
+    paddingHorizontal: 20,
     fontFamily: fonts.garamond,
     fontSize: 20,
     lineHeight: 20 * 1.1,

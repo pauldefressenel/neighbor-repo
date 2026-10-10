@@ -11,7 +11,8 @@
 
 export const config = { matcher: '/' }
 
-// Countries where French is the main language.
+// Countries where French is the main language. The app's start screen
+// (mobile/src/app/index.js) has a copy; change both together.
 const FRENCH_COUNTRIES = new Set([
   'FR', 'MC', 'LU',
   // Overseas France with their own country codes.
