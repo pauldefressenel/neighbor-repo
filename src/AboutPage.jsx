@@ -2,35 +2,45 @@ import { useState, useEffect } from 'react'
 import { useParams } from 'react-router-dom'
 import { PortableText } from '@portabletext/react'
 import { getAboutPage } from './sanity/queries'
-import { urlFor } from './sanity/client'
+import { i18n } from './i18n'
 import './AboutPage.css'
 
-// Mirrors Framer's About page: title, paragraphs in the article column, then
-// the founders' pixel avatars. Content is the `about-<lang>` Sanity document.
+const WORDS_PER_MINUTE = 200
+
+// "4 min.", from the words in the text.
+const readingMinutes = (body) => {
+  const words = body
+    .flatMap((block) => block.children ?? [])
+    .reduce((sum, span) => sum + (span.text?.match(/\S+/g)?.length ?? 0), 0)
+  return Math.max(1, Math.round(words / WORDS_PER_MINUTE))
+}
+
+// A Propos, set like an article, as in the app (mobile/src/app/[lang]/a-propos.js):
+// a fixed heading on the left (category, byline, title, reading time), then
+// the `about-<lang>` document's text, opening on a drop cap. The heading is
+// fixed so it shows while the text loads.
 export default function AboutPage() {
   const { lang } = useParams()
-  const [page, setPage] = useState(null)
+  const t = i18n[lang] ?? i18n.en
+  const heading = t.aboutHeading
+  const [body, setBody] = useState(null)
 
   useEffect(() => {
-    getAboutPage(lang).then(setPage)
+    getAboutPage(lang).then((page) => setBody(page?.body ?? []))
   }, [lang])
-
-  if (!page) return null
 
   return (
     <main className="about-page">
-      <h1 className="page-title">{page.title}</h1>
-      <div className="about-body">
-        <PortableText value={page.body} />
+      <div className="about-heading">
+        <p className="about-category">{heading.category}</p>
+        <p className="about-byline">{heading.byline}</p>
       </div>
-      {page.founders?.length > 0 && (
-        <div className="about-founders">
-          {page.founders.map(({ _key, name, image }) => (
-            <figure key={_key} className="about-founder">
-              {image && <img src={urlFor(image).height(144).url()} alt={name} draggable="false" />}
-              <figcaption>{name}</figcaption>
-            </figure>
-          ))}
+      <h1 className="about-title">{heading.title}</h1>
+      {/* Held open until the text arrives, so nothing moves when it does. */}
+      <p className="about-byline about-reading">{body?.length ? `${readingMinutes(body)} min.` : ' '}</p>
+      {body && (
+        <div className="about-body">
+          <PortableText value={body} />
         </div>
       )}
     </main>

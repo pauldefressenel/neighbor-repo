@@ -4,8 +4,8 @@ import './SectionPage.css'
 import { getArticlesBySection } from './sanity/queries'
 import { i18n } from './i18n'
 import { findRubrique } from './sections'
-import ArticleCard from './ArticleCard'
-import PortraitCard from './PortraitCard'
+import ArticleGrid from './ArticleGrid'
+import PageTitle from './PageTitle'
 
 export default function SectionPage() {
   const { lang, section } = useParams()
@@ -19,14 +19,9 @@ export default function SectionPage() {
 
   return (
     <main className="main">
-      <h2 className="page-title">{title}</h2>
-      <div className={`articles-grid${section === 'portraits' ? ' articles-grid--portraits' : ''}`}>
-        {articles.map((a) => (
-          section === 'portraits'
-            ? <PortraitCard key={a._id} {...a} />
-            : <ArticleCard key={a._id} {...a} />
-        ))}
-      </div>
+      <PageTitle>{title}</PageTitle>
+      {section === 'portraits' && <p className="page-subtitle">{t.portraitsSubtitle}</p>}
+      <ArticleGrid articles={articles} />
     </main>
   )
 }

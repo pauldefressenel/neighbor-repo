@@ -1,0 +1,207 @@
+/* The app's Voisinage (mobile/src/app/[lang]/voisinage.js), in a column
+   about as wide as a phone. */
+
+.voisinage-content {
+  width: min(440px, 100%);
+  margin: 13px auto 0;
+  color: #1a1a1a;
+  animation: appear-5 0.2s var(--ease-spring) 0.5s both;
+}
+
+.voisinage-intro {
+  font-family: 'EB Garamond', serif;
+  font-size: 21px;
+  line-height: 31px;
+  text-align: center;
+  padding: 0 6px;
+}
+
+.voisinage-field {
+  display: block;
+  margin-top: 36px;
+}
+
+/* The cards' category type, smaller. */
+.voisinage-label {
+  display: block;
+  font-family: 'Averia Libre', sans-serif;
+  font-size: 14px;
+  letter-spacing: -0.05em;
+  line-height: 1.1;
+  color: #FF1919;
+  text-transform: uppercase;
+}
+
+.voisinage-input {
+  display: block;
+  width: 100%;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-family: 'EB Garamond', serif;
+  font-size: 22px;
+  color: inherit;
+  caret-color: #FF1919;
+  padding: 10px 0 6px;
+}
+
+.voisinage-input::placeholder {
+  color: rgba(0, 0, 0, 0.35);
+}
+
+.voisinage-input-rule {
+  display: block;
+  width: 100%;
+  height: 8px;
+}
+
+.voisinage-error {
+  display: block;
+  margin-top: 8px;
+  font-family: 'EB Garamond', serif;
+  font-style: italic;
+  font-size: 16px;
+  color: #FF1919;
+}
+
+.voisinage-option {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-top: 30px;
+  padding: 0;
+  border: none;
+  background: none;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.voisinage-checkbox {
+  flex: none;
+}
+
+.voisinage-option-title {
+  display: block;
+  font-family: 'EB Garamond', serif;
+  font-weight: 500;
+  font-size: 19px;
+  line-height: 23px;
+}
+
+.voisinage-option-note {
+  display: block;
+  margin-top: 2px;
+  font-family: 'EB Garamond', serif;
+  font-style: italic;
+  font-size: 16px;
+  line-height: 21px;
+}
+
+.voisinage-button {
+  display: block;
+  width: 100%;
+  height: 54px;
+  margin-top: 40px;
+  border: none;
+  border-radius: 27px;
+  background: #1a1a1a;
+  color: #FFFFF2;
+  font-family: 'NeighborFont', serif;
+  font-size: 24px;
+  cursor: pointer;
+  transition: transform 0.15s var(--ease-spring);
+}
+
+.voisinage-button:active {
+  transform: scale(0.98);
+}
+
+.voisinage-button:disabled {
+  cursor: default;
+}
+
+.voisinage-small {
+  margin-top: 14px;
+  font-family: 'EB Garamond', serif;
+  font-style: italic;
+  font-size: 15px;
+  text-align: center;
+}
+
+/* Signed up: a red heading over each part, in the cards' category type. */
+.voisinage-section-label {
+  margin-bottom: 28px;
+  font-family: 'Averia Libre', sans-serif;
+  font-size: 18px;
+  letter-spacing: -0.05em;
+  line-height: 1.1;
+  color: #FF1919;
+  text-transform: uppercase;
+}
+
+/* Laid out like the app's Rubriques list. */
+.voisinage-game {
+  margin-bottom: 56px;
+}
+
+.voisinage-game-line {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.voisinage-game-name {
+  font-family: 'NeighborFont', serif;
+  font-size: 35px;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+}
+
+.voisinage-soon {
+  flex: none;
+  font-family: 'EB Garamond', serif;
+  font-style: italic;
+  font-size: 16px;
+}
+
+.voisinage-game-subtitle {
+  margin-top: 4px;
+  font-family: 'Averia Libre', sans-serif;
+  font-size: 16px;
+  letter-spacing: -0.05em;
+  line-height: 1.1;
+  color: #FF1919;
+  text-transform: uppercase;
+}
+
+.voisinage-game-rule {
+  display: block;
+  width: 100%;
+  height: 8px;
+  margin-top: 6px;
+}
+
+.voisinage-email {
+  margin-top: -12px;
+  font-family: 'EB Garamond', serif;
+  font-weight: 500;
+  font-style: italic;
+  font-size: 21px;
+  line-height: 31px;
+}
+
+.voisinage-sign-out {
+  display: block;
+  margin-top: 30px;
+  padding: 0;
+  border: none;
+  background: none;
+  color: inherit;
+  font-family: 'EB Garamond', serif;
+  font-style: italic;
+  font-size: 16px;
+  text-decoration: underline;
+  cursor: pointer;
+}

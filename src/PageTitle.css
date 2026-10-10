@@ -1,0 +1,25 @@
+/* The app's page title (mobile/src/theme.js titleType): NeighborFont 35px,
+   -0.03em, 1.1 line height. */
+.page-title {
+  font-family: 'NeighborFont', serif;
+  font-weight: 400;
+  font-size: 35px;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+  color: #1a1a1a;
+  text-align: center;
+  text-wrap: balance;
+  margin-bottom: 23px;
+}
+
+/* Averia Serif Libre 26px, the asterisks 20px apart. */
+.dinkus {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  font-family: 'Averia Serif Libre', serif;
+  font-size: 26px;
+  line-height: 26px;
+  color: #1a1a1a;
+  margin-bottom: 17px;
+}

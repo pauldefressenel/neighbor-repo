@@ -14,6 +14,20 @@
   z-index: 100;
 }
 
+/* Under the header, the paper fades out over 30px, so the page scrolling up
+   beneath it dissolves rather than being cut off sharply. It lets clicks
+   through to the page. */
+.header::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  height: 30px;
+  background: linear-gradient(#FFFFF2, rgba(255, 255, 242, 0));
+  pointer-events: none;
+}
+
 /* Measured on theneighborr.com: the header switches layout at 750 and 1000px
    (the home page's breakpoints; section pages use 700/900 for their grids but
    the header is the same component). Desktop: wordmark centred, links ending
@@ -114,11 +128,15 @@
   border-bottom: 1px solid #1a1a1a;
 }
 
+/* Small spaced capitals in the cards' category face (Averia Libre), in ink:
+   chosen from a side-by-side comparison of headers. */
 .section-link {
-  font-family: 'EB Garamond', serif;
-  font-weight: 500;
-  font-size: 18px;
-  line-height: 1.2em;
+  font-family: 'Averia Libre', sans-serif;
+  font-weight: 400;
+  font-size: 14px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  line-height: 1.1;
   color: #1a1a1a;
   text-decoration: none;
   background: none;
@@ -127,9 +145,10 @@
   padding: 0;
 }
 
-.section-link:hover {
-  text-decoration: underline;
-  text-underline-offset: 2px;
+/* The current page is red, and so is a link under the pointer. */
+.section-link:hover,
+.section-link--active {
+  color: #FF1919;
 }
 
 .section-link--disabled {
@@ -240,6 +259,103 @@
 
 .menu-overlay-link--disabled {
   opacity: 0.4;
+}
+
+/* The one-row header's pieces exist only on wide screens (below). */
+.header-links,
+.header-rule,
+.lang-pair {
+  display: none;
+}
+
+/* Wide screens (from 1200px, where the links fit either side of the
+   wordmark): one 70px row, the rubriques to the left of the wordmark, The
+   Neighborhood, About and the language to its right, all on the wordmark's
+   baseline. Under it, the hand-drawn line instead of a border, 50px in from
+   each side like the page's content; the row's ends line up with it. The
+   wordmark is 30px, smaller than the page titles (35px), so they lead.
+   Chosen from a side-by-side comparison of headers. */
+@media (min-width: 1200px) {
+  .header-top {
+    height: 70px;
+    padding: 0 50px;
+    border-bottom: none;
+    align-items: baseline;
+    align-content: center;
+  }
+
+  .site-title {
+    font-size: 30px;
+  }
+
+  .header-links {
+    display: flex;
+    align-items: baseline;
+    gap: 32px;
+  }
+
+  .header-links--left {
+    grid-column: 1;
+    grid-row: 1;
+  }
+
+  .header-meta {
+    align-items: baseline;
+    gap: 32px;
+  }
+
+  .sections-nav {
+    display: none;
+  }
+
+  .header-rule {
+    display: block;
+    width: calc(100% - 100px);
+    height: 8px;
+    margin: -4px 50px 0;
+    color: #1a1a1a;
+  }
+
+  /* The language: "FR / EN" in the links' type, the current one in red, in
+     place of the menu. */
+  .lang-menu {
+    display: none;
+  }
+
+  .lang-pair {
+    display: inline-flex;
+    align-items: baseline;
+  }
+
+  .lang-pair-option,
+  .lang-pair-sep {
+    padding: 0;
+    border: none;
+    background: none;
+    font-family: 'Averia Libre', sans-serif;
+    font-weight: 400;
+    font-size: 14px;
+    letter-spacing: 0.06em;
+    line-height: 1.1;
+    color: #1a1a1a;
+  }
+
+  .lang-pair-sep {
+    margin: 0 8px;
+  }
+
+  .lang-pair-option {
+    cursor: pointer;
+  }
+
+  .lang-pair-option:hover,
+  .lang-pair-option--current {
+    color: #FF1919;
+  }
+
+  .lang-pair-option--current {
+    cursor: default;
+  }
 }
 
 /* Tablet (750–999): the language selector at the right, the wordmark stays

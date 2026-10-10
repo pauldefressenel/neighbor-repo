@@ -1,33 +1,19 @@
-import { Link } from 'react-router-dom'
+import ArticleCard from './ArticleCard'
 import PortraitAnimation from './PortraitAnimation'
 import { urlFor } from './sanity/client'
 import { hasPortraitAnimation } from './portraits'
-import { rubriqueOf } from './sections'
-import './ArticleCard.css'
 import './PortraitCard.css'
 
-// Framer's "Portrait Vignette": a 110px animation slot above a 300px centred
-// text block, all centred in the grid cell. Text presets are shared with
-// the article card; only the layout differs.
-export default function PortraitCard({ category, title, excerpt, author, mainImage, slug, language, section }) {
-  return (
-    <Link className="portrait-card" to={`/${language}/${rubriqueOf(section)}/${slug.current}`}>
-      {hasPortraitAnimation(slug.current)
-        ? <PortraitAnimation slug={slug.current} alt={title} />
-        : <div className="portrait-slot">
-            {mainImage && <img className="portrait-still" src={urlFor(mainImage).width(220).url()} alt={title} />}
-          </div>
-      }
-      <div className="portrait-text">
-        <div className="portrait-heading">
-          <p className="article-category">{category}</p>
-          <h2 className="article-title">{title}</h2>
-        </div>
-        <div className="portrait-body">
-          <p className="article-description">{excerpt}</p>
-          <p className="article-author">{author}</p>
-        </div>
+// A portrait: the same card as every other article, with the animated
+// portrait (Framer's Portrait Vignette) at the top, as in the app
+// (mobile/src/PortraitCard.js).
+export default function PortraitCard(props) {
+  const { title, mainImage, slug } = props
+  const picture = hasPortraitAnimation(slug.current)
+    ? <PortraitAnimation slug={slug.current} alt={title} />
+    // A portrait without an animation shows its whole drawing instead.
+    : <div className="portrait-slot">
+        {mainImage && <img className="portrait-still" src={urlFor(mainImage).width(220).url()} alt={title} />}
       </div>
-    </Link>
-  )
+  return <ArticleCard {...props} picture={picture} />
 }

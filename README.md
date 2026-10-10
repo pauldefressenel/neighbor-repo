@@ -48,6 +48,9 @@ repo root: it builds the Studio when the project's production hostname contains
 `studio` or `cms` (or `NEIGHBOR_BUILD=studio` is set) and the site otherwise, so
 the Studio project works even without the Root Directory setting.
 
+`middleware.js` at the root sends the bare address to `/fr` or `/en` by the
+visitor's country (Vercel's geolocation headers), or by the `lang` cookie once
+the reader has picked a language; it leaves the Studio's hostname alone.
 `vercel.json` at the root carries the SPA rewrite, immutable caching for
 `/assets` and `/portraits`, and permanent redirects from every URL the old Framer
 site published (the six slugs with accented or curly-quote characters appear both

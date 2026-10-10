@@ -1,65 +1,83 @@
-/* Measured on theneighborr.com/about at 1280px: title 50px above a 650px
-   column, 25px paragraph gaps, avatars 46px below, captions 5px under them. */
+/* The app's A Propos (mobile/src/ArticleScreen.js ArticleHeading and
+   ArticleText.js), in the website's 650px article column. */
 
 .about-page {
-  margin-top: 100px;
-  padding: 50px 0 80px;
-}
-
-.about-page .page-title {
-  margin-bottom: 50px;
-}
-
-.about-body,
-.about-founders {
-  animation: appear-10 0.4s var(--ease-spring) 0.3s both;
-}
-
-.about-body {
   width: min(650px, 100% - 40px);
-  margin: 0 auto;
+  margin: 100px auto 0;
+  padding: 60px 0 80px;
+}
+
+.about-heading {
+  animation: appear-10 0.3s var(--ease-spring) 0.15s both;
+}
+
+/* The cards' category, on the left. */
+.about-category {
+  font-family: 'Averia Libre', sans-serif;
+  font-size: 18px;
+  letter-spacing: -0.05em;
+  line-height: 1.1;
+  color: #FF1919;
+  text-transform: uppercase;
+}
+
+.about-byline {
+  margin-top: 4px;
   font-family: 'EB Garamond', serif;
   font-size: 21px;
-  line-height: 1.4em;
+  line-height: 24px;
   color: #1a1a1a;
+}
+
+/* An article's title: 42px, on the left, its lines unbalanced. */
+.about-title {
+  margin-top: 6px;
+  font-family: 'NeighborFont', serif;
+  font-weight: 400;
+  font-size: 42px;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+  color: #1a1a1a;
+  animation: appear-10 0.3s var(--ease-spring) 0.2s both;
+}
+
+.about-reading {
+  margin-top: 2px;
+  margin-bottom: 48px;
+  animation: appear-10 0.3s var(--ease-spring) 0.3s both;
+}
+
+/* EB Garamond 21px on 31px lines, paragraphs 1.4em apart. */
+.about-body {
+  font-family: 'EB Garamond', serif;
+  font-size: 21px;
+  line-height: 31px;
+  color: #1a1a1a;
+  animation: appear-10 0.3s var(--ease-spring) 0.3s both;
 }
 
 .about-body p + p {
-  margin-top: 25px;
+  margin-top: 1.4em;
 }
 
-.about-founders {
-  display: flex;
-  justify-content: center;
-  align-items: flex-end;
-  gap: 66px;
-  margin-top: 46px;
-}
-
-.about-founder {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 5px;
-  margin: 0;
-}
-
-.about-founder img {
-  height: 72px;
-  width: auto;
-  image-rendering: pixelated;
-  user-select: none;
-}
-
-.about-founder figcaption {
-  font-family: 'EB Garamond', serif;
-  font-size: 18px;
-  line-height: 1.4em;
-  color: #1a1a1a;
+/* The drop cap: a NeighborFont letter over the first two lines. */
+.about-body > p:first-child::first-letter {
+  float: left;
+  font-family: 'NeighborFont', serif;
+  font-size: 64px;
+  line-height: 52px;
+  margin: 6px 8px 0 0;
 }
 
 @media (max-width: 699.98px) {
   .about-page {
     margin-top: 60px;
+  }
+}
+
+/* Under the one-row header on wide screens (Layout.css). */
+@media (min-width: 1200px) {
+  .about-page {
+    margin-top: 74px;
   }
 }

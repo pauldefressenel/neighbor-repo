@@ -13,6 +13,16 @@ export const i18n = {
     language: 'English',
     latest: 'Latest',
     switchTo: 'fr',
+    // An article card's byline: "by <author>".
+    by: 'by',
+    // Under the Portraits title, on wider screens (beside the arrows).
+    portraitsSubtitle: 'Explore the portraits with the arrows',
+    // A Propos is set like an article; its heading is fixed, as in the app.
+    aboutHeading: {
+      category: 'About',
+      byline: 'The editors, October 5, 2026.',
+      title: 'The Neighbor Manifesto.',
+    },
     // The phone menu drops the article: "Neighborhood", not "The Neighborhood".
     menuNeighborhood: 'Neighborhood',
     footer: {
@@ -29,8 +39,15 @@ export const i18n = {
     neighborhood: 'Le Voisinage',
     about: 'A Propos',
     language: 'Français',
-    latest: 'Récents',
+    latest: 'En Couverture',
     switchTo: 'en',
+    by: 'de',
+    portraitsSubtitle: 'Découvrez les portraits avec les flèches',
+    aboutHeading: {
+      category: 'A propos',
+      byline: "L'équipe de rédaction, 5 octobre 2026.",
+      title: 'Manifeste Neighbor.',
+    },
     menuNeighborhood: 'Voisinage',
     footer: {
       submit: 'Propose un texte :',

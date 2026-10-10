@@ -1,73 +1,169 @@
+/* The app's card (mobile/src/ArticleCard.js), at the app's sizes. */
+
 .article-card {
   display: flex;
   flex-direction: column;
+  align-items: center;
+  text-align: center;
   text-decoration: none;
   color: inherit;
   cursor: pointer;
+  /* The app rises the whole card at once. */
+  animation: appear-5 0.2s var(--ease-spring) 0.5s both;
+  transition: transform 0.15s var(--ease-spring);
+}
+
+.article-card:active {
+  transform: scale(0.98);
+}
+
+/* The line between two cards: 48px below the date above, 50px above the
+   category below, as in the app's ArticleList. */
+.card-rule {
+  display: block;
+  width: 100%;
+  height: 8px;
+  margin: 48px 0 50px;
+  color: #1a1a1a;
+}
+
+/* Averia Libre 18px, red, -0.05em, 1.1 line height. */
+.article-category {
+  font-family: 'Averia Libre', sans-serif;
+  font-weight: 400;
+  font-size: 18px;
+  letter-spacing: -0.05em;
+  line-height: 1.1;
+  color: #FF1919;
+  text-transform: uppercase;
+}
+
+/* The page title's type. About 15px between the category's letters and the
+   title's. */
+.article-title {
+  margin-top: 6px;
+  font-family: 'NeighborFont', serif;
+  font-weight: 400;
+  font-size: 35px;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+  text-wrap: balance;
+  padding-bottom: 4px;
+}
+
+/* A narrow column under the title, so it breaks into short lines. */
+.article-description {
+  max-width: 240px;
+  font-family: 'EB Garamond', serif;
+  font-weight: 400;
+  font-size: 20px;
+  line-height: 1.1;
+  text-wrap: balance;
 }
 
 .article-image {
-  /* The illustration spans the card's width and its height follows from its
-     own proportions, so nothing is ever cropped. The vignettes are all drawn
-     at the same size (about 1818×572), so they come out the same height. */
+  /* Every illustration gets the same box: the card's width, at the
+     vignettes' shared proportions (about 1818×572). A few vignettes are
+     taller (around 2:1); they are scaled down to fit inside the box rather
+     than cropped. */
   width: 100%;
-  height: auto;
+  aspect-ratio: 1818 / 572;
+  object-fit: contain;
   display: block;
-  align-self: center;
-  margin-bottom: 20px;
+  margin: 22px 0;
 }
 
 .article-image--placeholder {
-  aspect-ratio: 1818 / 572;
   background-color: #7B61FF;
 }
 
-.article-category {
-  /* The app's category style (mobile/src/ArticleCard.js), a size smaller. */
-  font-family: 'New Amsterdam', sans-serif;
-  font-weight: 400;
-  font-size: 18px;
-  letter-spacing: 1px;
-  color: #FF1919;
-  text-transform: uppercase;
-  animation: appear-5 0.2s var(--ease-spring) 0.5s both;
-}
-
-.article-title {
-  margin-top: 4px;
-  font-family: 'NeighborFont', serif;
-  font-weight: 500;
-  font-size: 27px;
-  letter-spacing: -0.03em;
-  line-height: 1.1em;
-  animation: appear-5 0.2s var(--ease-spring) 0.5s both;
-}
-
-.article-description {
-  margin-top: 5px;
+.article-author,
+.article-date {
   font-family: 'EB Garamond', serif;
-  font-weight: 400;
-  font-size: 20px;
-  letter-spacing: 0em;
-  line-height: 1.1em;
-  animation: appear-5 0.2s var(--ease-spring) 0.55s both;
+  font-size: 21px;
+  line-height: 24px;
 }
 
 .article-author {
-  margin-top: 7px;
-  font-family: 'EB Garamond', serif;
   font-weight: 500;
-  font-size: 20px;
-  letter-spacing: 0em;
-  line-height: 1.1em;
-  animation: appear-5 0.2s var(--ease-spring) 0.55s both;
+}
+
+/* The author's size, in a lighter italic. */
+.article-date {
+  font-style: italic;
+  font-weight: 400;
+}
+
+/* A portrait: its animation at the top, the text a little closer together. */
+.article-picture {
+  margin-bottom: 10px;
+}
+
+/* The animation's 110px Framer slot drawn at 100px, the app's size
+   (mobile/src/PortraitAnimation.js PORTRAIT_SCALE). The sprites are large
+   images shown smaller, so this stays sharp. */
+.article-picture > .portrait-slot {
+  zoom: calc(100 / 110);
+  /* A character smaller than the slot (Zorba) stands at its foot, like the
+     others, so the gap down to the category is the same for every card. */
+  align-items: flex-end;
+}
+
+.article-card--portrait .article-title {
+  margin-top: 1px;
+}
+
+.article-card--portrait .article-author {
+  margin-top: 4px;
+}
+
+/* Wider screens set the card on the left. The excerpt runs a little wider
+   there, without balancing, since a narrow ragged column looks pinched on
+   the left. */
+@media (min-width: 700px) {
+  .article-card {
+    align-items: stretch;
+    text-align: left;
+  }
+
+  .article-title {
+    text-wrap: pretty;
+  }
+
+  .article-description {
+    max-width: 300px;
+    text-wrap: pretty;
+  }
+
+  .article-picture {
+    align-self: flex-start;
+  }
+
+  /* Portraits: set on the left like the other cards (centred was tried),
+     with the other cards' title gap, 22px under the animation and 7px above
+     the byline. */
+  .article-card--portrait .article-picture {
+    margin-bottom: 22px;
+  }
+
+  .article-card--portrait .article-title {
+    margin-top: 6px;
+  }
+
+  .article-card--portrait .article-author {
+    margin-top: 7px;
+  }
+
+  /* More room around the illustration than on a phone (22px). */
+  .article-image {
+    margin: 36px 0;
+  }
 }
 
 @media (max-width: 699.98px) {
-  /* One column on phones, so cards are separated by a rule rather than by
-     the grid gutter alone. */
-  .article-card:not(:last-child) {
-    padding-bottom: 30px;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.5);
+  /* As in the app, a single-line title wider than 80% of the card goes onto
+     two balanced lines. */
+  .article-title {
+    max-width: 80%;
   }
 }

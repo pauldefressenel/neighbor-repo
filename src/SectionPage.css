@@ -1,31 +1,67 @@
 .main {
-  padding: 30px 50px 50px;
+  padding: 40px 50px 80px;
   margin-top: 100px;
   /* Framer: y 10 → 0, spring bounce 0.3, delay 0.4s, 0.4s */
   animation: appear-10 0.4s var(--ease-spring-bouncy) 0.4s both;
 }
 
-.page-title {
-  font-family: 'NeighborFont', serif;
-  font-weight: 400;
-  font-size: 40px;
-  letter-spacing: -0.02em;
-  line-height: 1.1em;
-  color: #1a1a1a;
-  text-align: center;
-  margin-bottom: 15px;
-}
-
+/* The app's cards, laid out in columns on wider screens. Each card carries
+   a line above it (`.card-rule`), the line between two cards on phones. On
+   wider screens one long line runs between rows instead: the first card of
+   each row stretches its line across every column (`--cols` columns and the
+   gaps between them), the other cards keep an invisible copy so every card
+   in the row starts at the same height, and the first row has none. */
 .articles-grid {
+  --cols: 4;
+  --gap: 40px;
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 45px 20px;
+  grid-template-columns: repeat(var(--cols), minmax(0, 1fr));
+  column-gap: var(--gap);
 }
 
-/* Framer's Portraits Layout: same column count, taller rows, cards centred. */
-.articles-grid--portraits {
-  gap: 70px 20px;
-  justify-items: center;
+@media (min-width: 700px) {
+  .articles-grid .card-rule {
+    visibility: hidden;
+  }
+
+  /* The lists set their title on the left, on the grid's edge, without the
+     dinkus, and the first row has no line above it. The title sits 47px
+     below the header's line (to its capitals) and the first categories 47px
+     below its baseline (measured). */
+  .main:has(.articles-grid) {
+    padding-top: 37px;
+  }
+
+  .main .page-title:has(+ .dinkus + :is(.articles-grid, .portrait-strip, .page-subtitle)) {
+    text-align: left;
+    margin-bottom: 0;
+  }
+
+  .main .dinkus:has(+ :is(.articles-grid, .portrait-strip, .page-subtitle)) {
+    display: none;
+  }
+
+  .articles-grid {
+    margin-top: 36px;
+  }
+
+  /* The space between rows: 30 + 8 + 32px, closer than the phone's cards. */
+  .articles-grid .card-rule {
+    margin: 30px 0 32px;
+  }
+}
+
+/* Each breakpoint names the first card of each row and the first row
+   (nth-child). Only the drawn line is stretched: the hidden copies would
+   still widen the page and let it scroll sideways. */
+
+@media (min-width: 1200px) {
+  .articles-grid > :nth-child(4n + 1) .card-rule {
+    visibility: visible;
+    align-self: flex-start;
+    width: calc(var(--cols) * 100% + (var(--cols) - 1) * var(--gap));
+  }
+  .articles-grid > :nth-child(-n + 4) .card-rule { display: none; }
 }
 
 /* Breakpoints mirror the four Framer defines for this project:
@@ -33,33 +69,182 @@
 
 @media (min-width: 900px) and (max-width: 1199.98px) {
   .articles-grid {
-    grid-template-columns: repeat(3, 1fr);
+    --cols: 3;
   }
+
+  .articles-grid > :nth-child(3n + 1) .card-rule {
+    visibility: visible;
+    align-self: flex-start;
+    width: calc(var(--cols) * 100% + (var(--cols) - 1) * var(--gap));
+  }
+  .articles-grid > :nth-child(-n + 3) .card-rule { display: none; }
 }
 
 @media (min-width: 700px) and (max-width: 899.98px) {
   .main {
-    padding: 30px 30px 50px;
+    padding: 40px 30px 80px;
   }
 
   .articles-grid {
-    grid-template-columns: repeat(2, 1fr);
+    --cols: 2;
+  }
+
+  .articles-grid > :nth-child(2n + 1) .card-rule {
+    visibility: visible;
+    align-self: flex-start;
+    width: calc(var(--cols) * 100% + (var(--cols) - 1) * var(--gap));
+  }
+  .articles-grid > :nth-child(-n + 2) .card-rule { display: none; }
+}
+
+/* A line under the Portraits title saying how to browse them: in the cards'
+   category type, in ink. Wider screens only, where the arrows are. */
+.page-subtitle {
+  display: none;
+}
+
+@media (min-width: 700px) {
+  .page-subtitle {
+    display: block;
+    margin-top: 10px;
+    font-family: 'Averia Libre', sans-serif;
+    font-size: 18px;
+    letter-spacing: -0.05em;
+    line-height: 1.1;
+    text-transform: uppercase;
+    color: #1a1a1a;
   }
 }
 
+/* Portraits: on phones the strip is just its cards, in the usual column
+   (the lead copy is for the wide row's slide). */
+.strip-arrow,
+.strip-item--lead {
+  display: none;
+}
+
+/* Portraits on wider screens: four cards in view (three below 900px), 60px
+   apart, sharing the width of the header's line with the two drawn arrows
+   either side; in the middle of the height left under the title (the page
+   fills the window between header and footer). A move slides the track by
+   one card (`--shift`, ArticleGrid.jsx); at rest it is shifted one card left,
+   past the lead copy. Card widths come from the viewport's own width
+   (container units). No lines. */
+@media (min-width: 700px) {
+  .main:has(.portrait-strip) {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .portrait-strip {
+    --visible: 4;
+    --strip-gap: 60px;
+    --edge: 44px; /* between the arrows and the cards */
+    display: flex;
+    align-items: center;
+    margin-top: auto;
+    margin-bottom: auto;
+  }
+
+  /* The space between the arrows and the cards belongs to the viewport, and
+     its edges fade there: a card dissolves as it slides through. Card sizes
+     come from the content box (container units), so the cards at rest sit
+     clear of the fade. */
+  .strip-viewport {
+    flex: 1;
+    min-width: 0;
+    padding: 0 var(--edge);
+    overflow: hidden;
+    container-type: inline-size;
+    mask-image: linear-gradient(to right, transparent, #000 var(--edge), #000 calc(100% - var(--edge)), transparent);
+  }
+
+  .articles-grid--portraits {
+    --card: calc((100cqw - (var(--visible) - 1) * var(--strip-gap)) / var(--visible));
+    display: flex;
+    column-gap: var(--strip-gap);
+    transform: translateX(calc(-1 * (1 + var(--shift)) * (var(--card) + var(--strip-gap))));
+    /* Eases in gently and settles softly. */
+    transition: transform 0.65s cubic-bezier(0.45, 0.05, 0.25, 1);
+  }
+
+  /* The putting back after a slide is unseen: nothing transitions. */
+  .articles-grid--portraits.strip-still {
+    transition: none;
+  }
+
+  .strip-moved .article-card {
+    animation: none;
+  }
+
+  .strip-item,
+  .strip-item--lead {
+    display: block;
+    flex: none;
+    width: var(--card);
+  }
+
+  .articles-grid--portraits .card-rule {
+    display: none;
+  }
+
+  /* A chevron is narrow: the padding widens what can be clicked, and the
+     negative margin keeps the chevron on the header line's ends. */
+  .strip-arrow {
+    display: block;
+    flex: none;
+    padding: 10px 12px;
+    margin: 0 -12px;
+    border: none;
+    background: none;
+    color: #1a1a1a;
+    cursor: pointer;
+    transition: color 0.15s ease;
+  }
+
+  .strip-arrow svg {
+    display: block;
+  }
+
+  .strip-arrow--next svg {
+    transform: scaleX(-1);
+  }
+
+  .strip-arrow:hover {
+    color: #FF1919;
+  }
+}
+
+@media (min-width: 700px) and (max-width: 899.98px) {
+  .portrait-strip {
+    --visible: 3;
+    --strip-gap: 40px;
+  }
+}
+
+/* Wide screens: the one-row header is 74px tall (Layout.css). */
+@media (min-width: 1200px) {
+  .main {
+    margin-top: 74px;
+  }
+}
+
+/* Phones: the app's single column, a line between each two cards. */
 @media (max-width: 699.98px) {
   /* The phone header is a single 60px row, so the page starts higher. */
   .main {
-    padding: 30px 20px 50px;
+    padding: 40px 20px 60px;
     margin-top: 60px;
   }
 
   .articles-grid {
-    grid-template-columns: 1fr;
-    gap: 30px;
+    --cols: 1;
   }
 
-  .articles-grid--portraits {
-    gap: 90px 20px;
-  }
+  .articles-grid > :first-child .card-rule { display: none; }
+
+  /* Portraits: the first card shown follows the hidden lead copy. */
+  .strip-item--lead + .strip-item .card-rule { display: none; }
+
 }

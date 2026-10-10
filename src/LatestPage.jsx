@@ -2,7 +2,8 @@ import { useState, useEffect } from 'react'
 import { useParams } from 'react-router-dom'
 import { getLatestArticles } from './sanity/queries'
 import { i18n } from './i18n'
-import ArticleCard from './ArticleCard'
+import ArticleGrid from './ArticleGrid'
+import PageTitle from './PageTitle'
 import './SectionPage.css'
 
 export default function LatestPage() {
@@ -16,12 +17,8 @@ export default function LatestPage() {
 
   return (
     <main className="main">
-      <h2 className="page-title">{t.latest}</h2>
-      <div className="articles-grid">
-        {articles.map((a) => (
-          <ArticleCard key={a._id} {...a} />
-        ))}
-      </div>
+      <PageTitle>{t.latest}</PageTitle>
+      <ArticleGrid articles={articles} />
     </main>
   )
 }
