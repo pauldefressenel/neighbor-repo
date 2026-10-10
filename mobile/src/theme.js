@@ -4,6 +4,7 @@ export const colors = {
   bar: '#FFFFF2', // fill of the top masthead and the bottom menu
   ink: '#000000', // full black; the website's text is #1a1a1a
   red: '#FF1919',
+  faint: 'rgba(0, 0, 0, 0.35)', // placeholders in text fields
   placeholder: '#7B61FF',
   water: '#A6D2F7', // rivers between articles
   bank: '#9E9E9E',

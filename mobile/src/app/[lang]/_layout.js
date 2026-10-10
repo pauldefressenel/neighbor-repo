@@ -4,7 +4,7 @@ import TabBar from '../../TabBar'
 import { i18n } from '../../i18n'
 import { colors } from '../../theme'
 
-// The three tabs. Each screen draws its own masthead; the order here is the
+// The four tabs. Each screen draws its own masthead; the order here is the
 // order of the bar.
 export default function TabsLayout() {
   const { lang } = useLocalSearchParams()
@@ -20,6 +20,7 @@ export default function TabsLayout() {
       <Tabs.Screen name="(couverture)" initialParams={{ lang }} />
       <Tabs.Screen name="rubriques" initialParams={{ lang }} />
       <Tabs.Screen name="a-propos" initialParams={{ lang }} />
+      <Tabs.Screen name="voisinage" initialParams={{ lang }} />
     </Tabs>
   )
 }

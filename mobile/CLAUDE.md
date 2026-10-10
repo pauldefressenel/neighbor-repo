@@ -19,9 +19,10 @@ submitted yet.
 
 ## Scope today
 
-- **French only.** `/` redirects to `/fr`, and the chrome (tab labels, dates,
-  "de <author>", the A Propos copy) is hard-coded in French. The `[lang]`
-  segment is there so English can come later; `i18n.js` holds only the few
+- **French first.** `/` redirects to `/fr`, and the chrome (tab labels, dates,
+  "de <author>", the A Propos copy) is hard-coded in French. The masthead's
+  language selector switches to `/en`, which fetches the English articles
+  and About page but keeps the French chrome; `i18n.js` holds only the few
   strings that already exist in both languages.
 - **Articles** open from any card (`ArticleScreen.js`), laid out like the
   website's article page. Audio readings (`audioFile`) aren't played yet.
@@ -35,9 +36,9 @@ submitted yet.
 ## Routes (`src/app/`)
 
 ```
-_layout.js                  fonts, splash screen, a <Slot> (not a Stack) inside GestureHandlerRootView
+_layout.js                  fonts, splash screen, the AccountProvider, a <Slot> (not a Stack) inside GestureHandlerRootView
 index.js                    → /fr
-[lang]/_layout.js           Tabs with the custom TabBar: (couverture), rubriques, a-propos (in that order)
+[lang]/_layout.js           Tabs with the custom TabBar: (couverture), rubriques, a-propos, voisinage (in that order)
 [lang]/(couverture)/_layout.js         a PageStack (PageStack.js)
 [lang]/(couverture)/index.js           En Couverture (/fr) — articles whose `featured` is "French"
 [lang]/(couverture)/articles/[slug].js an article opened from En Couverture (/fr/articles/<slug>)
@@ -46,7 +47,7 @@ index.js                    → /fr
 [lang]/rubriques/[section]/index.js    one rubrique's articles (slug from sections.js)
 [lang]/rubriques/[section]/[slug].js   an article opened from a rubrique
 [lang]/a-propos.js          About: the about-<lang> text, set like an article
-[lang]/voisinage.js         "coming soon" stand-in; not in the tab bar
+[lang]/voisinage.js         Voisinage: the sign-up form, or (signed up) the games, none built yet, and the account
 ```
 
 Navigation details that are easy to break:
@@ -114,7 +115,16 @@ Navigation details that are easy to break:
     1.1em line height.
   - Date: EB Garamond regular italic, lighter than the author's medium.
 - `Masthead.js` — the fixed top bar: the wordmark between two equal slots,
-  with an optional back arrow that pops in (`BACK_POP`, `usePop`) as a rubrique opens.
+  with an optional back arrow that pops in (`BACK_POP`, `usePop`) as a rubrique opens,
+  and the language selector on the right ("Fr", which shows "En" beside it
+  in red). Switching keeps the page, except that an article goes back to the
+  list it was opened from (article slugs differ between languages).
+- `account.js` — signing up (an e-mail address and the newsletter tick box),
+  which opens Voisinage's games. A design mock-up for now: the account lives
+  in memory and nothing is sent. Provided above `[lang]`, so switching
+  language keeps it.
+- `DrawnIcons.js` — SVG stand-ins (Voisinage's house, the tick box) until
+  hand-drawn PNGs exist.
 - `TabBar.js` — the custom bottom bar: hand-drawn PNG icons from
   `assets/icons/`, ink labels, and a red dot under the current tab.
 - `Rule.js` — the hand-drawn rule (from the repo's `assets/path.svg`), drawn as
@@ -154,7 +164,6 @@ Navigation details that are easy to break:
 - `portraitSprites.js` — `require()` and pixel size for each sprite (Metro
   needs static requires; the sizes give height-only layers their width). A new
   sprite needs a line here.
-- `ComingSoon.js` — the placeholder screen.
 - `Dinkus.js` — three black asterisks in a row, 20pt apart (measured between
   the glyphs), in Averia Serif Libre 26pt. Each asterisk keeps a full line
   box, because iOS clips a glyph to its box and the asterisk sits at its top.

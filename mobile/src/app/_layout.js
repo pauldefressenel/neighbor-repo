@@ -10,6 +10,7 @@ import { NewAmsterdam_400Regular } from '@expo-google-fonts/new-amsterdam'
 import { Paprika_400Regular } from '@expo-google-fonts/paprika'
 import { AveriaLibre_400Regular } from '@expo-google-fonts/averia-libre'
 import { AveriaSerifLibre_400Regular } from '@expo-google-fonts/averia-serif-libre'
+import { AccountProvider } from '../account'
 import { colors } from '../theme'
 
 SplashScreen.preventAutoHideAsync()
@@ -44,9 +45,12 @@ export default function RootLayout() {
       {/* A Slot, not a Stack: nothing above the tabs should slide. With a
           Stack here, opening a rubrique pushed a whole new copy of the tabs,
           masthead and tab bar included. The gesture root lets the
-          Rubriques stack's swipe-back work. */}
+          Rubriques stack's swipe-back work. The account sits above the
+          [lang] segment, which changing language replaces. */}
       <GestureHandlerRootView style={{ flex: 1, backgroundColor: colors.paper }}>
-        <Slot />
+        <AccountProvider>
+          <Slot />
+        </AccountProvider>
       </GestureHandlerRootView>
     </>
   )

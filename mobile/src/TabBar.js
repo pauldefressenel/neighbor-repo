@@ -1,21 +1,25 @@
 import { Image, Pressable, StyleSheet, Text, View } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
+import { HouseIcon } from './DrawnIcons'
 import { colors, fonts } from './theme'
 
 // Hand-drawn black strokes on transparent PNGs, always drawn in ink. Keyed by
 // the tab's route name in app/[lang]/_layout.js; each is drawn at its own
-// aspect ratio and height.
+// aspect ratio and height. Voisinage has no drawing yet, so it draws an SVG
+// stand-in (`Icon`) instead.
 const icons = {
   '(couverture)': { source: require('../assets/icons/a-la-une.png'), ratio: 416 / 344, height: 22 },
   rubriques: { source: require('../assets/icons/rubriques.png'), ratio: 312 / 389, height: 20 },
   'a-propos': { source: require('../assets/icons/a-propos.png'), ratio: 282 / 344, height: 22 },
+  voisinage: { Icon: HouseIcon },
 }
 
 // French-only for now, like the rest of the app's chrome.
 const LABELS = {
-  '(couverture)': 'En Couverture',
+  '(couverture)': 'A La Une',
   rubriques: 'Rubriques',
   'a-propos': 'A Propos',
+  voisinage: 'Voisinage',
 }
 
 // Rendered by the Tabs navigator (its `tabBar` prop). Icons and labels are
@@ -44,10 +48,14 @@ export default function TabBar({ state, navigation }) {
             accessibilityLabel={LABELS[route.name]}
           >
             <View style={styles.icon}>
-              <Image
-                source={icon.source}
-                style={{ height: icon.height, width: icon.height * icon.ratio, tintColor: colors.ink }}
-              />
+              {icon.Icon ? (
+                <icon.Icon />
+              ) : (
+                <Image
+                  source={icon.source}
+                  style={{ height: icon.height, width: icon.height * icon.ratio, tintColor: colors.ink }}
+                />
+              )}
             </View>
             <Text style={styles.label}>{LABELS[route.name]}</Text>
             <View style={[styles.dot, focused && styles.dotOn]} />
