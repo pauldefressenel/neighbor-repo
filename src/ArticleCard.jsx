@@ -16,16 +16,33 @@ import './ArticleCard.css'
 // the card separates it from the one before (on phones the first card has
 // none); on wider screens the first card of each row stretches it across the
 // grid (SectionPage.css).
-export default function ArticleCard({ category, title, excerpt, author, mainImage, publishedAt, slug, language, section, picture, pictureStyle, appearIndex }) {
+export default function ArticleCard({ category, title, excerpt, author, mainImage, publishedAt, slug, language, section, picture, pictureStyle, appearIndex, riseOnScroll }) {
   const t = i18n[language] ?? i18n.en
   // On a page that builds up, the first cards rise in as in the app, once the
-  // title's asterisk is up, or at once if they arrived later than that.
+  // title's asterisk is up, or at once if they arrived later than that. With
+  // `riseOnScroll` (the article grids), the cards after them wait unseen and
+  // rise the same way as they come into view; those already in view as the
+  // page opens (a wide screen's second row) rise with the first ones.
   const since = useContext(AppearContext)
   const link = useRef(null)
   useLayoutEffect(() => {
-    if (since == null || appearIndex == null || appearIndex >= appear.max) return
-    link.current.style.animationDelay = `${delayLeft(since, appear.card.delay)}ms`
-    link.current.classList.add('article-card--rise')
+    if (since == null || appearIndex == null) return
+    const el = link.current
+    const rise = () => {
+      el.classList.remove('article-card--waiting')
+      el.style.animationDelay = `${delayLeft(since, appear.card.delay)}ms`
+      el.classList.add('article-card--rise')
+    }
+    if (appearIndex < appear.max) return rise()
+    if (!riseOnScroll || matchMedia('(prefers-reduced-motion: reduce)').matches) return
+    el.classList.add('article-card--waiting')
+    const observer = new IntersectionObserver(([entry]) => {
+      if (!entry.isIntersecting) return
+      observer.disconnect()
+      rise()
+    })
+    observer.observe(el)
+    return () => observer.disconnect()
     // Plays once, on mount.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])

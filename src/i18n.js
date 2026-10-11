@@ -15,8 +15,12 @@ export const i18n = {
     about: 'About',
     // The phone menu drops the article: "Neighborhood", not "The Neighborhood".
     menuNeighborhood: 'Neighborhood',
+    // The footer (Footer.jsx): its two columns' headings and the e-mail
+    // link.
     footer: {
-      submit: 'Submit a piece:',
+      sections: 'Sections',
+      paper: 'The paper',
+      submit: 'Submit a piece',
       email: 'paul@theneighborr.com',
     },
   },
@@ -27,7 +31,9 @@ export const i18n = {
     about: 'A Propos',
     menuNeighborhood: 'Voisinage',
     footer: {
-      submit: 'Propose un texte :',
+      sections: 'Rubriques',
+      paper: 'Le journal',
+      submit: 'Proposer un texte',
       email: 'paul@theneighborr.com',
     },
   },

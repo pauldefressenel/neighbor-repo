@@ -8,7 +8,7 @@ export default function ArticleGrid({ articles }) {
   if (articles[0]?.section === 'portraits') return <PortraitStrip articles={articles} />
   return (
     <div className="articles-grid">
-      {articles.map((a, i) => <ArticleCard key={a._id} {...a} appearIndex={i} />)}
+      {articles.map((a, i) => <ArticleCard key={a._id} {...a} appearIndex={i} riseOnScroll />)}
     </div>
   )
 }

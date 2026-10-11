@@ -1,0 +1,170 @@
+/* TEMPORARY: the footer comparison sheet (FooterSheet.jsx). Self-contained;
+   delete with it. Each footer sits in a frame that is its own container, so
+   the 390px frame shows the phone layout (below 700px) on any screen. */
+
+.fs {
+  display: flex;
+  flex-direction: column;
+  gap: 120px;
+}
+
+.fs-letter {
+  font-family: 'NeighborFont', serif;
+  font-size: 64px;
+  line-height: 1;
+  color: var(--red);
+  margin-bottom: 24px;
+}
+
+.fs-label {
+  font-family: 'Averia Libre', sans-serif;
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: rgba(0, 0, 0, 0.35);
+  margin: 24px 0 8px;
+}
+
+.fs-frame {
+  container-type: inline-size;
+  background: var(--paper);
+  outline: 1px dashed rgba(0, 0, 0, 0.15);
+}
+
+.fs-frame--phone {
+  width: 390px;
+  max-width: 100%;
+}
+
+/* The end of a page above the footer, so the footer is seen arriving. */
+.fs-filler {
+  height: 60px;
+  background: linear-gradient(rgba(0, 0, 0, 0.03), transparent);
+}
+
+.fs .rule {
+  display: block;
+  width: 100%;
+  height: 8px;
+  color: #000;
+}
+
+/* ── Shared pieces ── */
+
+.fs footer {
+  color: #000;
+  --gutter: 50px;
+}
+
+@container (max-width: 699.98px) {
+  .fs footer { --gutter: 20px; }
+}
+
+.fs-caps {
+  font-family: 'Averia Libre', sans-serif;
+  font-size: 14px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  line-height: 1.1;
+  color: #000;
+  text-decoration: none;
+}
+
+.fs-c-col a:hover {
+  color: var(--red);
+}
+
+.fs-red { color: var(--red); }
+.fs-faint { color: rgba(0, 0, 0, 0.4); }
+
+.fs-wordmark {
+  font-family: 'NeighborFont', serif;
+  font-size: 30px;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+  text-align: center;
+}
+
+.fs-c-col a {
+  color: #000;
+  text-decoration: none;
+}
+
+.fs-link-garamond {
+  font-family: 'EB Garamond', serif;
+  font-size: 20px;
+  line-height: 1.3;
+}
+
+.fs-left { text-align: left; }
+
+/* ── C: newspaper columns ── */
+
+.fs-c {
+  padding: 60px var(--gutter) 30px;
+}
+
+.fs-c-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr;
+  gap: 40px;
+  padding: 36px 0 44px;
+}
+
+.fs-c-intro p {
+  margin-top: 12px;
+  max-width: 280px;
+  text-wrap: balance;
+}
+
+/* The line under the wordmark, one class per letter on the sheet. */
+.fs-line-roman {
+  font-family: 'EB Garamond', serif;
+  font-size: 20px;
+  line-height: 1.2;
+  color: rgba(0, 0, 0, 0.55);
+}
+
+.fs-line-red-caps,
+.fs-line-caps {
+  font-family: 'Averia Libre', sans-serif;
+  font-size: 14px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  line-height: 1.45;
+  color: var(--red);
+}
+
+.fs-line-caps { color: rgba(0, 0, 0, 0.45); }
+
+.fs-line-small {
+  font-family: 'EB Garamond', serif;
+  font-size: 17px;
+  line-height: 1.25;
+  color: rgba(0, 0, 0, 0.55);
+}
+
+.fs-c-col {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.fs-c-col > .fs-caps:first-child { margin-bottom: 8px; }
+
+.fs-c-foot {
+  display: flex;
+  justify-content: space-between;
+  padding-top: 16px;
+}
+
+.fs-c-foot .fs-caps { font-size: 12px; }
+
+@container (max-width: 699.98px) {
+  .fs-c-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 36px 20px;
+    padding: 30px 0 36px;
+  }
+  .fs-c-intro { grid-column: 1 / -1; }
+}

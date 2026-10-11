@@ -1,19 +1,94 @@
+/* The footer (Footer.jsx): the page's side margins, as .main has them. */
 .site-footer {
   margin-top: auto;
-  padding: 40px 10px 10px;
-  font-family: 'EB Garamond', serif;
-  font-size: 20px;
-  line-height: 1.2em;
+  padding: 60px 50px 50px;
   color: #000;
-  text-align: center;
 }
 
-.site-footer a {
-  color: inherit;
+.site-footer .rule {
+  display: block;
+  width: 100%;
+  height: 8px;
+}
+
+/* The wordmark and the year take two shares, each column one. */
+.footer-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr;
+  gap: 40px;
+  padding-top: 24px;
+}
+
+.footer-wordmark {
+  font-family: 'NeighborFont', serif;
+  font-size: 30px;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+  color: #000;
   text-decoration: none;
 }
 
-.site-footer a:hover {
-  text-decoration: underline;
-  text-underline-offset: 2px;
+/* The year under the wordmark, in small faint capitals. */
+.footer-rights {
+  margin-top: 14px;
+  font-family: 'Averia Libre', sans-serif;
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  line-height: 1.1;
+  color: rgba(0, 0, 0, 0.4);
+}
+
+.footer-column {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* The heading in the cards' red category capitals, the links in Garamond. */
+.footer-heading {
+  margin-bottom: 8px;
+  font-family: 'Averia Libre', sans-serif;
+  font-size: 14px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  line-height: 1.1;
+  color: var(--red);
+}
+
+.footer-column a {
+  font-family: 'EB Garamond', serif;
+  font-size: 20px;
+  line-height: 1.3;
+  color: #000;
+  text-decoration: none;
+}
+
+.footer-column a:hover {
+  color: var(--red);
+}
+
+@media (min-width: 700px) and (max-width: 899.98px) {
+  .site-footer {
+    padding-left: 30px;
+    padding-right: 30px;
+  }
+}
+
+/* Phones: the wordmark and the year across the top, the two columns side
+   by side under them. */
+@media (max-width: 699.98px) {
+  .site-footer {
+    padding: 60px 20px 40px;
+  }
+
+  .footer-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 36px 20px;
+    padding-top: 20px;
+  }
+
+  .footer-intro {
+    grid-column: 1 / -1;
+  }
 }

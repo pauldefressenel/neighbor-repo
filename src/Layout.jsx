@@ -9,6 +9,7 @@ import LatestPage from './LatestPage'
 import AboutPage from './AboutPage'
 import VoisinagePage from './VoisinagePage'
 import Footer from './Footer'
+import FooterSheet from './FooterSheet' // TEMPORARY
 import Rule from './Rule'
 import MenuIcon from './MenuIcon'
 
@@ -65,16 +66,15 @@ export default function Layout() {
 
   const other = i18n[t.switchTo]
   const { pathname } = useLocation()
-  // Keep the reader where they are, in the other language. Article slugs are
-  // language-specific, so from an article we go to its section's listing.
+  // The other language opens on its home page (Latest), from wherever the
+  // reader is. (The app keeps the page instead.)
   const switchLanguage = () => {
     setMenuOpen(false)
     setLangOpen(false)
     // Remembered for a year: the bare address (middleware.js, App.jsx) opens
     // in this language rather than the one picked by location.
     document.cookie = `lang=${t.switchTo}; path=/; max-age=31536000; samesite=lax`
-    const [, , page] = pathname.split('/')
-    navigate(`/${t.switchTo}${page ? `/${page}` : ''}`)
+    navigate(`/${t.switchTo}`)
   }
 
   return (
@@ -191,6 +191,8 @@ export default function Layout() {
       <Routes>
         <Route index element={<LatestPage key={useLocation().pathname} />} />
         <Route path="about" element={<AboutPage />} />
+        {/* TEMPORARY: the footer comparison sheet. */}
+        <Route path="footers" element={<FooterSheet />} />
         <Route
           path="neighborhood"
           element={NEIGHBORHOOD_OPEN ? <VoisinagePage /> : <Navigate to={`/${lang}`} replace />}
@@ -201,7 +203,8 @@ export default function Layout() {
         <Route path=":section/:slug" element={<ArticlePage />} />
         <Route path=":section" element={<SectionPage key={useLocation().pathname} />} />
       </Routes>
-      <Footer lang={lang} />
+      {/* TEMPORARY: the comparison sheet hides the current footer. */}
+      {!pathname.endsWith('/footers') && <Footer lang={lang} />}
     </div>
   )
 }

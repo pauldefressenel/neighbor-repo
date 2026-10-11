@@ -21,6 +21,11 @@
   animation: rise var(--appear-card-duration) var(--appear-card-easing) backwards;
 }
 
+/* A card further down, waiting to come into view (ArticleCard.jsx). */
+.article-card--waiting {
+  opacity: 0;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .article-card--rise {
     animation: none;
