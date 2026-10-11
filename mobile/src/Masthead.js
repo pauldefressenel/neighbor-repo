@@ -6,6 +6,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { i18n } from './i18n'
 import Rule from './Rule'
 import { FadePressable, PAGE_REDUCED, useFade, usePop } from './motion'
+import PaperFade from './PaperFade'
 import { categoryType, colors, fonts } from './theme'
 
 // The bar at the top of every screen. It sits outside the scrolling content
@@ -54,6 +55,7 @@ export default function Masthead({ onBack, backLabel = 'Retour' }) {
         </View>
       </View>
       <Rule />
+      <PaperFade edge="top" />
     </View>
   )
 }
@@ -95,6 +97,8 @@ function Language() {
 const styles = StyleSheet.create({
   masthead: {
     backgroundColor: colors.bar,
+    // Above the page that follows it, for the fade below (PaperFade).
+    zIndex: 1,
   },
   row: {
     flexDirection: 'row',

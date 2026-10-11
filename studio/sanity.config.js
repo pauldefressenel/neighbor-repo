@@ -4,12 +4,13 @@ import { visionTool } from '@sanity/vision'
 import { schemaTypes } from './schemas/index'
 import { structure, articleTemplate } from './structure'
 import { ForceLightScheme } from './forceLight'
+import { SANITY } from '../shared/sanity.js'
 
 export default defineConfig({
   name: 'neighbor',
   title: 'The Neighbor',
-  projectId: '9hw8z0gm',
-  dataset: 'production',
+  projectId: SANITY.projectId,
+  dataset: SANITY.dataset,
   plugins: [
     structureTool({ structure }),
     visionTool(),

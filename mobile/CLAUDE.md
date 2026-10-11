@@ -69,14 +69,18 @@ Navigation details that are easy to break:
 ## Files (`src/`)
 
 - `sections.js` — the three rubriques (`essais-critiques`, `prose-poesie`,
-  `portraits`), each mapped to one or more of Sanity's four `section` values.
-  `src/sections.js` (the website) and `studio/structure.js` duplicate this
-  list, so change all three together.
-- `sanity.js` — client (same project, dataset `production`, CDN on), `urlFor`,
+  `portraits`), each mapped to one or more of Sanity's four `section` values,
+  derived from `../shared/sections.js`, the list the website and the Studio
+  read too.
+- `sanity.js` — client (same project, dataset `production`, CDN on; the
+  project and the queries are in `../shared/sanity.js`), `urlFor`,
   `getLatestArticles`, `getSectionArticles`, `prefetchSectionArticles`,
   `openArticle` / `getArticle` and `getAboutPage`. A
   prefetch is used once by the next fetch for that rubrique; pull to refresh
   fetches again.
+- `LateSpinner.js` — the loading spinner of the article lists, an article
+  and A Propos, shown only once loading has taken `SPINNER_DELAY` (700ms):
+  shown at once, it flashed for an instant before the content arrived.
 - `PageStack.js` — a tab's stack: the Masthead (back arrow included) and the
   sliding transition.
 - `ArticleText.js` — the running text of an article and of A Propos:
@@ -97,7 +101,9 @@ Navigation details that are easy to break:
   the card's fields so the title and byline draw at once, and starts loading
   the body while the page slides in.
 - `ArticleList.js` — shared by En Couverture and each rubrique: a page title
-  closed by a dinkus (`Dinkus.js`), a FlatList of cards, pull to refresh, and
+  closed by one asterisk centred under it (`titleMark` in
+  `../shared/tokens.js`, as on the website; three asterisks, then a short
+  drawn line, came first), a FlatList of cards, pull to refresh, and
   a retry message on error. `fetchArticles` must be stable (`useCallback`). Between two article
   cards is the hand-drawn `Rule`, 54pt from the date above and from the
   category below (measured to the letters). The first card has no line above
@@ -111,15 +117,23 @@ Navigation details that are easy to break:
     `maxFill={0.8}` breaks a single line wider than 80% of the card onto two
     lines.
   - The excerpt is balanced too, and sits right under the title with no gap.
-    It is 20pt in from each side of the card (it was 60pt, a 240pt column
-    whose short lines made it run long).
-  - The illustration is full width, with its height from the image's own
-    proportions (`imageAspect`, from Sanity's metadata), so it is never
-    cropped. It has 22px above and below.
+    It is 20pt in from each side of the card (`card.excerptInset`, which
+    the website's phone cards use too; it was a 240pt column whose short
+    lines made it run long).
+  - The illustration is full width in the same box as on the website, at
+    the vignettes' shared proportions (`card.illustrationAspect`, about
+    1818×572); a taller drawing is scaled down to fit inside it, never
+    cropped. It has `card.imageGap` (30pt) above and below, less and more `GARAMOND_RISE`
+    (1.5pt): iOS sets EB Garamond higher in its line than a browser, so
+    without it the excerpt looked further from the illustration and the
+    byline nearer than on the website (measured ink to ink). A portrait's
+    drawing takes the same place.
   - Category: Averia Libre Regular, red, 18pt, -0.05em letter-spacing,
     1.1em line height.
   - Date: EB Garamond regular italic, lighter than the author's medium.
-- `Masthead.js` — the fixed top bar: the wordmark between two equal slots,
+- `Masthead.js` — the fixed top bar (under its line, the paper fading out
+  into the page, `PaperFade.js`, drawn over the page through the masthead's
+  `zIndex`): the wordmark between two equal slots,
   with an optional back arrow that pops in (`BACK_POP`, `usePop`) as a rubrique opens,
   and the language on the right: "FR EN" side by side in the cards' category
   type at 16pt, the current one in ink, the other faint; a tap switches.
@@ -190,13 +204,16 @@ Navigation details that are easy to break:
   rejected). Their paths and sizes are generated into `tabIcons.js` by the
   repo-root `assets/icons/make-icons.py`, which also writes the `.svg`
   copies beside it: change the script and run it, never the outputs.
-- `TabBar.js` — the custom bottom bar: the icons from `DrawnIcons.js`, labels in the cards' category type (ink, 14pt, -0.06em), and a red dot under the current tab.
+- `PaperFade.js` — the paper fading out over `headerFade` (`../shared/tokens.js`,
+  as under the website's header) from a bar's line into the page: below the
+  masthead (`edge="top"`) and above the tab bar (`edge="bottom"`).
+- `TabBar.js` — the custom bottom bar: the masthead's hand-drawn `Rule` along its top, turned upside down so the two differ, with the paper fading out above it (`PaperFade`), the icons from `DrawnIcons.js`, labels in the cards' category type (ink, 14pt, -0.06em), and a red dot under the current tab.
 - `Rule.js` — the hand-drawn rule (from the repo's `assets/path.svg`), drawn as
   SVG at any width.
 - `BalancedText.js` — `text-wrap: balance` for React Native, found by binary
   searching the width. `maxFill` splits a too-wide single line into two.
-- `motion.js` — all animation: `PAGE` (the slide between the list and a rubrique; `slide: false` for the old crossfade), `PRESS` and
-  `FadePressable` (touch feedback), and `APPEAR` (the delays and springs for
+- `motion.js` — all animation: `PAGE` (the slide between the list and a rubrique; `slide: false` for the old crossfade), `PRESS`, `CARD_PRESS` (an article card: a 0.98
+  shrink in 0.22s and a 0.38s release, from `../shared/tokens.js`) and `FadePressable` (touch feedback), and `APPEAR` (the delays and springs for
   how a page builds up). `Rise` and `RiseLines` play those steps when inside
   an `AppearContext`. Every animation honours Reduce Motion.
   A page builds up only the first time it is shown (tabs stay mounted, so
@@ -207,6 +224,8 @@ Navigation details that are easy to break:
   does Voisinage.
 - `theme.js` — colours (paper `#FFFFF2`, ink, red `#FF1919`), font families,
   and shared text and layout styles (`pageTitle`, `rubriquesTitle`, `menu`).
+  The values the website uses too (paper, red, the title and category type)
+  come from `../shared/tokens.js`; change them there.
   The Rubriques list sets its block names ("1. Essais & Critiques") in
   `titleType`, like the page title, and their red subtitles in
   `categoryType`, like the cards' categories, but at 16pt.
@@ -222,17 +241,15 @@ Navigation details that are easy to break:
   100pt, in Framer's 110px slot scaled down (`PORTRAIT_SCALE`; 1.4, 1, 0.85
   and 0.75 were tried).
 - `PortraitCard.js` — a portrait: the same `ArticleCard` as every other
-  article, with the animation passed as `picture`, at the top of the card
-  (above the category) rather than in the illustration's place. (It was the website's own portrait card, a 300px column in other
+  article, with the animation passed as `picture`, in the illustration's
+  place (`card.imageGap` above and below), as on the website's phones; at the top of
+  the card, above the category, it ran all the text together. The drawing
+  stays still on press while the text above and below it shrinks. (It was the website's own portrait card, a 300px column in other
   sizes, until it was brought in line with the other rubriques.) A portrait
   with no animation shows its whole `mainImage` at `PORTRAIT_SIZE`.
 - `portraitSprites.js` — `require()` and pixel size for each sprite (Metro
   needs static requires; the sizes give height-only layers their width). A new
   sprite needs a line here.
-- `Dinkus.js` — three black asterisks in a row, 20pt apart (measured between
-  the glyphs), in Averia Serif Libre 26pt. Each asterisk keeps a full line
-  box, because iOS clips a glyph to its box and the asterisk sits at its top.
-  (A red ⁂ triangle was tried first.)
 
 ## Spacing that depends on two places
 
@@ -240,9 +257,10 @@ These were measured in the simulator. If you change one half, re-measure and
 change the other half too.
 
 - **The page title's spacing.** `rubriquesTitle.marginTop` in `theme.js` (41.5)
-  sets the space above the title. Below it, 36pt to the dinkus
-  (`titleStyle.marginBottom`, 22.7) and 36pt from the dinkus to the first
-  category (`styles.dinkus.marginBottom`, 17), both measured to the letters. `rubriquesTitle` also places the
+  sets the space above the title. Below it, the asterisk: `titleMark.above`
+  between the title's box and the asterisk's (a 26pt line box, so iOS
+  doesn't clip it), `titleMark.below` between that and the first card's,
+  as on the website (`../shared/tokens.js`). `rubriquesTitle` also places the
   Rubriques list's and A Propos's titles, so all tabs move together.
 - **The line between cards** sits 54pt from the date above and 54pt from the
   category below. The separator's margins in `ArticleList.js` (47.7 / 49.9)

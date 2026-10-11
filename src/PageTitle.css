@@ -1,25 +1,54 @@
-/* The app's page title (mobile/src/theme.js titleType): NeighborFont 35px,
-   -0.03em, 1.1 line height. */
+/* The app's page title (titleType, from shared/tokens.js). */
 .page-title {
   font-family: 'NeighborFont', serif;
   font-weight: 400;
-  font-size: 35px;
-  letter-spacing: -0.03em;
-  line-height: 1.1;
-  color: #1a1a1a;
+  font-size: var(--title-size);
+  letter-spacing: var(--title-tracking);
+  line-height: var(--title-leading);
+  color: #000;
   text-align: center;
   text-wrap: balance;
-  margin-bottom: 23px;
 }
 
-/* Averia Serif Libre 26px, the asterisks 20px apart. */
-.dinkus {
-  display: flex;
-  justify-content: center;
-  gap: 16px;
+/* The asterisk closing the title (titleMark in shared/tokens.js), in Averia
+   Serif Libre, its line box as tall as its size: --title-mark-above between
+   the title's box and its own, --title-mark-below between its own and what
+   follows. */
+.title-mark {
   font-family: 'Averia Serif Libre', serif;
-  font-size: 26px;
-  line-height: 26px;
-  color: #1a1a1a;
-  margin-bottom: 17px;
+  font-size: var(--title-mark-size);
+  line-height: var(--title-mark-size);
+  text-align: center;
+  color: #000;
+  margin: var(--title-mark-above) 0 var(--title-mark-below);
+}
+
+/* Rising in (PageTitle.jsx), as in the app: the title's words, each on its
+   line's beat, then the asterisk. A word waits hidden until it is
+   measured. */
+.rise-word {
+  display: inline-block;
+  opacity: 0;
+}
+
+.rise-word--go {
+  opacity: 1;
+  --rise: var(--appear-title-rise);
+  animation: rise var(--appear-title-duration) var(--appear-title-easing) backwards;
+}
+
+.title-mark--rise {
+  --rise: var(--appear-title-mark-rise);
+  animation: rise var(--appear-title-mark-duration) var(--appear-title-mark-easing) backwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rise-word {
+    opacity: 1;
+  }
+
+  .rise-word--go,
+  .title-mark--rise {
+    animation: none;
+  }
 }

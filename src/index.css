@@ -16,6 +16,12 @@
   from { opacity: 0.001; transform: translateY(10px); }
   to   { opacity: 1; transform: translateY(0); }
 }
+/* The app's rise (shared/tokens.js appear): fading in while rising --rise
+   into place, on a spring traced as the animation's easing. */
+@keyframes rise {
+  from { opacity: 0; transform: translateY(var(--rise)); }
+  to   { opacity: 1; transform: none; }
+}
 @keyframes appear-5 {
   from { opacity: 0.001; transform: translateY(5px); }
   to   { opacity: 1; transform: translateY(0); }
@@ -37,8 +43,8 @@
 }
 
 html, body {
-  background-color: #FFFFF2;
-  color: #1a1a1a;
+  background-color: var(--paper);
+  color: #000;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   scrollbar-width: none;

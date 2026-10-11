@@ -1,7 +1,12 @@
 .main {
   padding: 40px 50px 80px;
   margin-top: 100px;
-  /* Framer: y 10 → 0, spring bounce 0.3, delay 0.4s, 0.4s */
+}
+
+/* The Neighborhood still lifts in whole, as on Framer (y 10 → 0, spring
+   bounce 0.3, delay 0.4s, 0.4s). The article lists build up as in the app
+   instead (PageTitle.jsx, ArticleCard.jsx). */
+.main.voisinage {
   animation: appear-10 0.4s var(--ease-spring-bouncy) 0.4s both;
 }
 
@@ -25,19 +30,24 @@
   }
 
   /* The lists set their title on the left, on the grid's edge, without the
-     dinkus, and the first row has no line above it. The title sits 47px
+     asterisk under it, and the first row has no line above it. The title sits 47px
      below the header's line (to its capitals) and the first categories 47px
      below its baseline (measured). */
   .main:has(.articles-grid) {
     padding-top: 37px;
   }
 
-  .main .page-title:has(+ .dinkus + :is(.articles-grid, .portrait-strip, .page-subtitle)) {
+  .main .page-title:has(+ .title-mark + :is(.articles-grid, .portrait-strip)) {
     text-align: left;
     margin-bottom: 0;
   }
 
-  .main .dinkus:has(+ :is(.articles-grid, .portrait-strip, .page-subtitle)) {
+  /* Portraits, a row of cards rather than a grid, centre their title. */
+  .main .page-title:has(+ .title-mark + .portrait-strip) {
+    text-align: center;
+  }
+
+  .main .title-mark:has(+ :is(.articles-grid, .portrait-strip)) {
     display: none;
   }
 
@@ -95,25 +105,6 @@
     width: calc(var(--cols) * 100% + (var(--cols) - 1) * var(--gap));
   }
   .articles-grid > :nth-child(-n + 2) .card-rule { display: none; }
-}
-
-/* A line under the Portraits title saying how to browse them: in the cards'
-   category type, in ink. Wider screens only, where the arrows are. */
-.page-subtitle {
-  display: none;
-}
-
-@media (min-width: 700px) {
-  .page-subtitle {
-    display: block;
-    margin-top: 10px;
-    font-family: 'Averia Libre', sans-serif;
-    font-size: 18px;
-    letter-spacing: -0.05em;
-    line-height: 1.1;
-    text-transform: uppercase;
-    color: #1a1a1a;
-  }
 }
 
 /* Portraits: on phones the strip is just its cards, in the usual column
@@ -198,7 +189,7 @@
     margin: 0 -12px;
     border: none;
     background: none;
-    color: #1a1a1a;
+    color: #000;
     cursor: pointer;
     transition: color 0.15s ease;
   }
@@ -212,7 +203,7 @@
   }
 
   .strip-arrow:hover {
-    color: #FF1919;
+    color: var(--red);
   }
 }
 

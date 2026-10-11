@@ -5,6 +5,7 @@
 import { writeFileSync, existsSync } from 'node:fs'
 import { createClient } from '@sanity/client'
 import { NEIGHBORHOOD_OPEN, RUBRIQUES, rubriqueOf } from '../src/sections.js'
+import { SANITY } from '../shared/sanity.js'
 
 const ORIGIN = 'https://react.theneighborr.com'
 const LANGS = ['en', 'fr']
@@ -14,12 +15,7 @@ if (!existsSync('dist')) {
   process.exit(1)
 }
 
-const client = createClient({
-  projectId: '9hw8z0gm',
-  dataset: 'production',
-  apiVersion: '2024-01-01',
-  useCdn: true,
-})
+const client = createClient({ ...SANITY, useCdn: true })
 
 const urls = []
 for (const lang of LANGS) {

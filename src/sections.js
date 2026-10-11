@@ -1,12 +1,9 @@
-// The site's three rubriques, as in the app (mobile/src/sections.js) and the
-// Studio sidebar (studio/structure.js); keep the three in step. Sanity still
-// has four `section` values, so Essays & Criticism gathers the literature
-// reviews and the arts. `value` is the URL segment; labels are in i18n.js.
-export const RUBRIQUES = [
-  { value: 'essays-criticism', sanity: ['literature-review', 'the-arts'] },
-  { value: 'prose-poetry', sanity: ['fiction-poetry'] },
-  { value: 'portraits', sanity: ['portraits'] },
-]
+import { RUBRIQUES as SHARED } from '../shared/sections.js'
+
+// The site's three rubriques, from the list the app and the Studio share
+// (shared/sections.js). `value` is the URL segment, English in both
+// languages; labels are in i18n.js.
+export const RUBRIQUES = SHARED.map((r) => ({ value: r.slug.en, sanity: r.sanity }))
 
 export const findRubrique = (value) => RUBRIQUES.find((r) => r.value === value)
 

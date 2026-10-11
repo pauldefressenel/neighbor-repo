@@ -1,12 +1,15 @@
-// Values from the website's CSS (src/index.css, src/ArticleCard.css).
+import { colors as shared, type } from '../../shared/tokens'
+
+// The values shared with the website come from shared/tokens.js; the rest are
+// the app's own.
 export const colors = {
-  paper: '#FFFFF2',
-  bar: '#FFFFF2', // fill of the top masthead and the bottom menu
-  ink: '#000000', // full black; the website's text is #1a1a1a
-  red: '#FF1919',
+  paper: shared.paper,
+  bar: shared.paper, // fill of the top masthead and the bottom menu
+  ink: '#000000', // all text is full black, on the website too
+  red: shared.red,
   faint: 'rgba(0, 0, 0, 0.35)', // placeholders in text fields
   muted: 'rgba(0, 0, 0, 0.55)', // a neighbour's activity on the Voisinage landing
-  placeholder: '#7B61FF',
+  placeholder: shared.placeholder,
   water: '#A6D2F7', // rivers between articles
   bank: '#9E9E9E',
 }
@@ -25,7 +28,7 @@ export const fonts = {
   newAmsterdam: 'NewAmsterdam_400Regular',
   paprika: 'Paprika_400Regular',
   averia: 'AveriaLibre_400Regular', // card categories
-  averiaSerif: 'AveriaSerifLibre_400Regular', // the dinkus under page titles
+  averiaSerif: 'AveriaSerifLibre_400Regular', // the asterisk under page titles
 }
 
 // The big centred title at the top of a page (Rubriques, a rubrique, …).
@@ -42,23 +45,23 @@ export const pageTitle = {
 // The title of the Rubriques list and of every article page (En Couverture
 // and each rubrique), so the title sits in the same place from page to page.
 // The space below it is set by each page.
-// The type shared by page titles and article titles, so the two match:
-// 35pt, -0.03em letter-spacing, 1.1 line height.
+// The type shared by page titles and article titles, so the two match
+// (type.title in shared/tokens.js).
 export const titleType = {
   fontFamily: fonts.neighbor,
-  fontSize: 35,
-  lineHeight: 35 * 1.1,
-  letterSpacing: 35 * -0.03,
+  fontSize: type.title.size,
+  lineHeight: type.title.size * type.title.leading,
+  letterSpacing: type.title.size * type.title.tracking,
   color: colors.ink,
 }
 
 // The red category over an article card, also the Rubriques list's and A
-// Propos's subtitles: 18pt, -0.05em letter-spacing, 1.1em line height.
+// Propos's subtitles (type.category in shared/tokens.js).
 export const categoryType = {
   fontFamily: fonts.averia,
-  fontSize: 18,
-  lineHeight: 18 * 1.1,
-  letterSpacing: 18 * -0.05,
+  fontSize: type.category.size,
+  lineHeight: type.category.size * type.category.leading,
+  letterSpacing: type.category.size * type.category.tracking,
   color: colors.red,
   textTransform: 'uppercase',
 }

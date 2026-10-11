@@ -1,5 +1,6 @@
 import { createContext, useContext, useEffect, useRef, useState } from 'react'
 import { Animated, Easing, Pressable, StyleSheet, Text, View } from 'react-native'
+import { appear, press } from '../../shared/tokens'
 
 // Moving between the Rubriques list and a rubrique: the rubrique slides in
 // from the right, pushing the list off to the left, and back plays it in
@@ -25,6 +26,16 @@ export const PRESS = {
   easing: Easing.bezier(0.25, 0.1, 0.25, 1),
   opacity: 0.55,
   scale: 0.9,
+}
+
+// An article card while held (press in shared/tokens.js):
+// a slight shrink, and a slower, softer release. It doesn't fade.
+export const CARD_PRESS = {
+  scale: press.scale,
+  opacity: 1,
+  duration: press.pressIn,
+  release: press.release,
+  easing: Easing.bezier(...press.easing),
 }
 
 // The Voisinage landing's neighbours, one at a time: each stays `dwell` ms,
@@ -69,20 +80,27 @@ export const pageTransition = ({ duration, easing, slide }) => {
 
 // A Pressable that eases to PRESS.opacity while held and back on release,
 // scaling to `pressScale` as it goes (1 by default: no scaling). Article cards
-// pass `pressOpacity={1}` to shrink without fading. `style` goes on the faded
+// pass CARD_PRESS's scale, opacity and timing. `style` goes on the faded
 // view, not the touch target.
 //
 // With `scaleChildren`, it doesn't scale itself: the parts of its content
 // wrapped in `Pressed` shrink instead, and the rest stays exactly still. A
 // portrait's drawing blurred while its card shrank, even when held at its
 // own size, because the card moved it by fractions of a pixel.
-export function FadePressable({ style, children, onPressIn, onPressOut, pressScale = 1, pressOpacity = PRESS.opacity, scaleChildren = false, ...props }) {
+export function FadePressable({ style, children, onPressIn, onPressOut, pressScale = 1, pressOpacity = PRESS.opacity, timing = PRESS, scaleChildren = false, ...props }) {
   // 1 at rest, 0 fully pressed; opacity and scale both follow it.
   const rest = useRef(new Animated.Value(1)).current
   const opacity = rest.interpolate({ inputRange: [0, 1], outputRange: [pressOpacity, 1] })
   const scale = rest.interpolate({ inputRange: [0, 1], outputRange: [pressScale, 1] })
+  // `timing` sets the easing and how long the press takes; the release takes
+  // `timing.release` when it has one, else as long.
   const fade = (toValue) =>
-    Animated.timing(rest, { toValue, duration: PRESS.duration, easing: PRESS.easing, useNativeDriver: true }).start()
+    Animated.timing(rest, {
+      toValue,
+      duration: toValue === 1 ? (timing.release ?? timing.duration) : timing.duration,
+      easing: timing.easing,
+      useNativeDriver: true,
+    }).start()
   // Whether it is held, for what's inside (`useHeld`).
   const [held, setHeld] = useState(false)
 
@@ -132,15 +150,11 @@ export function Pressed({ style, children }) {
 // moment the page mounts; springs are Framer's duration and bounce. (Playing
 // it 30% faster was tried and rejected.)
 export const APPEAR = {
-  // The page title, one line at a time.
-  titleLines: { rise: 10, delay: 200, stagger: 75, spring: { duration: 400, bounce: 0.4 } },
-  // The dinkus under the page title, once the title is in.
-  dinkus: { rise: 5, delay: 350, spring: { duration: 200, bounce: 0 } },
-  // Each card (portraits too) rises all at once, with the line below it, as
-  // soon as the dinkus is up. (Two beats, at 500 and 550, felt slow; 250 felt rushed.)
-  card: { rise: 5, delay: 400, spring: { duration: 200, bounce: 0 } },
-  line: { rise: 5, delay: 400, spring: { duration: 200, bounce: 0 } },
-  max: 5, // cards further down start offscreen and are shown as they are
+  // An article list: the page title one line at a time, its asterisk once the
+  // title is in, then each card (portraits too) all at once with the line
+  // below it, the first `max` only. Shared with the website
+  // (appear in shared/tokens.js).
+  ...appear,
   // An article's page, top to bottom: the category and byline, the title, then
   // the reading time and text. The website's timings (0.15, 0.2, 0.3s, in
   // ArticlePage.css) were spent inside the 500ms slide and went unseen, so it

@@ -4,7 +4,7 @@
 .voisinage-content {
   width: min(440px, 100%);
   margin: 13px auto 0;
-  color: #1a1a1a;
+  color: #000;
   animation: appear-5 0.2s var(--ease-spring) 0.5s both;
 }
 
@@ -28,7 +28,7 @@
   font-size: 14px;
   letter-spacing: -0.05em;
   line-height: 1.1;
-  color: #FF1919;
+  color: var(--red);
   text-transform: uppercase;
 }
 
@@ -41,7 +41,7 @@
   font-family: 'EB Garamond', serif;
   font-size: 22px;
   color: inherit;
-  caret-color: #FF1919;
+  caret-color: var(--red);
   padding: 10px 0 6px;
 }
 
@@ -61,7 +61,7 @@
   font-family: 'EB Garamond', serif;
   font-style: italic;
   font-size: 16px;
-  color: #FF1919;
+  color: var(--red);
 }
 
 .voisinage-option {
@@ -105,8 +105,8 @@
   margin-top: 40px;
   border: none;
   border-radius: 27px;
-  background: #1a1a1a;
-  color: #FFFFF2;
+  background: #000;
+  color: var(--paper);
   font-family: 'NeighborFont', serif;
   font-size: 24px;
   cursor: pointer;
@@ -136,7 +136,7 @@
   font-size: 18px;
   letter-spacing: -0.05em;
   line-height: 1.1;
-  color: #FF1919;
+  color: var(--red);
   text-transform: uppercase;
 }
 
@@ -172,7 +172,7 @@
   font-size: 16px;
   letter-spacing: -0.05em;
   line-height: 1.1;
-  color: #FF1919;
+  color: var(--red);
   text-transform: uppercase;
 }
 

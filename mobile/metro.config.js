@@ -3,10 +3,11 @@ const { getDefaultConfig } = require('expo/metro-config')
 
 const config = getDefaultConfig(__dirname)
 
-// The portraits are shared with the website rather than copied: the
-// animation spec (src/portraitAnimations.js) and its sprites
-// (public/portraits/) live in the site's half of the repo.
+// What the app shares with the website lives outside mobile/: the rubriques,
+// queries, strings and design values (shared/), and the portraits' animation
+// spec (src/portraitAnimations.js) and sprites (public/portraits/).
 config.watchFolders = [
+  path.resolve(__dirname, '../shared'),
   path.resolve(__dirname, '../src'),
   path.resolve(__dirname, '../public/portraits'),
 ]

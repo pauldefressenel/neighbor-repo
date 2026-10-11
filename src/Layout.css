@@ -10,21 +10,21 @@
   left: 0;
   right: 0;
   width: 100%;
-  background-color: #FFFFF2;
+  background-color: var(--paper);
   z-index: 100;
 }
 
-/* Under the header, the paper fades out over 30px, so the page scrolling up
-   beneath it dissolves rather than being cut off sharply. It lets clicks
-   through to the page. */
+/* Under the header, the paper fades out (headerFade in shared/tokens.js, as
+   under the app's masthead), so the page scrolling up beneath it dissolves
+   rather than being cut off sharply. It lets clicks through to the page. */
 .header::after {
   content: '';
   position: absolute;
   top: 100%;
   left: 0;
   right: 0;
-  height: 30px;
-  background: linear-gradient(#FFFFF2, rgba(255, 255, 242, 0));
+  height: var(--header-fade);
+  background: linear-gradient(var(--paper), rgba(255, 255, 242, 0));
   pointer-events: none;
 }
 
@@ -38,7 +38,7 @@
   grid-template-columns: 1fr auto 1fr;
   align-items: center;
   padding: 0 15px;
-  border-bottom: 1px solid #1a1a1a;
+  border-bottom: 1px solid #000;
 }
 
 /* Explicit placement: the toggle is display:none above the phone breakpoint,
@@ -56,7 +56,7 @@
   font-size: 32px;
   letter-spacing: 0em;
   line-height: 1.2em;
-  color: #1a1a1a;
+  color: #000;
   text-align: center;
   justify-self: center;
 }
@@ -80,7 +80,7 @@
   right: 0;
   height: 55px;
   padding: 0 4px;
-  background: #FFFFF2;
+  background: var(--paper);
   white-space: nowrap;
   opacity: 0;
   pointer-events: none;
@@ -101,14 +101,14 @@
   font-weight: 500;
   font-size: 18px;
   line-height: 1.2em;
-  color: #1a1a1a;
+  color: #000;
   text-decoration: none;
   cursor: pointer;
 }
 
 .lang-menu .lang-option {
   padding: 0 4px;
-  background: #FFFFF2;
+  background: var(--paper);
 }
 
 .lang-selector:hover,
@@ -125,7 +125,7 @@
   gap: 60px;
   padding: 0 20px;
   white-space: nowrap;
-  border-bottom: 1px solid #1a1a1a;
+  border-bottom: 1px solid #000;
 }
 
 /* Small spaced capitals in the cards' category face (Averia Libre), in ink:
@@ -137,7 +137,7 @@
   letter-spacing: 0.06em;
   text-transform: uppercase;
   line-height: 1.1;
-  color: #1a1a1a;
+  color: #000;
   text-decoration: none;
   background: none;
   border: none;
@@ -148,7 +148,7 @@
 /* The current page is red, and so is a link under the pointer. */
 .section-link:hover,
 .section-link--active {
-  color: #FF1919;
+  color: var(--red);
 }
 
 .section-link--disabled {
@@ -170,42 +170,13 @@
   cursor: pointer;
 }
 
-.nav-toggle-icon,
-.nav-toggle-icon::before,
-.nav-toggle-icon::after {
-  display: block;
-  width: 25px;
-  height: 1.5px;
-  background-color: #1a1a1a;
-  transition: transform 0.2s ease, opacity 0.2s ease;
-}
-
-.nav-toggle-icon {
-  position: relative;
-}
-
-.nav-toggle-icon::before,
-.nav-toggle-icon::after {
-  content: '';
-  position: absolute;
-  left: 0;
-}
-
-.nav-toggle-icon::before { top: -7px; }
-.nav-toggle-icon::after  { top: 7px; }
-
-.nav-toggle-icon--open {
-  background-color: transparent;
-}
-
-.nav-toggle-icon--open::before {
-  top: 0;
-  transform: rotate(45deg);
-}
-
-.nav-toggle-icon--open::after {
-  top: 0;
-  transform: rotate(-45deg);
+/* The menu icon, drawn by hand like the app's tab icons (MenuIcon in
+   Layout.jsx), standing at the toggle's left edge where the ruled lines
+   were. */
+.nav-toggle {
+  align-items: center;
+  color: #000;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .menu-overlay {
@@ -241,7 +212,7 @@
   font-size: 40px;
   letter-spacing: -0.02em;
   line-height: 1.22em;
-  color: #1a1a1a;
+  color: #000;
   text-decoration: none;
   animation: menu-item-in 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
@@ -264,6 +235,8 @@
 /* The one-row header's pieces exist only on wide screens (below). */
 .header-links,
 .header-rule,
+.header-rule-phone,
+.lang-switch,
 .lang-pair {
   display: none;
 }
@@ -313,7 +286,7 @@
     width: calc(100% - 100px);
     height: 8px;
     margin: -4px 50px 0;
-    color: #1a1a1a;
+    color: #000;
   }
 
   /* The language: "FR / EN" in the links' type, the current one in red, in
@@ -337,7 +310,7 @@
     font-size: 14px;
     letter-spacing: 0.06em;
     line-height: 1.1;
-    color: #1a1a1a;
+    color: #000;
   }
 
   .lang-pair-sep {
@@ -350,7 +323,7 @@
 
   .lang-pair-option:hover,
   .lang-pair-option--current {
-    color: #FF1919;
+    color: var(--red);
   }
 
   .lang-pair-option--current {
@@ -389,18 +362,85 @@
 }
 
 @media (max-width: 749.98px) {
-  /* Single 60px row, left-aligned: 25px toggle at 15px, wordmark 50px after
-     it, language selector at the right. */
+  /* Single 60px row: 25px toggle at 15px, the wordmark centred on the page
+     as in the app, the language at the right. */
   .header-top {
     height: 60px;
-    grid-template-columns: 26px auto 1fr;
-    padding: 0 24px 0 15px;
+    grid-template-columns: 1fr auto 1fr;
+    padding: 0 15px;
+    border-bottom: none;
+    /* The language stands on the wordmark's baseline, as in the app; the row
+       stays centred in the 60px. */
+    align-items: baseline;
+    align-content: center;
+  }
+
+  /* The menu icon: 28px from the left edge, as the language is from the
+     right, and standing on the wordmark's baseline, like the language. The
+     padding (taken back by the margin) gives it the language's 12px more to
+     tap all round. */
+  .nav-toggle {
+    align-self: baseline;
+    justify-self: start;
+    width: auto;
+    height: auto;
+    padding: 12px;
+    margin: -12px -12px -12px 1px;
+    line-height: 0;
+  }
+
+  /* The app's language switch in place of the selector: "FR EN" in the
+     cards' category type at 16px, black, the other language faint. It ends
+     28px from the edge, and fades while pressed, as in the app (PRESS). */
+  .lang-menu {
+    display: none;
+  }
+
+  .lang-switch {
+    display: inline-flex;
+    gap: 7px;
+    /* The app's hitSlop: 12px more to tap all round. */
+    padding: 12px;
+    margin: -12px 1px -12px -12px;
+    border: none;
+    background: none;
+    font-family: 'Averia Libre', sans-serif;
+    font-weight: 400;
+    font-size: 16px;
+    letter-spacing: -0.05em;
+    line-height: 1.1;
+    text-transform: uppercase;
+    color: #000;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    transition: opacity 150ms cubic-bezier(0.25, 0.1, 0.25, 1);
+  }
+
+  .lang-switch:active {
+    opacity: 0.55;
+  }
+
+  .lang-switch-faint {
+    color: rgba(0, 0, 0, 0.35);
+  }
+
+  /* Under it, the app's masthead line (mobile/src/Masthead.js) in place of
+     the border: the hand-drawn rule stretched edge to edge. Its 8px box is
+     centred on the row's foot and takes no room, so the header stays 60px. */
+  .header-rule-phone {
+    display: block;
+    width: 100%;
+    height: 8px;
+    margin: -4px 0;
+    color: #000;
+    /* Above the paper's fade, which starts at the row's foot. */
+    position: relative;
+    z-index: 1;
   }
 
   .site-title {
     font-size: 29px;
-    justify-self: start;
-    margin-left: 49px;
+    justify-self: center;
   }
 
   .header-meta {

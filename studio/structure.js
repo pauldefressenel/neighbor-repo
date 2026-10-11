@@ -1,3 +1,5 @@
+import { RUBRIQUES, SANITY_SECTIONS } from '../shared/sections.js'
+
 // French first: the app serves the French edition only for now.
 const languages = [
   { title: 'Français', value: 'fr' },
@@ -6,34 +8,15 @@ const languages = [
 
 const aboutTitle = { en: 'About', fr: 'A Propos' }
 
-// The three rubriques, as on the site (src/sections.js) and in the app
-// (mobile/src/sections.js). Articles still carry four `section` values, so
+// The three rubriques, from the list the website and the app share
+// (shared/sections.js). Articles still carry four `section` values, so
 // Essais & Critiques gathers two of them; creating an article there asks
 // which one it belongs to.
-const rubriques = {
-  fr: [
-    {
-      title: 'Essais & Critiques',
-      sections: [
-        { title: 'La Revue Littéraire', value: 'literature-review' },
-        { title: 'Les Arts', value: 'the-arts' },
-      ],
-    },
-    { title: 'Prose & Poésie', sections: [{ title: 'Fiction & Poésie', value: 'fiction-poetry' }] },
-    { title: 'Portraits', sections: [{ title: 'Portraits', value: 'portraits' }] },
-  ],
-  en: [
-    {
-      title: 'Essays & Criticism',
-      sections: [
-        { title: 'Literature Review', value: 'literature-review' },
-        { title: 'The Arts', value: 'the-arts' },
-      ],
-    },
-    { title: 'Prose & Poetry', sections: [{ title: 'Fiction & Poetry', value: 'fiction-poetry' }] },
-    { title: 'Portraits', sections: [{ title: 'Portraits', value: 'portraits' }] },
-  ],
-}
+const rubriques = (lang) =>
+  RUBRIQUES.map((r) => ({
+    title: r.label[lang],
+    sections: r.sanity.map((value) => ({ title: SANITY_SECTIONS[value][lang], value })),
+  }))
 
 // Fills in language and section for a new article, so writers never set them
 // by hand. Registered in sanity.config.js.
@@ -59,7 +42,7 @@ export const structure = (S) =>
             S.list()
               .title(langTitle)
               .items([
-                ...rubriques[lang].map(({ title, sections }) =>
+                ...rubriques(lang).map(({ title, sections }) =>
                   S.listItem()
                     .title(title)
                     .child(

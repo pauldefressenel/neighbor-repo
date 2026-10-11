@@ -11,9 +11,11 @@ const LONG = 600
 const HEIGHT = 8
 const MID = HEIGHT / 2
 
+// The app's path (rulePath in mobile/src/Rule.js): the dip grows with the
+// width, as the drawing is stretched.
 const original = (w) => {
   const s = w / 390
-  const dip = 1.642
+  const dip = 1.642 * s
   return `M 0 ${MID} C 0 ${MID} ${30.104 * s} ${MID - dip} ${140 * s} ${MID} C ${249.896 * s} ${MID + dip} ${w} ${MID} ${w} ${MID}`
 }
 
@@ -41,7 +43,9 @@ function penStroke(width) {
   return `M ${top.join(' L ')} L ${bottom.join(' L ')} Z`
 }
 
-export default function Rule({ className = '' }) {
+// `drawn` keeps the drawing at any width, as the app does: the phone
+// header's full-width line.
+export default function Rule({ className = '', drawn = false }) {
   const ref = useRef(null)
   const [width, setWidth] = useState(390)
 
@@ -57,7 +61,7 @@ export default function Rule({ className = '' }) {
 
   return (
     <svg ref={ref} className={`rule ${className}`} viewBox={`0 0 ${width} ${HEIGHT}`} preserveAspectRatio="none" aria-hidden="true">
-      {width > LONG
+      {width > LONG && !drawn
         ? <path d={penStroke(width)} fill="currentColor" />
         : <path d={original(width)} fill="none" stroke="currentColor" strokeWidth="1" vectorEffect="non-scaling-stroke" />}
     </svg>

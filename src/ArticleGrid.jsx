@@ -8,7 +8,7 @@ export default function ArticleGrid({ articles }) {
   if (articles[0]?.section === 'portraits') return <PortraitStrip articles={articles} />
   return (
     <div className="articles-grid">
-      {articles.map((a) => <ArticleCard key={a._id} {...a} />)}
+      {articles.map((a, i) => <ArticleCard key={a._id} {...a} appearIndex={i} />)}
     </div>
   )
 }
@@ -22,6 +22,12 @@ export default function ArticleGrid({ articles }) {
 // was, without a transition: the same cards stand in the same places, so
 // nothing is seen to move. The row's edges fade (SectionPage.css), so a card
 // dissolves as it slides out and appears as it slides in. The wheel or a trackpad swipe moves it too.
+// On its own, it moves on one card every AUTO_ADVANCE, as the right arrow
+// does, counted from the start of the last move, the reader's included, and
+// whatever the pointer is doing. It holds still while the page is in the
+// background, and with Reduce Motion on.
+const AUTO_ADVANCE = 5000 // ms
+
 function PortraitStrip({ articles }) {
   const n = articles.length
   const [offset, setOffset] = useState(0)
@@ -33,13 +39,28 @@ function PortraitStrip({ articles }) {
   const [moved, setMoved] = useState(false)
   const busy = useRef(false)
   const viewport = useRef(null)
+  // Counts the moves, so the automatic one is timed from the last.
+  const [moves, setMoves] = useState(0)
   const move = (direction) => {
     if (busy.current) return
     busy.current = true
+    setMoves((m) => m + 1)
     setMoved(true)
     setAnimate(true)
     setShift(direction)
   }
+
+  useEffect(() => {
+    const el = viewport.current
+    if (!el || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+    const id = setInterval(() => {
+      // Phones show the column instead, with nothing to slide.
+      if (document.hidden || getComputedStyle(el).overflow !== 'hidden') return
+      move(1)
+    }, AUTO_ADVANCE)
+    return () => clearInterval(id)
+    // Started again as each move begins.
+  }, [moves])
 
   // The slide has ended: turn the list, put the track back, and allow the
   // transition again once that has been drawn.
@@ -92,9 +113,9 @@ function PortraitStrip({ articles }) {
           <div className="strip-item strip-item--lead" inert>
             <PortraitCard {...lead} />
           </div>
-          {turned.map((a) => (
+          {turned.map((a, i) => (
             <div key={a._id} className="strip-item">
-              <PortraitCard {...a} />
+              <PortraitCard {...a} appearIndex={i} />
             </div>
           ))}
         </div>

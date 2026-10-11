@@ -1,10 +1,11 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native'
+import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native'
 import { useLocalSearchParams, useNavigation } from 'expo-router'
 import { useScrollToTop } from 'expo-router/react-navigation'
 import { useReducedMotion } from 'react-native-reanimated'
 import { ArticleHeading } from '../../ArticleScreen'
 import ArticleText from '../../ArticleText'
+import LateSpinner from '../../LateSpinner'
 import Masthead from '../../Masthead'
 import { APPEAR, AppearContext, Rise } from '../../motion'
 import { getAboutPage } from '../../sanity'
@@ -12,15 +13,10 @@ import { i18n } from '../../i18n'
 import { colors, fonts } from '../../theme'
 
 // A Propos, set like an article (ArticleScreen.js): an article's heading,
-// with a fixed category, byline and reading time, then the `about-<lang>` document's
-// text (ArticleText.js), opening on a drop cap. The heading is fixed so it can
-// rise in while the text loads.
-const HEADING = {
-  category: 'A propos',
-  byline: 'L\'équipe de rédaction, 5 octobre 2026.',
-  title: 'Manifeste Neighbor.',
-  readingTime: '4 min.',
-}
+// with a fixed category, byline and reading time (aboutHeading, shared with
+// the website), then the `about-<lang>` document's text (ArticleText.js),
+// opening on a drop cap. The heading is fixed so it can rise in while the
+// text loads.
 
 export default function AProposScreen() {
   const { lang } = useLocalSearchParams()
@@ -64,7 +60,7 @@ export default function AProposScreen() {
       <AppearContext.Provider value={{ since: shown, still: reduceMotion }}>
         <ScrollView ref={scroll} style={styles.scroll} contentContainerStyle={styles.content}>
           <View key={shown}>
-            <ArticleHeading {...HEADING} />
+            <ArticleHeading {...t.aboutHeading} />
             {failed ? (
               <View style={styles.center}>
                 <Text style={styles.message}>{t.pageError}</Text>
@@ -73,7 +69,7 @@ export default function AProposScreen() {
                 </Pressable>
               </View>
             ) : body === null ? (
-              <ActivityIndicator style={styles.center} color={colors.ink} />
+              <LateSpinner style={styles.center} />
             ) : (
               <Rise step={steps.body}>
                 <ArticleText body={body} />

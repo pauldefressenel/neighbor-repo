@@ -4,7 +4,7 @@ import { Image } from 'expo-image'
 import { useGlobalSearchParams } from 'expo-router'
 import { useIsFocused } from 'expo-router/react-navigation'
 import { CODE_LENGTH, isEmail, useAccount } from './account'
-import { MONTHS } from './ArticleCard'
+import { MONTHS } from '../../shared/dates'
 import { APPEAR, FadePressable, NEIGHBOUR, Rise, RiseLines, usePlayOn } from './motion'
 import Rule from './Rule'
 import { avatarUrl, getNeighbours } from './supabase'
@@ -342,7 +342,7 @@ export function Neighbours({ example = false, size = AVATAR }) {
 
   const n = list?.[index]
   if (!n || !ready.current.has(n.id)) return example ? <View style={{ width: size, height: size }} /> : null
-  const month = MONTHS[new Date(n.created_at).getMonth()]
+  const month = MONTHS.fr[new Date(n.created_at).getMonth()]
   // The picture centred, its words flush left under it.
   const image = (
     <Image

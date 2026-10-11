@@ -4,6 +4,9 @@ by hand rather than ruled, and writes them out twice:
   assets/icons/<name>.svg   to look at and share
   mobile/src/tabIcons.js    what the app draws (DrawnIcons.js)
 
+It also draws the website's phone menu icon and the cross it turns into, the
+same way, into src/menuIcons.js (Layout.jsx).
+
 Run it from anywhere: python3 assets/icons/make-icons.py
 
 Each shape is first laid out clean (straight lines, true curves), then
@@ -18,6 +21,7 @@ import json, math, os, random
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 APP_FILE = os.path.join(HERE, '..', '..', 'mobile', 'src', 'tabIcons.js')
+SITE_FILE = os.path.join(HERE, '..', '..', 'src', 'menuIcons.js')
 
 BOW = 0.025             # a line's sideways bow, as a share of its length (at most)
 WARP_PT = 0.3           # how far the field moves a point, in pt at the drawn size
@@ -138,6 +142,39 @@ ICONS = {
 }
 
 
+# The website's phone menu icon: a list, three dots each with a line. And the
+# drawn cross it turns into while the menu is open. Drawn at the tab icons'
+# scale and weight. They were picked from a page of proposals drawn on a
+# bow series of their own, after 26 other lines; the series is advanced past
+# those so the two come out as approved.
+def site_icons():
+    global _bow_rnd
+    _bow_rnd = random.Random(11)
+    for _ in range(26):
+        _bow_rnd.choice((-1, 1)); _bow_rnd.uniform(0.6, 1)
+    menu = [circle((12, 26), 4), circle((12, 50), 4), circle((12, 74), 4),
+            line((28, 26), (94, 26), 24), line((28, 50), (94, 50), 24), line((28, 74), (94, 74), 24)]
+    return dict(viewBox=(0, 0, 100, 100), height=25, strokeWidth=6.8, strokes=menu)
+
+
+# The cross is the list's own top and bottom lines, as drawn, each stretched
+# along its length to an arm 58 units long each way and turned a quarter
+# turn's half, crossing at the middle: what the menu's transition makes of
+# them (a cross drawn separately looked unrelated to the list).
+CROSS_ARM = 58
+LIST_LINE = (28, 94)
+
+
+def cross(menu_strokes):
+    stretch = CROSS_ARM * math.sqrt(2) / (LIST_LINE[1] - LIST_LINE[0])
+    cx = (LIST_LINE[0] + LIST_LINE[1]) / 2
+    arms = []
+    for pts, y, turn in ((menu_strokes[3], 26, 45), (menu_strokes[5], 74, -45)):
+        a = math.radians(turn); ca, sa = math.cos(a), math.sin(a)
+        arms.append([(50 + stretch * (x - cx) * ca - (py - y) * sa, 50 + stretch * (x - cx) * sa + (py - y) * ca) for x, py in pts])
+    return dict(viewBox=(0, 0, 100, 100), height=25, strokeWidth=6.8, strokes=arms, drawn=True)
+
+
 def warp():
     rnd = random.Random(SEED); waves = []
     for _ in range(2):
@@ -157,20 +194,21 @@ def num(v):
 
 
 def draw(icon):
+    # Returns the path, the points it passes through, and its strokes as
+    # drawn. A `drawn` icon's strokes are already bent and warped.
     u = icon['viewBox'][3] / icon.get('warpAt', icon['height'])  # viewBox units per pt
-    D = warp(); parts = []; ink = []
+    D = warp(); parts = []; ink = []; strokes = []
     for pts in icon['strokes']:
-        L = sum(math.dist(pts[i - 1], pts[i]) for i in range(1, len(pts)))
-        pts = resample(pts, min(1.2 * u, L / 48))
-        pts = [(x + D(x / u, y / u)[0] * u, y + D(x / u, y / u)[1] * u) for x, y in pts]
+        if not icon.get('drawn'):
+            L = sum(math.dist(pts[i - 1], pts[i]) for i in range(1, len(pts)))
+            pts = resample(pts, min(1.2 * u, L / 48))
+            pts = [(x + D(x / u, y / u)[0] * u, y + D(x / u, y / u)[1] * u) for x, y in pts]
         parts.append('M' + ' '.join(num(x) + ' ' + num(y) for x, y in pts))
-        ink += pts
-    return ' '.join(parts), ink
+        ink += pts; strokes.append(pts)
+    return ' '.join(parts), ink, strokes
 
 
-app = {}
-for name, icon in ICONS.items():
-    d, ink = draw(icon)
+def crop(icon, d, ink):
     # The viewBox is cropped to the ink (the strokes and half their width
     # around them), so the tab bar can stand every icon on the same line
     # beneath it: each shape left a different margin in its original box.
@@ -180,15 +218,31 @@ for name, icon in ICONS.items():
     y0 = min(y for x, y in ink) - pad; y1 = max(y for x, y in ink) + pad
     scale = icon['height'] / icon['viewBox'][3]
     vb = ' '.join(num(v) for v in (x0, y0, x1 - x0, y1 - y0))
+    return dict(viewBox=vb, width=round((x1 - x0) * scale, 2), height=round((y1 - y0) * scale, 2),
+                strokeWidth=icon['strokeWidth'], d=d)
+
+
+app = {}
+for name, icon in ICONS.items():
+    d, ink, _ = draw(icon)
+    app[name] = crop(icon, d, ink)
     with open(os.path.join(HERE, name + '.svg'), 'w') as f:
-        f.write(f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="{vb}" fill="none" stroke="currentColor" '
+        f.write(f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="{app[name]["viewBox"]}" fill="none" stroke="currentColor" '
                 f'stroke-width="{icon["strokeWidth"]}" stroke-linecap="round" stroke-linejoin="round"><path d="{d}"/></svg>\n')
-    app[name] = dict(viewBox=vb, width=round((x1 - x0) * scale, 2), height=round((y1 - y0) * scale, 2),
-                     strokeWidth=icon['strokeWidth'], d=d)
 
 with open(APP_FILE, 'w') as f:
     f.write('// Written by assets/icons/make-icons.py; change that script and run it\n'
             '// again rather than editing this file. The tab icons, keyed by name:\n'
             '// viewBox, drawn size in pt, stroke width in viewBox units, and the path.\n')
     f.write('export default ' + json.dumps(app, indent=2) + '\n')
-print('wrote', ', '.join(name + '.svg' for name in ICONS), 'and mobile/src/tabIcons.js')
+
+menu = site_icons()
+d, ink, strokes = draw(menu)
+close = cross(strokes)
+site = {'menu': crop(menu, d, ink), 'close': crop(close, *draw(close)[:2])}
+with open(SITE_FILE, 'w') as f:
+    f.write('// Written by assets/icons/make-icons.py; change that script and run it\n'
+            '// again rather than editing this file. The phone menu icon and its cross:\n'
+            '// viewBox, drawn size in px, stroke width in viewBox units, and the path.\n')
+    f.write('export default ' + json.dumps(site, indent=2) + '\n')
+print('wrote', ', '.join(name + '.svg' for name in ICONS), 'mobile/src/tabIcons.js and src/menuIcons.js')

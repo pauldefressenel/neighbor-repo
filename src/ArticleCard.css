@@ -1,4 +1,5 @@
-/* The app's card (mobile/src/ArticleCard.js), at the app's sizes. */
+/* The app's card (mobile/src/ArticleCard.js). Its sizes are the ones the
+   app reads too (shared/tokens.js, as CSS variables). */
 
 .article-card {
   display: flex;
@@ -8,13 +9,22 @@
   text-decoration: none;
   color: inherit;
   cursor: pointer;
-  /* The app rises the whole card at once. */
-  animation: appear-5 0.2s var(--ease-spring) 0.5s both;
-  transition: transform 0.15s var(--ease-spring);
+  /* No press on the website: pressing a card is the app's. Nor iOS's grey
+     tap flash. */
+  -webkit-tap-highlight-color: transparent;
 }
 
-.article-card:active {
-  transform: scale(0.98);
+/* Rising in with its line, as in the app (ArticleCard.jsx sets the delay).
+   Filled backwards only, so it lets go of the card once played. */
+.article-card--rise {
+  --rise: var(--appear-card-rise);
+  animation: rise var(--appear-card-duration) var(--appear-card-easing) backwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .article-card--rise {
+    animation: none;
+  }
 }
 
 /* The line between two cards: 48px below the date above, 50px above the
@@ -24,40 +34,43 @@
   width: 100%;
   height: 8px;
   margin: 48px 0 50px;
-  color: #1a1a1a;
+  color: #000;
 }
 
 /* Averia Libre 18px, red, -0.05em, 1.1 line height. */
 .article-category {
   font-family: 'Averia Libre', sans-serif;
   font-weight: 400;
-  font-size: 18px;
-  letter-spacing: -0.05em;
-  line-height: 1.1;
-  color: #FF1919;
+  font-size: var(--category-size);
+  letter-spacing: var(--category-tracking);
+  line-height: var(--category-leading);
+  color: var(--red);
   text-transform: uppercase;
 }
 
 /* The page title's type. About 15px between the category's letters and the
-   title's. */
+   title's. On phones a one-line title too wide for the card is broken in two
+   (CardTitle in ArticleCard.jsx). */
 .article-title {
   margin-top: 6px;
   font-family: 'NeighborFont', serif;
   font-weight: 400;
-  font-size: 35px;
-  letter-spacing: -0.03em;
-  line-height: 1.1;
+  font-size: var(--title-size);
+  letter-spacing: var(--title-tracking);
+  line-height: var(--title-leading);
   text-wrap: balance;
   padding-bottom: 4px;
 }
 
-/* A narrow column under the title, so it breaks into short lines. */
+/* The card's width less an inset each side, as in the app, its lines
+   balanced. */
 .article-description {
-  max-width: 240px;
+  align-self: stretch;
+  padding: 0 var(--excerpt-inset);
   font-family: 'EB Garamond', serif;
   font-weight: 400;
-  font-size: 20px;
-  line-height: 1.1;
+  font-size: var(--excerpt-size);
+  line-height: var(--excerpt-leading);
   text-wrap: balance;
 }
 
@@ -67,21 +80,21 @@
      taller (around 2:1); they are scaled down to fit inside the box rather
      than cropped. */
   width: 100%;
-  aspect-ratio: 1818 / 572;
+  aspect-ratio: var(--illustration-aspect);
   object-fit: contain;
   display: block;
-  margin: 22px 0;
+  margin: var(--card-image-gap) 0;
 }
 
 .article-image--placeholder {
-  background-color: #7B61FF;
+  background-color: var(--placeholder);
 }
 
 .article-author,
 .article-date {
   font-family: 'EB Garamond', serif;
-  font-size: 21px;
-  line-height: 24px;
+  font-size: var(--byline-size);
+  line-height: var(--byline-line-height);
 }
 
 .article-author {
@@ -94,9 +107,12 @@
   font-weight: 400;
 }
 
-/* A portrait: its animation at the top, the text a little closer together. */
+/* A portrait: its animation in the illustration's place, with the same
+   room above and below the figure itself, whatever room it leaves in its
+   slot (--ink-top and --ink-bottom, from PortraitCard.jsx). On wider screens
+   it goes to the top, below. */
 .article-picture {
-  margin-bottom: 10px;
+  margin: calc(var(--card-image-gap) - var(--ink-top, 0px)) 0 calc(var(--card-image-gap) - var(--ink-bottom, 0px));
 }
 
 /* The animation's 110px Framer slot drawn at 100px, the app's size
@@ -105,21 +121,13 @@
 .article-picture > .portrait-slot {
   zoom: calc(100 / 110);
   /* A character smaller than the slot (Zorba) stands at its foot, like the
-     others, so the gap down to the category is the same for every card. */
+     others, so the gap down to the byline is the same for every card. */
   align-items: flex-end;
 }
 
-.article-card--portrait .article-title {
-  margin-top: 1px;
-}
-
-.article-card--portrait .article-author {
-  margin-top: 4px;
-}
-
-/* Wider screens set the card on the left. The excerpt runs a little wider
-   there, without balancing, since a narrow ragged column looks pinched on
-   the left. */
+/* Wider screens set the card on the left. The excerpt keeps to a 300px
+   column there, without balancing, since a narrow ragged column looks
+   pinched on the left. */
 @media (min-width: 700px) {
   .article-card {
     align-items: stretch;
@@ -132,6 +140,7 @@
 
   .article-description {
     max-width: 300px;
+    padding: 0;
     text-wrap: pretty;
   }
 
@@ -139,31 +148,34 @@
     align-self: flex-start;
   }
 
-  /* Portraits: set on the left like the other cards (centred was tried),
-     with the other cards' title gap, 22px under the animation and 7px above
-     the byline. */
-  .article-card--portrait .article-picture {
-    margin-bottom: 22px;
+  /* Portraits: their animation goes back to the top, above the category
+     (on a phone it takes the illustration's place), set on the left like the
+     other cards (centred was tried), 22px above the title's category and 7px
+     between the excerpt and the byline. In a row, the animations line up.
+     (The category and title above the animation were tried here.) */
+  .article-card--portrait .card-rule {
+    order: -2;
   }
 
-  .article-card--portrait .article-title {
-    margin-top: 6px;
+  .article-card--portrait .article-picture {
+    order: -1;
+    margin: 0 0 22px;
   }
 
   .article-card--portrait .article-author {
     margin-top: 7px;
   }
 
-  /* More room around the illustration than on a phone (22px). */
+  /* No date on a portrait here, only the author (on a phone it has both).
+     A drawn line before the byline, and the byline set right or centred,
+     were tried. */
+  .article-card--portrait .article-date {
+    display: none;
+  }
+
+  /* More room around the illustration than on a phone. */
   .article-image {
     margin: 36px 0;
   }
 }
 
-@media (max-width: 699.98px) {
-  /* As in the app, a single-line title wider than 80% of the card goes onto
-     two balanced lines. */
-  .article-title {
-    max-width: 80%;
-  }
-}

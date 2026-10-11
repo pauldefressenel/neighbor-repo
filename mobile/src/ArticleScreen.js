@@ -1,10 +1,11 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native'
+import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native'
 import { useNavigation } from 'expo-router'
 import { useScrollToTop } from 'expo-router/react-navigation'
 import { useReducedMotion } from 'react-native-reanimated'
 import { frenchDate } from './ArticleCard'
 import ArticleText, { readingMinutes } from './ArticleText'
+import LateSpinner from './LateSpinner'
 import { i18n } from './i18n'
 import { APPEAR, AppearContext, Rise } from './motion'
 import { articleCard, getArticle } from './sanity'
@@ -72,7 +73,7 @@ export default function ArticleScreen({ lang, slug }) {
             </Pressable>
           </View>
         ) : !full ? (
-          <ActivityIndicator style={styles.center} color={colors.ink} />
+          <LateSpinner style={styles.center} />
         ) : (
           <Rise step={steps.body}>
             <ArticleText body={article.body ?? []} poems={article.poems ?? []} />

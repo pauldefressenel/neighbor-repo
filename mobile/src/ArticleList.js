@@ -1,15 +1,16 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { ActivityIndicator, FlatList, Pressable, RefreshControl, StyleSheet, Text, View } from 'react-native'
+import { FlatList, Pressable, RefreshControl, StyleSheet, Text, View } from 'react-native'
 import { router, useFocusEffect } from 'expo-router'
 import { useScrollToTop } from 'expo-router/react-navigation'
 import { useReducedMotion } from 'react-native-reanimated'
 import ArticleCard from './ArticleCard'
-import Dinkus from './Dinkus'
+import LateSpinner from './LateSpinner'
 import PortraitCard from './PortraitCard'
-import { APPEAR, AppearContext, FadePressable, PRESS, RiseLines, Rise } from './motion'
+import { APPEAR, AppearContext, CARD_PRESS, FadePressable, RiseLines, Rise } from './motion'
 import Rule from './Rule'
 import { i18n } from './i18n'
 import { openArticle } from './sanity'
+import { titleMark } from '../../shared/tokens'
 import { colors, fonts, rubriquesTitle } from './theme'
 
 // The article layout shared by En Couverture and every rubrique: a title over
@@ -101,7 +102,7 @@ export default function ArticleList({ lang, title, fetchArticles, articleHref })
       keyExtractor={(a) => a._id}
       renderItem={({ item, index }) => (
         <AppearContext.Provider value={appearFor(index)}>
-          <FadePressable onPress={() => open(item)} pressScale={PRESS.scale} pressOpacity={1} scaleChildren={item.section === 'portraits'} accessibilityRole="link" accessibilityLabel={item.title}>
+          <FadePressable onPress={() => open(item)} pressScale={CARD_PRESS.scale} pressOpacity={CARD_PRESS.opacity} timing={CARD_PRESS} scaleChildren={item.section === 'portraits'} accessibilityRole="link" accessibilityLabel={item.title}>
             {item.section === 'portraits' ? <PortraitCard {...item} /> : <ArticleCard {...item} />}
           </FadePressable>
         </AppearContext.Provider>
@@ -110,8 +111,8 @@ export default function ArticleList({ lang, title, fetchArticles, articleHref })
       ListHeaderComponent={
         <AppearContext.Provider value={appearFor(0)}>
           <RiseLines style={titleStyle}>{title}</RiseLines>
-          <Rise step={APPEAR.dinkus} style={styles.dinkus}>
-            <Dinkus />
+          <Rise step={APPEAR.titleMark} style={styles.titleMark}>
+            <Text style={styles.asterisk} accessibilityElementsHidden importantForAccessibility="no-hide-descendants">*</Text>
           </Rise>
         </AppearContext.Provider>
       }
@@ -124,7 +125,7 @@ export default function ArticleList({ lang, title, fetchArticles, articleHref })
             </Pressable>
           </View>
         ) : articles === null ? (
-          <ActivityIndicator style={styles.center} color={colors.ink} />
+          <LateSpinner style={styles.center} />
         ) : null
       }
       refreshControl={<RefreshControl refreshing={refreshing} onRefresh={refresh} tintColor={colors.ink} />}
@@ -132,18 +133,29 @@ export default function ArticleList({ lang, title, fetchArticles, articleHref })
   )
 }
 
-// The page title (rubriquesTitle's marginTop above it), then the dinkus that
-// closes it before the first card: 36pt from the title's letters to the
-// dinkus, and 36pt again from the dinkus to the first category (measured).
-const titleStyle = { ...rubriquesTitle, marginBottom: 22.7 }
+// The page title (rubriquesTitle's marginTop above it), then the asterisk
+// that closes it before the first card, centred (titleMark in
+// shared/tokens.js, the website's too; three asterisks, then a short drawn
+// line, came first): `above` between the title's box and the asterisk's,
+// `below` between the asterisk's and the first card's.
+const titleStyle = { ...rubriquesTitle, marginBottom: titleMark.above }
 
 const styles = StyleSheet.create({
   list: {
     flex: 1,
     backgroundColor: colors.paper,
   },
-  dinkus: {
-    marginBottom: 17,
+  titleMark: {
+    alignSelf: 'center',
+    marginBottom: titleMark.below,
+  },
+  // A full line box: iOS clips a glyph to its box, and the asterisk sits at
+  // the top of it.
+  asterisk: {
+    fontFamily: fonts.averiaSerif,
+    fontSize: titleMark.size,
+    lineHeight: titleMark.size,
+    color: colors.ink,
   },
   // The line sits 54pt below the date above it and 54pt above the next
   // category, measured to the letters: the fonts' own line boxes already

@@ -10,6 +10,7 @@ import AboutPage from './AboutPage'
 import VoisinagePage from './VoisinagePage'
 import Footer from './Footer'
 import Rule from './Rule'
+import MenuIcon from './MenuIcon'
 
 // The nav: the three rubriques, The Neighborhood once it opens, then About.
 function navSections(t) {
@@ -87,7 +88,7 @@ export default function Layout() {
             aria-expanded={menuOpen}
             onClick={() => setMenuOpen((open) => !open)}
           >
-            <span className={`nav-toggle-icon${menuOpen ? ' nav-toggle-icon--open' : ''}`} />
+            <MenuIcon open={menuOpen} />
           </button>
           <HeaderLinks items={t.sections} lang={lang} className="header-links header-links--left" />
           <Link to={`/${lang}`} className="site-title" onClick={() => setMenuOpen(false)}>
@@ -115,6 +116,13 @@ export default function Layout() {
                 {other.language}
               </button>
             </span>
+            {/* Phones: the app's switch (mobile/src/Masthead.js), both
+                languages with the other one faint; a tap anywhere on the pair
+                switches. */}
+            <button type="button" className="lang-switch" aria-label={other.language} onClick={switchLanguage}>
+              <span className={lang === 'en' ? 'lang-switch-faint' : undefined}>FR</span>
+              <span className={lang !== 'en' ? 'lang-switch-faint' : undefined}>EN</span>
+            </button>
             {/* Wide screens: both languages, the current one in red; one click
                 switches (chosen over the menu above, which they hide). */}
             <span className="lang-pair">
@@ -156,6 +164,8 @@ export default function Layout() {
         </nav>
         {/* Wide screens: the hand-drawn line under the one-row header. */}
         <Rule className="header-rule" />
+        {/* Phones: the app's masthead line, edge to edge. */}
+        <Rule className="header-rule-phone" drawn />
       </header>
 
       {/* Phone-only: the sections nav collapses behind the header toggle. */}

@@ -167,7 +167,7 @@ function CheckBox({ checked }) {
     <svg className="voisinage-checkbox" width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
       <path
         d="M3.6 4.4 C3.7 3.9 4 3.6 4.6 3.6 L19.4 3.4 C20 3.4 20.4 3.8 20.4 4.4 L20.6 19.5 C20.6 20.1 20.2 20.5 19.6 20.5 L4.5 20.7 C3.9 20.7 3.6 20.3 3.5 19.7 Z"
-        stroke="#1a1a1a"
+        stroke="#000"
         strokeWidth="1.3"
         strokeLinejoin="round"
       />

@@ -1,5 +1,6 @@
 import { defineField, defineType } from 'sanity'
 import { BlockquoteIcon } from '@sanity/icons'
+import { RUBRIQUES, SANITY_SECTIONS } from '../../shared/sections.js'
 
 export const article = defineType({
   name: 'article',
@@ -36,12 +37,8 @@ export const article = defineType({
       title: 'Section',
       type: 'string',
       options: {
-        list: [
-          { title: 'Fiction & Poetry', value: 'fiction-poetry' },
-          { title: 'Literature Review', value: 'literature-review' },
-          { title: 'The Arts', value: 'the-arts' },
-          { title: 'Portraits', value: 'portraits' },
-        ],
+        // The four sections (shared/sections.js), in the rubriques' order.
+        list: RUBRIQUES.flatMap((r) => r.sanity).map((value) => ({ title: SANITY_SECTIONS[value].en, value })),
       },
       validation: Rule => Rule.required(),
     }),

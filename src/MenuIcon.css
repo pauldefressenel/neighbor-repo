@@ -1,0 +1,32 @@
+/* The menu icon (MenuIcon.jsx), standing on its foot like the cross it turns
+   into, so the two share the same baseline and left edge. */
+.menu-icon {
+  position: relative;
+  display: inline-block;
+  vertical-align: baseline;
+}
+
+.menu-icon svg {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  overflow: visible;
+}
+
+/* The top and bottom lines swing into the cross (their transforms are set in
+   MenuIcon.jsx); the dots and the middle line go. */
+.menu-icon path {
+  transform-box: view-box;
+  transition: transform 320ms cubic-bezier(0.22, 1, 0.36, 1), opacity 200ms ease;
+}
+
+.menu-icon--open path:nth-child(-n + 3) {
+  opacity: 0;
+  transform: scale(0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .menu-icon path {
+    transition: none;
+  }
+}

@@ -1,7 +1,8 @@
 import { StyleSheet } from 'react-native'
 import { Image } from 'expo-image'
 import ArticleCard from './ArticleCard'
-import PortraitAnimation, { PORTRAIT_SIZE, hasPortrait } from './PortraitAnimation'
+import PortraitAnimation, { PORTRAIT_SCALE, PORTRAIT_SIZE, hasPortrait } from './PortraitAnimation'
+import { portraitInk } from '../../src/portraits'
 import { urlFor } from './sanity'
 
 // A portrait: the same card as every other article (ArticleCard.js), with the
@@ -14,7 +15,10 @@ export default function PortraitCard(props) {
     ? <PortraitAnimation slug={slug.current} alt={title} />
     // A portrait without an animation shows its whole drawing instead.
     : <Image style={styles.still} source={mainImage ? urlFor(mainImage).width(330).url() : null} contentFit="contain" accessibilityLabel={title} />
-  return <ArticleCard {...props} picture={picture} />
+  // The figure's own empty room above and below at the drawn size, for the
+  // card to take away from the gap around it (portraitInk, the website's too).
+  const ink = portraitInk(slug?.current)
+  return <ArticleCard {...props} picture={picture} pictureInset={{ top: ink.top * PORTRAIT_SCALE, bottom: ink.bottom * PORTRAIT_SCALE }} />
 }
 
 const styles = StyleSheet.create({

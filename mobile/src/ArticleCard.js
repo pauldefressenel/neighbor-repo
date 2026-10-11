@@ -1,57 +1,77 @@
 import { StyleSheet, Text, View } from 'react-native'
 import { Image } from 'expo-image'
+import { longDate } from '../../shared/dates'
+import { card, type } from '../../shared/tokens'
 import BalancedText from './BalancedText'
 import { APPEAR, Pressed, Rise } from './motion'
 import { urlFor } from './sanity'
 import { categoryType, colors, fonts, titleType } from './theme'
 
-export const MONTHS = ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre']
-
-// "9 mai 2026". Spelled out by hand rather than through Intl, whose French
-// data isn't guaranteed in the app's JavaScript engine.
-export const frenchDate = (iso) => {
-  const d = new Date(iso)
-  return Number.isNaN(d.getTime()) ? null : `${d.getDate()} ${MONTHS[d.getMonth()]} ${d.getFullYear()}`
-}
+// "9 mai 2026", as on the website (shared/dates.js).
+export const frenchDate = (iso) => longDate(iso, 'fr')
 
 // An article as a centred title page: category, title and excerpt, then the
 // illustration, then the byline and date. A portrait (PortraitCard.js) passes
-// its animation as `picture`, which goes at the top instead, above the
-// category. Inside a list that
+// its animation as `picture`, which takes the illustration's place (it was
+// at the top, above the category, which ran all the text together). Inside a
+// list that
 // sets AppearContext, it rises all at once (APPEAR.card). (Each part on its
 // own beat felt too drawn out.)
-export default function ArticleCard({ category, title, excerpt, author, mainImage, imageAspect, publishedAt, picture }) {
+export default function ArticleCard({ category, title, excerpt, author, mainImage, publishedAt, picture, pictureInset }) {
   const date = publishedAt ? frenchDate(publishedAt) : null
   return (
     <View>
       <Rise step={APPEAR.card}>
-        {/* A portrait's drawing stays still on press, and only the text below
-            it shrinks (FadePressable's scaleChildren): moved or scaled, even
-            around its own centre, it blurred. */}
-        {picture ? <View style={styles.picture}>{picture}</View> : null}
         <Pressed>
           {category ? <Text style={styles.category}>{category}</Text> : null}
           {/* A one-line title wider than 80% of the card goes onto two lines. */}
-          <BalancedText style={[styles.title, picture && styles.titleUnderPicture]} maxFill={0.8}>{title}</BalancedText>
+          <BalancedText style={styles.title} maxFill={card.titleMaxFill}>{title}</BalancedText>
           {excerpt ? <BalancedText style={styles.excerpt}>{excerpt}</BalancedText> : null}
-          {picture ? null : <Illustration title={title} mainImage={mainImage} imageAspect={imageAspect} />}
-          {author ? <Text style={[styles.author, picture && styles.afterExcerpt]}>de {author}</Text> : null}
-          {/* Portraits go undated, as on the website. */}
-          {date && !picture ? <Text style={styles.date}>{date}</Text> : null}
+        </Pressed>
+        {/* A portrait's drawing takes the illustration's place, as on the
+            website's phones, and stays still on press while the text above
+            and below it shrinks (FadePressable's scaleChildren): moved or
+            scaled, even around its own centre, it blurred. */}
+        {picture ? (
+          <View
+            style={[
+              styles.picture,
+              pictureInset && {
+                marginTop: card.imageGap - GARAMOND_RISE - pictureInset.top,
+                marginBottom: card.imageGap + GARAMOND_RISE - pictureInset.bottom,
+              },
+            ]}
+          >
+            {picture}
+          </View>
+        ) : (
+          <Pressed>
+            <Illustration title={title} mainImage={mainImage} />
+          </Pressed>
+        )}
+        <Pressed>
+          {author ? <Text style={styles.author}>de {author}</Text> : null}
+          {date ? <Text style={styles.date}>{date}</Text> : null}
         </Pressed>
       </Rise>
     </View>
   )
 }
 
-// The vignettes' shared proportions (about 1818×572), for the placeholder.
-const VIGNETTE_ASPECT = 1818 / 572
+// iOS sets EB Garamond about 1.5pt higher in its line than a browser does,
+// so the excerpt above an illustration looked further from it and the byline
+// below nearer than on the website (measured ink to ink, 1.7 and 1.4pt on a
+// portrait, 2 and 1pt on an illustration). The illustration, or a
+// portrait's drawing, sits that much higher to match.
+const GARAMOND_RISE = 1.5
 
-function Illustration({ title, mainImage, imageAspect }) {
-  if (!mainImage) return <View style={[styles.image, styles.placeholder, { aspectRatio: VIGNETTE_ASPECT }]} />
-  // Full width, and as tall as the drawing's own proportions make it
-  // (from Sanity's metadata), so nothing is cropped.
-  return <Image style={[styles.image, { aspectRatio: imageAspect ?? VIGNETTE_ASPECT }]} source={urlFor(mainImage).width(1200).url()} contentFit="contain" accessibilityLabel={title} transition={200} />
+// Every illustration gets the same box, as on the website: the card's width,
+// at the vignettes' shared proportions (card.illustrationAspect). A few
+// vignettes are taller; they are scaled down to fit inside it rather than
+// cropped.
+function Illustration({ title, mainImage }) {
+  if (!mainImage) return <View style={[styles.image, styles.placeholder]} />
+  return <Image style={styles.image} source={urlFor(mainImage).width(1200).url()} contentFit="contain" accessibilityLabel={title} transition={200} />
 }
 
 const centred = { textAlign: 'center', color: colors.ink }
@@ -74,33 +94,29 @@ const styles = StyleSheet.create({
     paddingTop: 8,
     paddingBottom: 4,
   },
-  // About 320pt on a phone, so it takes fewer lines. (It was a 240pt column,
-  // 60pt in from each side, whose short lines made the excerpt run long.)
+  // The card's width less card.excerptInset each side (shared/tokens.js).
   excerpt: {
     ...centred,
-    paddingHorizontal: 20,
+    paddingHorizontal: card.excerptInset,
     fontFamily: fonts.garamond,
-    fontSize: 20,
-    lineHeight: 20 * 1.1,
+    fontSize: type.excerpt.size,
+    lineHeight: type.excerpt.size * type.excerpt.leading,
     letterSpacing: 0,
   },
   image: {
     width: '100%',
+    aspectRatio: card.illustrationAspect,
     alignSelf: 'center',
-    marginVertical: 22,
+    marginTop: card.imageGap - GARAMOND_RISE,
+    marginBottom: card.imageGap + GARAMOND_RISE,
   },
-  // A portrait's animation, centred, at the top, right above the category.
+  // A portrait's animation, centred, in the illustration's place, with the
+  // same room above and below the figure itself (less the room it leaves in
+  // its slot, `pictureInset`).
   picture: {
     alignItems: 'center',
-    marginBottom: 10,
-  },
-  // On a portrait the text sits closer together: the title 6pt nearer the
-  // category, the byline 4pt from the excerpt.
-  titleUnderPicture: {
-    marginTop: -5,
-  },
-  afterExcerpt: {
-    marginTop: 4,
+    marginTop: card.imageGap - GARAMOND_RISE,
+    marginBottom: card.imageGap + GARAMOND_RISE,
   },
   placeholder: {
     backgroundColor: colors.placeholder,
@@ -108,14 +124,14 @@ const styles = StyleSheet.create({
   author: {
     ...centred,
     fontFamily: fonts.garamondMedium,
-    fontSize: 21,
-    lineHeight: 24,
+    fontSize: type.byline.size,
+    lineHeight: type.byline.lineHeight,
   },
   // The author's size, in a lighter italic.
   date: {
     ...centred,
     fontFamily: fonts.garamondItalic,
-    fontSize: 21,
-    lineHeight: 24,
+    fontSize: type.byline.size,
+    lineHeight: type.byline.lineHeight,
   },
 })

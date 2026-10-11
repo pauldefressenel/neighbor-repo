@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { AppearContext } from './appear'
 import { useParams } from 'react-router-dom'
 import './SectionPage.css'
 import { getArticlesBySection } from './sanity/queries'
@@ -10,6 +11,8 @@ import PageTitle from './PageTitle'
 export default function SectionPage() {
   const { lang, section } = useParams()
   const [articles, setArticles] = useState([])
+  // When the page opened, for its build-up (appear.js).
+  const [since] = useState(() => performance.now())
   const t = i18n[lang] ?? i18n.en
   const title = t.sections.find(s => s.value === section)?.label
 
@@ -18,10 +21,11 @@ export default function SectionPage() {
   }, [lang, section])
 
   return (
-    <main className="main">
-      <PageTitle>{title}</PageTitle>
-      {section === 'portraits' && <p className="page-subtitle">{t.portraitsSubtitle}</p>}
-      <ArticleGrid articles={articles} />
-    </main>
+    <AppearContext.Provider value={since}>
+      <main className="main">
+        <PageTitle>{title}</PageTitle>
+        <ArticleGrid articles={articles} />
+      </main>
+    </AppearContext.Provider>
   )
 }

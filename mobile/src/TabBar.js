@@ -1,6 +1,8 @@
 import { Pressable, StyleSheet, Text, View } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { TabIcon } from './DrawnIcons'
+import PaperFade from './PaperFade'
+import Rule from './Rule'
 import { categoryType, colors } from './theme'
 
 // Each tab's icon (DrawnIcons.js), always drawn in ink. Keyed by the tab's
@@ -28,44 +30,60 @@ export default function TabBar({ state, navigation }) {
   const insets = useSafeAreaInsets()
   return (
     <View style={[styles.bar, { paddingBottom: insets.bottom }]}>
-      {state.routes.map((route, i) => {
-        const icon = icons[route.name]
-        if (!icon) return null
-        const focused = state.index === i
-        const onPress = () => {
-          const event = navigation.emit({ type: 'tabPress', target: route.key, canPreventDefault: true })
-          if (!focused && !event.defaultPrevented) navigation.navigate(route.name, route.params)
-        }
-        return (
-          <Pressable
-            key={route.key}
-            style={styles.tab}
-            onPress={onPress}
-            accessibilityRole="tab"
-            accessibilityState={{ selected: focused }}
-            accessibilityLabel={LABELS[route.name]}
-          >
-            <View style={styles.icon}>
-              <TabIcon name={icon} />
-            </View>
-            <Text style={styles.label}>{LABELS[route.name]}</Text>
-            <View style={[styles.dot, focused && styles.dotOn]} />
-          </Pressable>
-        )
-      })}
+      {/* Above the line, the paper fades out into the page, as under the
+          masthead. */}
+      <PaperFade edge="bottom" />
+      {/* The masthead's hand-drawn line, turned upside down so the two
+          aren't the same: its sag is right of centre, bowing up. */}
+      <Rule style={styles.rule} />
+      <View style={styles.tabs}>
+        {state.routes.map((route, i) => {
+          const icon = icons[route.name]
+          if (!icon) return null
+          const focused = state.index === i
+          const onPress = () => {
+            const event = navigation.emit({ type: 'tabPress', target: route.key, canPreventDefault: true })
+            if (!focused && !event.defaultPrevented) navigation.navigate(route.name, route.params)
+          }
+          return (
+            <Pressable
+              key={route.key}
+              style={styles.tab}
+              onPress={onPress}
+              accessibilityRole="tab"
+              accessibilityState={{ selected: focused }}
+              accessibilityLabel={LABELS[route.name]}
+            >
+              <View style={styles.icon}>
+                <TabIcon name={icon} />
+              </View>
+              <Text style={styles.label}>{LABELS[route.name]}</Text>
+              <View style={[styles.dot, focused && styles.dotOn]} />
+            </Pressable>
+          )
+        })}
+      </View>
     </View>
   )
 }
 
 const styles = StyleSheet.create({
+  bar: {
+    backgroundColor: colors.bar,
+    // Above the page, for the fade above it (PaperFade).
+    zIndex: 1,
+  },
+  // Turned a half turn. Its box is 2pt taller than the border it replaced,
+  // taken back so the tabs stay where they were.
+  rule: {
+    transform: [{ rotate: '180deg' }],
+    marginBottom: -2,
+  },
   // Inset from the screen's sides, so the four tabs sit closer together
   // than they would spread across the full width.
-  bar: {
+  tabs: {
     flexDirection: 'row',
     paddingHorizontal: 28,
-    backgroundColor: colors.bar,
-    borderTopWidth: 1,
-    borderTopColor: colors.ink,
   },
   tab: {
     flex: 1,
