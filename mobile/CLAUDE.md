@@ -50,7 +50,7 @@ index.js                    → /fr or /en, from the phone's language and region
 [lang]/rubriques/[section]/index.js    one rubrique's articles (slug from sections.js)
 [lang]/rubriques/[section]/[slug].js   an article opened from a rubrique
 [lang]/a-propos.js          About: the about-<lang> text, set like an article
-[lang]/voisinage.js         Voisinage: the landing (NeighbourLanding), whose links open the sign-up form; signed up, the games, none built yet, and the account
+[lang]/voisinage.js         Voisinage: the landing (NeighbourLanding), whose e-mail and code fields sign up or in; then the sign-up (SignUpForm) for a new account; signed in, the games, none built yet, and the account
 ```
 
 Navigation details that are easy to break:
@@ -127,20 +127,61 @@ Navigation details that are easy to break:
   edge, and it stands on the wordmark's baseline.
   (It replaced "Fr" opening a red "En" beside it.) Switching keeps the page, except that an article goes back to the
   list it was opened from (article slugs differ between languages).
-- `NeighbourLanding.js` — Voisinage signed out: "S'inscrire" (red) and
-  "Se connecter" at the top, then the real neighbours one at a time, from
-  Supabase: avatar (160pt), first name, activity and "Depuis <mois>" (no
-  year: some neighbours predate the dates the old database kept), all in the
-  categories' type, changing every 2.2s with a fade and a 4pt drop
-  (`NEIGHBOUR` in motion.js). A tap stops on a neighbour. Only neighbours
-  with an activity are shown; the next three avatars are prefetched rather
-  than all of them. Both links open the old sign-up form for now.
+- `NeighbourLanding.js` — Voisinage signed out, chosen on a comparison
+  sheet (option B). Under the centred "Voisinage" title (no dinkus: it
+  separates articles, and there are none here), 90pt down:
+  - "S'inscrire" / "Se connecter" in the categories' capitals at 16pt, the
+    chosen one red, with the e-mail field right under them (they stand in
+    for its label; centring both was tried). Once the address is sent it stays, greyed, with
+    "Modifier", and the code field opens under it on the same page (six
+    digits, NeighborFont, iOS's one-time-code autofill; a whole code goes on
+    by itself). Both links lead to the same two steps, checked by Supabase
+    (account.js); whether the address is new or known will decide what
+    follows the code;
+  - a description set like a card's excerpt (Garamond 20/22) but flush left
+    (centred Garamond was turned down), which follows the chosen link: what
+    being a neighbour brings, or "Bon retour dans le voisinage";
+  - the real neighbours one at a time, from Supabase: a 135pt avatar,
+    centred, then flush left under it the first name (black), activity
+    (grey) and "Depuis <mois>" (red, the activity's 14pt; grey was tried; both at the
+    name's 20pt were tried; no year, since some neighbours
+    predate the dates the old database kept), changing every 2.2s with a
+    fade in place (`NEIGHBOUR` in motion.js; a 4pt drop was taken out). A tap doesn't stop it (that was tried).
+    Only neighbours with an activity are shown, and only the next three
+    avatars are prefetched. A scrolling street and a grid of faces were
+    rejected: always one neighbour replacing another.
+- `SignUpForm.js` — the sign-up, for a signed-in account without a profile
+  (a new address, right after its code). It fits the screen and doesn't scroll. Under
+  "S'inscrire": the first name and surname side by side ("Victor", "Hugo"
+  as grey placeholders), the country ("France" in grey until chosen; iOS's
+  wheel in a sheet opens on the phone's region; `countries.js` holds the
+  French names shown and the English ones stored), then "Avatar de voisin",
+  optional. Before a photo, a breathing dashed frame ("+ IMPORTER UN
+  SELFIE", written in capitals: with `textTransform` iOS laid the lines out
+  off centre) opens iOS's action sheet (a front-camera selfie or a library
+  photo, cut square), and an arrow points to the landing's stream in its
+  `example` mode (84pt avatar, the name and the whole activity centred, no
+  month). Once a photo is taken the example goes: the photo on the left,
+  "Activité*" (then required) and "Reprendre la photo" beside it. The
+  avatar part keeps one height (`AVATAR_PART`) either way, so the drawn
+  line and the envelope under it never move. The envelope and "Envoyer mon
+  profil" breathe softly, ink until the profile can be sent, then red; a
+  tap too soon shakes them, a ready one asks with iOS's alert, then
+  `saveProfile` (account.js) saves the profile and the photo (private
+  `photos` bucket). Typing the activity lifts the page just over the
+  keyboard (`useKeyboardLift`), since the page can't scroll.
 - `supabase.js` — the neighbours' Supabase project: its public key,
-  `avatarUrl` and `getNeighbours` (the public `neighbours` view), over plain
-  REST. Sign-in will bring supabase-js.
-- `account.js` — signing up (an e-mail address and the newsletter tick box),
-  which opens Voisinage's games. A design mock-up for now: the account lives
-  in memory and nothing is sent. Provided above `[lang]`, so switching
+  `avatarUrl` and `getNeighbours` (the public `neighbours` view, over plain
+  REST), and the supabase-js client for signing in, its session kept in
+  AsyncStorage (an encrypted store is worth adding before release) and
+  refreshed only while the app is in front.
+- `account.js` — the reader's account, from Supabase Auth: `sendCode` (an
+  e-mailed six-digit code; only "S'inscrire" may create the account, so
+  signing in with an unknown address is refused with `otp_disabled`),
+  `verifyCode`, `signOut`, and the profile's first name and newsletter.
+  The code's e-mail is written and sent by the `send-email` Edge Function
+  (repo-root `supabase/functions/send-email/`, Supabase's Send Email Hook),
+  in the language `sendCode` stores in the user's metadata (`lang`). Provided above `[lang]`, so switching
   language keeps it.
 - `DrawnIcons.js` — `TabIcon`, the tab bar's four icons (a crown for A La
   Une, a ticket for Rubriques, three people for Voisinage, a palette for
@@ -162,7 +203,8 @@ Navigation details that are easy to break:
   switching tabs and back shows it as it was), and when it slides in: a
   rubrique or an article each time it opens. Coming back to a page (the
   Rubriques list included) shows it as it was. A Propos is the exception: it
-  builds up again, from the top, every time its tab is entered.
+  builds up again, from the top, every time its tab is entered, and so
+  does Voisinage.
 - `theme.js` — colours (paper `#FFFFF2`, ink, red `#FF1919`), font families,
   and shared text and layout styles (`pageTitle`, `rubriquesTitle`, `menu`).
   The Rubriques list sets its block names ("1. Essais & Critiques") in

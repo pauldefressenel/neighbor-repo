@@ -34,7 +34,14 @@
           "backgroundColor": "#FFFFF2"
         }
       ],
-      "expo-localization"
+      "expo-localization",
+      [
+        "expo-image-picker",
+        {
+          "cameraPermission": "The Neighbor utilise l’appareil photo pour votre selfie, d’après lequel votre avatar de voisin est dessiné.",
+          "photosPermission": "The Neighbor utilise une photo de vous pour dessiner votre avatar de voisin."
+        }
+      ]
     ],
     "scheme": "theneighbor",
     "backgroundColor": "#FFFFF2"

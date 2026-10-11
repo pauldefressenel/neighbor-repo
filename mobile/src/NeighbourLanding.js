@@ -1,54 +1,274 @@
 import { useEffect, useRef, useState } from 'react'
-import { Animated, Pressable, StyleSheet, Text, View } from 'react-native'
+import { ActivityIndicator, Animated, StyleSheet, Text, TextInput, View } from 'react-native'
 import { Image } from 'expo-image'
+import { useGlobalSearchParams } from 'expo-router'
 import { useIsFocused } from 'expo-router/react-navigation'
-import { useReducedMotion } from 'react-native-reanimated'
+import { CODE_LENGTH, isEmail, useAccount } from './account'
 import { MONTHS } from './ArticleCard'
-import { FadePressable, NEIGHBOUR } from './motion'
+import { APPEAR, FadePressable, NEIGHBOUR, Rise, RiseLines, usePlayOn } from './motion'
+import Rule from './Rule'
 import { avatarUrl, getNeighbours } from './supabase'
-import { categoryType, colors } from './theme'
+import { categoryType, colors, fonts, rubriquesTitle } from './theme'
 
 // How many avatars ahead are loaded while one is shown. Loading all of them
 // up front would be some 30 MB over a phone's data.
 const AHEAD = 3
 
-// Voisinage for a reader who isn't signed in: "S'inscrire" and "Se
-// connecter" at the top, and below them the neighbours one at a time (their
-// avatar, first name, activity and the month they joined), changing every
-// couple of seconds. A tap on the neighbour stops on them, another goes on.
-// Only neighbours with an activity are shown. The month comes without its
-// year: some neighbours joined in 2025, before the dates the old database
-// kept, so a year would be wrong for them. Chosen on a comparison sheet
-// (option B), with everything in the categories' type.
-export default function NeighbourLanding({ onSignUp, onSignIn }) {
-  const neighbour = useNeighbours()
+// The neighbour's avatar, under the description (120pt was too small, 150pt
+// too big).
+const AVATAR = 135
+
+const MODES = { up: "S'inscrire", in: 'Se connecter' }
+
+// The text under the address changes with the link, so choosing one shows:
+// what being a neighbour brings to someone signing up, a welcome back to
+// someone signing in.
+// "Voisin" and "voisins" are set in italic, as the paper's own word. "News-letter" keeps
+// an ordinary hyphen on purpose: the line may break after "news-", which
+// fills the first line (a non-breaking hyphen was tried).
+const DESCRIPTIONS = {
+  up: (
+    <>
+      En devenant <Text style={{ fontFamily: fonts.garamondItalic }}>voisin</Text>, vous accédez à la news-letter, à
+      des mini-jeux, et bien plus encore.
+    </>
+  ),
+  in: (
+    <>
+      Vous revoilà{'\u00a0'}! Vos <Text style={{ fontFamily: fonts.garamondItalic }}>voisins</Text> vous ont gardé une
+      place. Le voisinage a bien changé, venez voir.
+    </>
+  ),
+}
+
+// Voisinage for a reader who isn't signed in. Under the centred title,
+// "S'inscrire" and "Se connecter" (the chosen one red), with the address
+// right under them, since they say what the address is for; then what being
+// a neighbour means, flush left and set like a card's excerpt (centred
+// Garamond was turned down); then the neighbours one at a time, the picture
+// centred and their words flush left under it. Once the address is sent, the code field opens
+// under it on the same page, and the address can be changed. Both links
+// lead to the same two steps; only who the reader turns out to be (a new
+// address or a known one) will decide what follows the code. There is no
+// dinkus: it separates articles, and there are none here. Chosen on a
+// comparison sheet (option B).
+export default function NeighbourLanding() {
+  const [mode, setMode] = useState('up')
   return (
-    <View style={styles.landing}>
-      <View style={styles.links}>
-        <FadePressable onPress={onSignUp} hitSlop={10} accessibilityRole="button">
-          <Text style={[styles.link, styles.signUp]}>S'inscrire</Text>
-        </FadePressable>
-        <FadePressable onPress={onSignIn} hitSlop={10} accessibilityRole="button">
-          <Text style={styles.link}>Se connecter</Text>
-        </FadePressable>
-      </View>
-      <View style={styles.stage}>{neighbour}</View>
-    </View>
+    <>
+      <RiseLines style={styles.title} step={APPEAR.menu.title}>Voisinage</RiseLines>
+      <Rise step={APPEAR.menu.subtitle}>
+        <View style={styles.links}>
+          {Object.entries(MODES).map(([key, label]) => (
+            <FadePressable
+              key={key}
+              onPress={() => setMode(key)}
+              hitSlop={10}
+              accessibilityRole="tab"
+              accessibilityState={{ selected: mode === key }}
+            >
+              <Text style={[styles.link, mode === key && styles.chosen]}>{label}</Text>
+            </FadePressable>
+          ))}
+        </View>
+        <SignIn mode={mode} />
+      </Rise>
+      <Rise step={APPEAR.menu.rule}>
+        {/* Keyed by the link, so choosing the other one rises the new text in. */}
+        <Rise key={mode} step={APPEAR.swap}>
+          <Text style={styles.description}>{DESCRIPTIONS[mode]}</Text>
+        </Rise>
+      </Rise>
+      <Rise step={APPEAR.menu.rule} extraDelay={APPEAR.menu.stagger} style={styles.stage}>
+        <Neighbours />
+      </Rise>
+    </>
   )
 }
 
-// The neighbour on show, as an element, or nothing until the first avatar
-// has loaded (or if the neighbours can't be fetched: the links still work).
-function useNeighbours() {
+// The address, then the code, both checked by Supabase (account.js). Signing
+// in with an address it doesn't know is refused; signing up with one it
+// knows simply signs that neighbour in.
+const SENT = 'Envoyé à l\u2019instant.'
+const RESENT = 'Un nouveau code vient de partir.'
+
+function SignIn({ mode }) {
+  const { sendCode, verifyCode } = useAccount()
+  // The e-mail is written in the app's language.
+  const { lang = 'fr' } = useGlobalSearchParams()
+  const [email, setEmail] = useState('')
+  const [sent, setSent] = useState(false)
+  const [code, setCode] = useState('')
+  const [busy, setBusy] = useState(false)
+  const [error, setError] = useState(null)
+  const [note, setNote] = useState(SENT)
+
+  const send = async () => {
+    if (busy) return
+    if (!isEmail(email)) {
+      setError("Cette adresse n'est pas valide.")
+      return
+    }
+    setError(null)
+    setBusy(true)
+    const failed = await sendCode(email.trim(), mode, lang)
+    setBusy(false)
+    if (failed) setError(failed)
+    else {
+      setSent(true)
+      setNote(SENT)
+    }
+  }
+
+  const resend = async () => {
+    const failed = await sendCode(email.trim(), mode, lang)
+    if (failed) setError(failed)
+    else setNote(RESENT)
+  }
+
+  const verify = async (value = code) => {
+    if (busy) return
+    if (value.length !== CODE_LENGTH) {
+      setError(`Le code a ${CODE_LENGTH} chiffres.`)
+      return
+    }
+    setError(null)
+    setBusy(true)
+    // On success the account signs in and the page turns into the games, so
+    // only a failure has anything left to do here.
+    const failed = await verifyCode(email.trim(), value, lang)
+    if (failed) {
+      setBusy(false)
+      setCode('')
+      setError(failed)
+    }
+  }
+
+  const change = () => {
+    setSent(false)
+    setCode('')
+    setError(null)
+  }
+
+  // When the reader picks the other link, the address's line draws again
+  // from the left, and the field's words and arrow come back once it is
+  // drawn.
+  const redraw = usePlayOn(mode, APPEAR.redraw.spring)
+  const afterLine = redraw.interpolate({ inputRange: [0, 1 - APPEAR.redraw.show, 1], outputRange: [0, 0, 1] })
+
+  return (
+    <>
+      <View>
+        <Animated.View style={[styles.row, styles.emailRow, { opacity: afterLine }]}>
+          <TextInput
+            style={[styles.input, sent && styles.sent]}
+            value={email}
+            onChangeText={(text) => {
+              setEmail(text)
+              if (error) setError(null)
+            }}
+            onSubmitEditing={send}
+            placeholder="votre adresse e-mail"
+            placeholderTextColor={colors.faint}
+            keyboardType="email-address"
+            textContentType="emailAddress"
+            autoComplete="email"
+            autoCapitalize="none"
+            autoCorrect={false}
+            returnKeyType="send"
+            editable={!sent && !busy}
+            selectionColor={colors.red}
+            accessibilityLabel={`Votre adresse e-mail, pour ${MODES[mode].toLowerCase()}`}
+          />
+          {sent ? (
+            <View style={styles.editSlot}>
+              <FadePressable onPress={change} hitSlop={12} accessibilityRole="button">
+                <Text style={styles.edit}>Modifier</Text>
+              </FadePressable>
+            </View>
+          ) : (
+            <Arrow busy={busy} onPress={send} />
+          )}
+        </Animated.View>
+        <Animated.View style={[styles.drawn, { transform: [{ scaleX: redraw }] }]}>
+          <Rule />
+        </Animated.View>
+      </View>
+
+      {sent ? (
+        // Rises as it opens: the page's appear time has long passed, so
+        // Rise plays it at once.
+        <Rise step={APPEAR.menu.subtitle}>
+          <Text style={styles.label}>Le code reçu par e-mail</Text>
+          <View style={styles.row}>
+            <TextInput
+              style={[styles.input, styles.code]}
+              value={code}
+              onChangeText={(text) => {
+                const digits = text.replace(/\D/g, '').slice(0, CODE_LENGTH)
+                setCode(digits)
+                if (error) setError(null)
+                // A code offered by the keyboard comes in whole: go on.
+                if (digits.length === CODE_LENGTH) verify(digits)
+              }}
+              keyboardType="number-pad"
+              textContentType="oneTimeCode"
+              autoComplete="one-time-code"
+              maxLength={CODE_LENGTH}
+              autoFocus
+              editable={!busy}
+              selectionColor={colors.red}
+              accessibilityLabel="Le code reçu par e-mail"
+            />
+            <Arrow busy={busy} onPress={() => verify()} style={styles.arrowOnCode} />
+          </View>
+          <Rule />
+          {error ? (
+            <Text style={[styles.note, styles.error]}>{error}</Text>
+          ) : (
+            <Text style={styles.note}>
+              {note}{' '}
+              <Text style={styles.underline} onPress={resend} accessibilityRole="button">
+                Renvoyer
+              </Text>
+            </Text>
+          )}
+        </Rise>
+      ) : error ? (
+        <Text style={[styles.note, styles.error]}>{error}</Text>
+      ) : null}
+    </>
+  )
+}
+
+// The chevron that sends a field, or a spinner while it is sent.
+function Arrow({ busy, onPress, style }) {
+  if (busy) return <ActivityIndicator color={colors.ink} style={styles.editSlot} />
+  return (
+    <FadePressable onPress={onPress} hitSlop={12} accessibilityRole="button" accessibilityLabel="Envoyer">
+      {/* The masthead's back chevron, pointing on. */}
+      <Text style={[styles.arrow, style]}>&gt;</Text>
+    </FadePressable>
+  )
+}
+
+// The neighbour on show, or nothing until the first avatar has loaded (or if
+// the neighbours can't be fetched: the field still works). Every couple of
+// seconds it fades to the next one, and a tap doesn't stop it (stopping on
+// a tap was tried).
+// Only neighbours with an activity are shown. The month comes without its
+// year: some neighbours joined in 2025, before the dates the old database
+// kept, so a year would be wrong for them.
+export function Neighbours({ example = false, size = AVATAR }) {
   const [list, setList] = useState(null)
   const [index, setIndex] = useState(0)
   // `ready` is a ref, so the first avatar's arrival also bumps this to draw.
   const [, setLoaded] = useState(0)
   const ready = useRef(new Set())
-  const paused = useRef(false)
   const shown = useRef(new Animated.Value(1)).current
+  // Set between the fade out and the new avatar being drawn.
+  const waiting = useRef(false)
   const focused = useIsFocused()
-  const reduceMotion = useReducedMotion()
 
   useEffect(() => {
     let live = true
@@ -88,79 +308,202 @@ function useNeighbours() {
 
   // Every `dwell`, fade the neighbour out, move on to the next one whose
   // avatar has loaded, and fade back in. Stops while the tab is out of
-  // view or the reader has tapped.
+  // view.
   useEffect(() => {
     if (!list?.length || !focused) return
     const timer = setInterval(() => {
-      if (paused.current) return
       let next = (index + 1) % list.length
       for (let k = 0; k < AHEAD && !ready.current.has(list[next].id); k++) next = (next + 1) % list.length
       if (!ready.current.has(list[next].id)) return
       Animated.timing(shown, { toValue: 0, duration: NEIGHBOUR.fade, easing: NEIGHBOUR.easing, useNativeDriver: true }).start(() => {
+        // The fade back in waits for the new avatar to be on screen
+        // (`appear`, from the image's onDisplay): started at once, it showed
+        // the old avatar for a moment, since expo-image keeps the previous
+        // picture until the next one is drawn.
+        waiting.current = true
         setIndex(next)
-        Animated.timing(shown, { toValue: 1, duration: NEIGHBOUR.fade, easing: NEIGHBOUR.easing, useNativeDriver: true }).start()
       })
     }, NEIGHBOUR.dwell)
     return () => clearInterval(timer)
   }, [list, index, focused, shown])
 
+  const appear = () => {
+    if (!waiting.current) return
+    waiting.current = false
+    Animated.timing(shown, { toValue: 1, duration: NEIGHBOUR.fade, easing: NEIGHBOUR.easing, useNativeDriver: true }).start()
+  }
+  // In case the image never reports being drawn, come back anyway.
+  useEffect(() => {
+    if (!waiting.current) return
+    const late = setTimeout(appear, 400)
+    return () => clearTimeout(late)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [index])
+
   const n = list?.[index]
-  if (!n || !ready.current.has(n.id)) return null
+  if (!n || !ready.current.has(n.id)) return example ? <View style={{ width: size, height: size }} /> : null
   const month = MONTHS[new Date(n.created_at).getMonth()]
-  const motion = reduceMotion
-    ? { opacity: shown }
-    : { opacity: shown, transform: [{ translateY: shown.interpolate({ inputRange: [0, 1], outputRange: [NEIGHBOUR.drop, 0] }) }] }
+  // The picture centred, its words flush left under it.
+  const image = (
+    <Image
+      style={{ width: size, height: size, alignSelf: 'center' }}
+      source={avatarUrl(n.avatar_path)}
+      contentFit="contain"
+      transition={0}
+      onDisplay={appear}
+    />
+  )
+
+  // The sign-up's example of what a photo becomes: smaller, the name and
+  // activity centred under the avatar, without the month.
+  if (example) {
+    return (
+      <Animated.View style={{ opacity: shown }} accessible accessibilityLabel={`${n.first_name}, ${n.activity}`}>
+        {image}
+        <Text style={[styles.name, styles.exampleName]}>{n.first_name}</Text>
+        <Text style={[styles.activity, styles.exampleActivity]}>{n.activity.trim()}</Text>
+      </Animated.View>
+    )
+  }
 
   return (
-    <Pressable
-      onPress={() => {
-        paused.current = !paused.current
-      }}
-      accessibilityLabel={`${n.first_name}, ${n.activity}, depuis ${month}`}
-    >
-      <Animated.View style={[styles.neighbour, motion]}>
-        <Image style={styles.avatar} source={avatarUrl(n.avatar_path)} contentFit="contain" transition={0} />
+    <View accessible accessibilityLabel={`${n.first_name}, ${n.activity}, depuis ${month}`}>
+      <Animated.View style={[styles.neighbour, { opacity: shown }]}>
+        {image}
         <Text style={styles.name}>{n.first_name}</Text>
         <Text style={styles.activity}>{n.activity.trim()}</Text>
         <Text style={styles.since}>Depuis {month}</Text>
       </Animated.View>
-    </Pressable>
+    </View>
   )
 }
 
+// The small capitals of the activity, the month and the code's label.
+// (The activity and the month at the name's 20pt were tried.)
+const smallCaps = {
+  ...categoryType,
+  fontSize: 14,
+  lineHeight: 14 * 1.1,
+  letterSpacing: 14 * -0.03,
+}
+
 const styles = StyleSheet.create({
-  landing: {
-    flex: 1,
+  title: {
+    ...rubriquesTitle,
+    marginBottom: 90,
   },
   links: {
     flexDirection: 'row',
-    justifyContent: 'center',
-    gap: 24,
-    marginTop: 20,
+    gap: 26,
   },
+  // The categories' capitals at 16pt (22 and 18 were too big).
   link: {
     ...categoryType,
-    fontSize: 14,
-    lineHeight: 14 * 1.1,
-    letterSpacing: 14 * -0.03,
+    fontSize: 16,
+    lineHeight: 16 * 1.1,
+    letterSpacing: 16 * -0.05,
     color: colors.ink,
   },
-  signUp: {
+  chosen: {
     color: colors.red,
   },
-  // The neighbour sits in the middle of the space under the links.
-  stage: {
+  // The field and its arrow stand on the bottom of the row, and the arrow
+  // is raised by the difference so it sits on the text's baseline rather
+  // than centred against it (see `arrow`).
+  row: {
+    flexDirection: 'row',
+    alignItems: 'flex-end',
+    gap: 12,
+  },
+  // The line grows from its left end.
+  drawn: {
+    transformOrigin: 'left',
+  },
+  // Right under the links, which stand in for its label: most of the
+  // field's top padding is taken back, so the address sits close under
+  // them. (Centring both was tried.)
+  emailRow: {
+    marginTop: -3,
+  },
+  input: {
     flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingBottom: 10,
+    fontFamily: fonts.garamond,
+    fontSize: 22,
+    color: colors.ink,
+    paddingTop: 12,
+    paddingBottom: 6,
   },
+  // The address once sent: kept, greyed, until "Modifier".
+  sent: {
+    color: colors.muted,
+  },
+  edit: {
+    ...categoryType,
+    fontSize: 13,
+    lineHeight: 13 * 1.1,
+    letterSpacing: 13 * -0.03,
+    color: colors.muted,
+    textDecorationLine: 'underline',
+  },
+  label: {
+    ...smallCaps,
+    letterSpacing: 14 * -0.05,
+    marginTop: 22,
+  },
+  code: {
+    fontFamily: fonts.neighbor,
+    fontSize: 30,
+    letterSpacing: 30 * 0.25,
+    paddingTop: 14,
+  },
+  // In red (ink, like the masthead's back arrow, was tried). Paprika at 24pt
+  // and Garamond at 22pt reach the same depth below their baselines (6.6pt,
+  // read from the fonts), so raising the arrow by the field's 6pt bottom
+  // padding would put both on one line; it sits 2pt lower than that, which
+  // looked better on the phone. NeighborFont, in the code field, reaches
+  // 6pt, hence the smaller lift there.
+  arrow: {
+    fontFamily: fonts.paprika,
+    fontSize: 24,
+    color: colors.red,
+    marginBottom: 4,
+  },
+  arrowOnCode: {
+    marginBottom: 3.4,
+  },
+  // "Modifier" stays centred against the address.
+  editSlot: {
+    alignSelf: 'center',
+  },
+  note: {
+    fontFamily: fonts.garamondItalic,
+    fontSize: 16,
+    lineHeight: 21,
+    color: colors.ink,
+    marginTop: 10,
+  },
+  underline: {
+    textDecorationLine: 'underline',
+  },
+  // Upright, unlike the notes (italic was tried).
+  error: {
+    fontFamily: fonts.garamond,
+    color: colors.red,
+  },
+  // A card's excerpt (ArticleCard.js), flush left.
+  description: {
+    fontFamily: fonts.garamond,
+    fontSize: 20,
+    lineHeight: 20 * 1.1,
+    color: colors.ink,
+    marginTop: 10,
+  },
+  stage: {
+    marginTop: 28,
+  },
+  // Flush left like the text above (centred was tried).
   neighbour: {
-    alignItems: 'center',
-  },
-  avatar: {
-    width: 160,
-    height: 160,
+    alignItems: 'flex-start',
   },
   name: {
     ...categoryType,
@@ -168,25 +511,29 @@ const styles = StyleSheet.create({
     lineHeight: 20 * 1.1,
     letterSpacing: 20 * -0.05,
     color: colors.ink,
-    textAlign: 'center',
-    marginTop: 4,
+    marginTop: 12,
   },
   activity: {
-    ...categoryType,
-    fontSize: 14,
-    lineHeight: 14 * 1.1,
-    letterSpacing: 14 * -0.03,
+    ...smallCaps,
     color: colors.muted,
-    textAlign: 'center',
     marginTop: 3,
-    paddingHorizontal: 20,
   },
   since: {
-    ...categoryType,
-    fontSize: 11,
-    lineHeight: 11 * 1.1,
-    letterSpacing: 11 * -0.02,
-    textAlign: 'center',
+    ...smallCaps,
     marginTop: 4,
+  },
+  exampleName: {
+    fontSize: 15,
+    lineHeight: 15 * 1.1,
+    letterSpacing: 15 * -0.05,
+    marginTop: 4,
+    textAlign: 'center',
+  },
+  exampleActivity: {
+    fontSize: 12,
+    lineHeight: 12 * 1.15,
+    letterSpacing: 12 * -0.03,
+    marginTop: 1,
+    textAlign: 'center',
   },
 })

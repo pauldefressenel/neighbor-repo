@@ -36,3 +36,7 @@ import/backup-*.ndjson
 
 # Claude Code launch config (local tooling)
 .claude/
+
+# The send-email letter preview (node supabase/functions/send-email/preview.mjs)
+supabase/functions/send-email/preview.html
+supabase/.temp/

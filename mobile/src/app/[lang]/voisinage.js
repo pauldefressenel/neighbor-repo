@@ -1,13 +1,14 @@
-import { useRef, useState } from 'react'
-import { ActivityIndicator, KeyboardAvoidingView, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native'
+import { useEffect, useRef, useState } from 'react'
+import { KeyboardAvoidingView, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native'
+import { useNavigation } from 'expo-router'
 import { useScrollToTop } from 'expo-router/react-navigation'
 import { useReducedMotion } from 'react-native-reanimated'
-import { isEmail, useAccount } from '../../account'
-import Dinkus from '../../Dinkus'
+import { useAccount } from '../../account'
 import { CheckBox } from '../../DrawnIcons'
 import Masthead from '../../Masthead'
 import NeighbourLanding from '../../NeighbourLanding'
-import { APPEAR, AppearContext, FadePressable, PRESS, Rise, RiseLines } from '../../motion'
+import SignUpForm from '../../SignUpForm'
+import { APPEAR, AppearContext, Rise, RiseLines } from '../../motion'
 import Rule from '../../Rule'
 import { categoryType, colors, fonts, menu as menuStyle } from '../../theme'
 
@@ -19,115 +20,61 @@ const GAMES = [
   { name: 'Le Mot juste', subtitle: 'Un mot par jour' },
 ]
 
-// Voisinage: signed out, the landing (NeighbourLanding.js: the neighbours
-// one at a time, with "S'inscrire" and "Se connecter"), whose links open the
-// sign-up form (an e-mail address and the newsletter; the real sign-up and
-// sign-in screens are still to be designed); signed up, the games, then the
-// reader's account. The masthead's back arrow goes from the form back to
-// the landing.
+// Voisinage: signed out, the landing (NeighbourLanding.js: what being a
+// neighbour means, the neighbours one at a time, and the e-mail field that
+// signs up or signs in); signed in without a profile, the sign-up
+// (SignUpForm.js); signed in, the games, then the reader's account.
 export default function VoisinageScreen() {
   const { member } = useAccount()
-  const [form, setForm] = useState(false)
-  if (member && form) setForm(false)
   const scroll = useRef(null)
   useScrollToTop(scroll)
-  // The page builds up the first time it is shown, and again when signing
-  // up or out, or opening the form, swaps its content.
-  const shown = useRef(Date.now())
-  const last = useRef({ member, form })
-  if (!!last.current.member !== !!member || last.current.form !== form) shown.current = Date.now()
-  last.current = { member, form }
-  const reduceMotion = useReducedMotion()
-
-  if (!member && !form) {
-    return (
-      <View style={styles.screen}>
-        <Masthead />
-        <NeighbourLanding onSignUp={() => setForm(true)} onSignIn={() => setForm(true)} />
-      </View>
-    )
+  // Like A Propos, the page builds up each time its tab is entered, from the
+  // top: its content is remounted (an address half typed is lost) and the
+  // page scrolled back up. Signing in or out builds it up again too. The
+  // tab's focus also fires on the first visit.
+  const navigation = useNavigation()
+  const [shown, setShown] = useState(() => Date.now())
+  useEffect(
+    () =>
+      navigation.addListener('focus', () => {
+        scroll.current?.scrollTo({ y: 0, animated: false })
+        setShown(Date.now())
+      }),
+    [navigation],
+  )
+  const last = useRef(member)
+  if (!!last.current !== !!member) {
+    last.current = member
+    setShown(Date.now())
   }
+  const reduceMotion = useReducedMotion()
+  // The sign-up fits the screen and doesn't scroll; it lifts itself over the
+  // keyboard (SignUpForm.js), so the screen's own avoiding is off for it.
+  const signingUp = !!member?.needsProfile
 
   return (
     <View style={styles.screen}>
-      <Masthead onBack={member ? undefined : () => setForm(false)} />
-      <KeyboardAvoidingView style={styles.screen} behavior="padding">
-        <AppearContext.Provider value={{ since: shown.current, still: reduceMotion }}>
+      <Masthead />
+      <KeyboardAvoidingView style={styles.screen} behavior="padding" enabled={!signingUp}>
+        <AppearContext.Provider value={{ since: shown, still: reduceMotion }}>
           <ScrollView
             ref={scroll}
             contentContainerStyle={styles.content}
             keyboardShouldPersistTaps="handled"
             keyboardDismissMode="interactive"
+            scrollEnabled={!signingUp}
           >
-            {member ? <Neighbourhood key="member" /> : <SignUp key="signup" />}
+            {signingUp ? (
+              <SignUpForm key={`sign-up-${shown}`} />
+            ) : member ? (
+              <Neighbourhood key={`member-${shown}`} />
+            ) : (
+              <NeighbourLanding key={`landing-${shown}`} />
+            )}
           </ScrollView>
         </AppearContext.Provider>
       </KeyboardAvoidingView>
     </View>
-  )
-}
-
-function SignUp() {
-  const { signUp } = useAccount()
-  const [email, setEmail] = useState('')
-  const [newsletter, setNewsletter] = useState(true)
-  const [sending, setSending] = useState(false)
-  const [error, setError] = useState(null)
-
-  const submit = async () => {
-    if (!isEmail(email)) {
-      setError('Cette adresse ne semble pas valide.')
-      return
-    }
-    setError(null)
-    setSending(true)
-    await signUp(email.trim(), newsletter)
-  }
-
-  return (
-    <>
-      <RiseLines style={styles.title} step={APPEAR.menu.title}>Voisinage</RiseLines>
-      <Rise step={APPEAR.dinkus}>
-        <Dinkus style={styles.dinkus} />
-      </Rise>
-      <Rise step={APPEAR.article.body}>
-        <Text style={styles.text}>
-          Inscrivez-vous pour rejoindre le voisinage : les jeux du Neighbor et, si vous le voulez, notre lettre.
-        </Text>
-
-        <View style={styles.field}>
-          <Text style={styles.label}>Votre adresse e-mail</Text>
-          <TextInput
-            style={styles.input}
-            value={email}
-            onChangeText={(text) => {
-              setEmail(text)
-              if (error) setError(null)
-            }}
-            onSubmitEditing={submit}
-            placeholder="vous@exemple.fr"
-            placeholderTextColor={colors.faint}
-            keyboardType="email-address"
-            textContentType="emailAddress"
-            autoComplete="email"
-            autoCapitalize="none"
-            autoCorrect={false}
-            returnKeyType="send"
-            editable={!sending}
-            selectionColor={colors.red}
-          />
-          <Rule />
-          {error ? <Text style={styles.error}>{error}</Text> : null}
-        </View>
-
-        <NewsletterBox checked={newsletter} onToggle={() => setNewsletter(!newsletter)} />
-
-        <FadePressable style={styles.button} pressScale={PRESS.scale} onPress={submit} disabled={sending} accessibilityRole="button">
-          {sending ? <ActivityIndicator color={colors.paper} /> : <Text style={styles.buttonText}>S'inscrire</Text>}
-        </FadePressable>
-        <Text style={styles.small}>Gratuit. Vous pourrez vous désinscrire à tout moment.</Text>
-      </Rise>
-    </>
   )
 }
 
@@ -188,44 +135,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: menuStyle.body.paddingHorizontal,
     paddingBottom: 60,
   },
-  // The title's spacing on an article list (ArticleList.js).
-  title: {
-    ...menuStyle.title,
-    marginBottom: 22.7,
-  },
-  dinkus: {
-    marginBottom: 30,
-  },
-  text: {
-    fontFamily: fonts.garamond,
-    fontSize: 21,
-    lineHeight: 31,
-    color: colors.ink,
-    textAlign: 'center',
-    paddingHorizontal: 6,
-  },
-  field: {
-    marginTop: 36,
-  },
-  label: {
-    ...categoryType,
-    fontSize: 14,
-    lineHeight: 14 * 1.1,
-    letterSpacing: 14 * -0.05,
-  },
-  input: {
-    fontFamily: fonts.garamond,
-    fontSize: 22,
-    color: colors.ink,
-    paddingTop: 10,
-    paddingBottom: 6,
-  },
-  error: {
-    fontFamily: fonts.garamondItalic,
-    fontSize: 16,
-    color: colors.red,
-    marginTop: 8,
-  },
   option: {
     flexDirection: 'row',
     alignItems: 'flex-start',
@@ -247,26 +156,6 @@ const styles = StyleSheet.create({
     lineHeight: 21,
     color: colors.ink,
     marginTop: 2,
-  },
-  button: {
-    marginTop: 40,
-    height: 54,
-    borderRadius: 27,
-    backgroundColor: colors.ink,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  buttonText: {
-    fontFamily: fonts.neighbor,
-    fontSize: 24,
-    color: colors.paper,
-  },
-  small: {
-    fontFamily: fonts.garamondItalic,
-    fontSize: 15,
-    color: colors.ink,
-    textAlign: 'center',
-    marginTop: 14,
   },
   // A red heading over each part of the signed-in page, in the cards'
   // category type.

@@ -28,13 +28,12 @@ export const PRESS = {
 }
 
 // The Voisinage landing's neighbours, one at a time: each stays `dwell` ms,
-// then fades out while dropping `drop` pt and the next fades in, `fade` ms
-// each way. Chosen on a comparison sheet after 0.45s, 1.2s and a hard cut
-// were tried. With Reduce Motion on, the fade stays and the drop goes.
+// then fades out and the next fades in, `fade` ms each way, in place. Chosen
+// on a comparison sheet after 0.45s, 1.2s and a hard cut were tried; a 4pt
+// drop with the fade was tried and taken out.
 export const NEIGHBOUR = {
   dwell: 2200,
   fade: 300,
-  drop: 4,
   easing: Easing.bezier(0.25, 0.1, 0.25, 1),
 }
 
@@ -161,6 +160,15 @@ export const APPEAR = {
     rule: { rise: 5, delay: 270, spring: { duration: 200, bounce: 0 } },
     stagger: 60,
   },
+  // A line of text swapped in place, like Voisinage's description when the
+  // reader picks the other link: it rises in as a card's text does, at once.
+  swap: { rise: 5, delay: 0, spring: { duration: 300, bounce: 0 } },
+  // Voisinage's address field when the reader picks the other link: its
+  // line draws again from the left, and the words and the arrow come back
+  // as it ends, over the last `show` of the run (rising like
+  // the description, fading the words in with the line, and typing them out
+  // were tried).
+  redraw: { spring: { duration: 380, bounce: 0 }, show: 0.2 },
 }
 
 // Framer's spring (duration, bounce) as React Native's stiffness and damping.
@@ -207,6 +215,37 @@ export function Rise({ step, extraDelay = 0, style, children }) {
 // The full text lays out invisibly, and is what VoiceOver reads; once its
 // lines are known each is drawn over its own spot and rises on the
 // APPEAR.titleLines step (or `step`).
+// An animated value that runs from 0 to 1 again, in place, each time `key`
+// changes (not on the first render), on `spring`. For content that must
+// keep its state, such as a text field that would lose what was typed if it
+// were remounted under a new key. Stays at 1 with Reduce Motion on.
+export function usePlayOn(key, spring) {
+  const appear = useContext(AppearContext)
+  const still = !appear || appear.still
+  const value = useRef(new Animated.Value(1)).current
+  const first = useRef(true)
+  useEffect(() => {
+    if (first.current) {
+      first.current = false
+      return
+    }
+    if (still) return
+    value.setValue(0)
+    const anim = Animated.spring(value, {
+      toValue: 1,
+      ...springConfig(spring),
+      restDisplacementThreshold: 0.001,
+      restSpeedThreshold: 0.001,
+      useNativeDriver: true,
+    })
+    anim.start()
+    return () => anim.stop()
+    // Only a change of key plays it.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [key])
+  return value
+}
+
 export function RiseLines({ style, step = APPEAR.titleLines, children }) {
   const appear = useContext(AppearContext)
   const [lines, setLines] = useState(null)
