@@ -5,6 +5,7 @@ export const colors = {
   ink: '#000000', // full black; the website's text is #1a1a1a
   red: '#FF1919',
   faint: 'rgba(0, 0, 0, 0.35)', // placeholders in text fields
+  muted: 'rgba(0, 0, 0, 0.55)', // a neighbour's activity on the Voisinage landing
   placeholder: '#7B61FF',
   water: '#A6D2F7', // rivers between articles
   bank: '#9E9E9E',

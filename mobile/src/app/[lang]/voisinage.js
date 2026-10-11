@@ -6,6 +6,7 @@ import { isEmail, useAccount } from '../../account'
 import Dinkus from '../../Dinkus'
 import { CheckBox } from '../../DrawnIcons'
 import Masthead from '../../Masthead'
+import NeighbourLanding from '../../NeighbourLanding'
 import { APPEAR, AppearContext, FadePressable, PRESS, Rise, RiseLines } from '../../motion'
 import Rule from '../../Rule'
 import { categoryType, colors, fonts, menu as menuStyle } from '../../theme'
@@ -18,23 +19,38 @@ const GAMES = [
   { name: 'Le Mot juste', subtitle: 'Un mot par jour' },
 ]
 
-// Voisinage: signed out, the sign-up form (an e-mail address and the
-// newsletter); signed up, the games, then the reader's account.
+// Voisinage: signed out, the landing (NeighbourLanding.js: the neighbours
+// one at a time, with "S'inscrire" and "Se connecter"), whose links open the
+// sign-up form (an e-mail address and the newsletter; the real sign-up and
+// sign-in screens are still to be designed); signed up, the games, then the
+// reader's account. The masthead's back arrow goes from the form back to
+// the landing.
 export default function VoisinageScreen() {
   const { member } = useAccount()
+  const [form, setForm] = useState(false)
+  if (member && form) setForm(false)
   const scroll = useRef(null)
   useScrollToTop(scroll)
   // The page builds up the first time it is shown, and again when signing
-  // up or out swaps its content.
+  // up or out, or opening the form, swaps its content.
   const shown = useRef(Date.now())
-  const lastMember = useRef(member)
-  if (!!lastMember.current !== !!member) shown.current = Date.now()
-  lastMember.current = member
+  const last = useRef({ member, form })
+  if (!!last.current.member !== !!member || last.current.form !== form) shown.current = Date.now()
+  last.current = { member, form }
   const reduceMotion = useReducedMotion()
+
+  if (!member && !form) {
+    return (
+      <View style={styles.screen}>
+        <Masthead />
+        <NeighbourLanding onSignUp={() => setForm(true)} onSignIn={() => setForm(true)} />
+      </View>
+    )
+  }
 
   return (
     <View style={styles.screen}>
-      <Masthead />
+      <Masthead onBack={member ? undefined : () => setForm(false)} />
       <KeyboardAvoidingView style={styles.screen} behavior="padding">
         <AppearContext.Provider value={{ since: shown.current, still: reduceMotion }}>
           <ScrollView

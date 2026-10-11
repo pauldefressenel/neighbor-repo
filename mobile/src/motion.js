@@ -27,6 +27,17 @@ export const PRESS = {
   scale: 0.9,
 }
 
+// The Voisinage landing's neighbours, one at a time: each stays `dwell` ms,
+// then fades out while dropping `drop` pt and the next fades in, `fade` ms
+// each way. Chosen on a comparison sheet after 0.45s, 1.2s and a hard cut
+// were tried. With Reduce Motion on, the fade stays and the drop goes.
+export const NEIGHBOUR = {
+  dwell: 2200,
+  fade: 300,
+  drop: 4,
+  easing: Easing.bezier(0.25, 0.1, 0.25, 1),
+}
+
 // Stack options for the transition, spread into a JS Stack's screenOptions.
 // Sliding, the screen on top comes in from the right as the one underneath
 // leaves to the left, side by side. Otherwise the screen underneath fades out

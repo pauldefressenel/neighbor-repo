@@ -50,7 +50,7 @@ index.js                    → /fr or /en, from the phone's language and region
 [lang]/rubriques/[section]/index.js    one rubrique's articles (slug from sections.js)
 [lang]/rubriques/[section]/[slug].js   an article opened from a rubrique
 [lang]/a-propos.js          About: the about-<lang> text, set like an article
-[lang]/voisinage.js         Voisinage: the sign-up form, or (signed up) the games, none built yet, and the account
+[lang]/voisinage.js         Voisinage: the landing (NeighbourLanding), whose links open the sign-up form; signed up, the games, none built yet, and the account
 ```
 
 Navigation details that are easy to break:
@@ -127,6 +127,17 @@ Navigation details that are easy to break:
   edge, and it stands on the wordmark's baseline.
   (It replaced "Fr" opening a red "En" beside it.) Switching keeps the page, except that an article goes back to the
   list it was opened from (article slugs differ between languages).
+- `NeighbourLanding.js` — Voisinage signed out: "S'inscrire" (red) and
+  "Se connecter" at the top, then the real neighbours one at a time, from
+  Supabase: avatar (160pt), first name, activity and "Depuis <mois>" (no
+  year: some neighbours predate the dates the old database kept), all in the
+  categories' type, changing every 2.2s with a fade and a 4pt drop
+  (`NEIGHBOUR` in motion.js). A tap stops on a neighbour. Only neighbours
+  with an activity are shown; the next three avatars are prefetched rather
+  than all of them. Both links open the old sign-up form for now.
+- `supabase.js` — the neighbours' Supabase project: its public key,
+  `avatarUrl` and `getNeighbours` (the public `neighbours` view), over plain
+  REST. Sign-in will bring supabase-js.
 - `account.js` — signing up (an e-mail address and the newsletter tick box),
   which opens Voisinage's games. A design mock-up for now: the account lives
   in memory and nothing is sent. Provided above `[lang]`, so switching

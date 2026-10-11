@@ -5,7 +5,7 @@ import { APPEAR, Pressed, Rise } from './motion'
 import { urlFor } from './sanity'
 import { categoryType, colors, fonts, titleType } from './theme'
 
-const MONTHS = ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre']
+export const MONTHS = ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre']
 
 // "9 mai 2026". Spelled out by hand rather than through Intl, whose French
 // data isn't guaranteed in the app's JavaScript engine.
