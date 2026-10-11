@@ -57,20 +57,22 @@ export function AccountProvider({ children }) {
       // The sign-up's answers (SignUpForm.js). The photo, if any, goes to
       // the private `photos` bucket under the neighbour's id, under a new
       // name each time (the bucket lets a neighbour add, not replace); the
-      // avatar drawn from it comes later. Returns null, or the message.
-      saveProfile: async ({ firstName, lastName, country, activity, photo }) => {
-        if (!user) return 'Vous n’êtes pas connecté.'
+      // avatar drawn from it comes later. Returns null, or the message in
+      // `lang`.
+      saveProfile: async ({ firstName, lastName, country, activity, photo }, lang) => {
+        const m = messages(lang)
+        if (!user) return m.signedOut
         let photo_path = null
         if (photo) {
           photo_path = `${user.id}/${Date.now()}.jpg`
           const bytes = Uint8Array.from(atob(photo), (c) => c.charCodeAt(0))
           const { error } = await supabase.storage.from('photos').upload(photo_path, bytes, { contentType: 'image/jpeg' })
-          if (error) return 'La photo n’a pas pu être envoyée. Réessayez.'
+          if (error) return m.photo
         }
         const row = { id: user.id, first_name: firstName, last_name: lastName, location: country, activity: activity || null }
         if (photo_path) row.photo_path = photo_path
         const { data, error } = await supabase.from('profiles').upsert(row).select('first_name, newsletter').single()
-        if (error) return 'Votre inscription n’a pas pu être enregistrée. Réessayez.'
+        if (error) return m.profile
         setProfile(data)
         return null
       },
@@ -86,11 +88,11 @@ export function AccountProvider({ children }) {
           email,
           options: { shouldCreateUser: mode === 'up', data: { lang } },
         })
-        return error ? sendError(error, mode) : null
+        return error ? sendError(error, mode, lang) : null
       },
       verifyCode: async (email, token, lang) => {
         const { data, error } = await supabase.auth.verifyOtp({ email, token, type: 'email' })
-        if (error) return codeError(error)
+        if (error) return codeError(error, lang)
         if (data.user?.user_metadata?.lang !== lang) supabase.auth.updateUser({ data: { lang } })
         return null
       },
@@ -113,18 +115,47 @@ export function AccountProvider({ children }) {
 // Supabase's errors, in the reader's words. Signing in with an address it
 // doesn't know is refused (`otp_disabled`, since the account may not be
 // created then).
-function sendError(error, mode) {
-  if (error.code === 'otp_disabled' && mode === 'in') return "Cette adresse n'est pas encore voisine. Choisissez S'inscrire."
-  if (error.status === 429 || error.code === 'over_email_send_rate_limit')
-    return 'Trop de codes demandés. Réessayez dans une minute.'
-  if (error.code === 'email_address_invalid') return "Cette adresse n'est pas valide."
-  return "Le code n'a pas pu partir. Réessayez."
+const MESSAGES = {
+  fr: {
+    signedOut: 'Vous n’êtes pas connecté.',
+    photo: 'La photo n’a pas pu être envoyée. Réessayez.',
+    profile: 'Votre inscription n’a pas pu être enregistrée. Réessayez.',
+    unknown: "Cette adresse n'est pas encore voisine. Choisissez S'inscrire.",
+    tooManyCodes: 'Trop de codes demandés. Réessayez dans une minute.',
+    invalid: "Cette adresse n'est pas valide.",
+    notSent: "Le code n'a pas pu partir. Réessayez.",
+    expired: 'Ce code ne fonctionne pas ou a expiré.',
+    tooManyTries: 'Trop d’essais. Réessayez dans une minute.',
+    wrongCode: 'Ce code ne fonctionne pas.',
+  },
+  en: {
+    signedOut: 'You are not signed in.',
+    photo: 'The photo could not be sent. Try again.',
+    profile: 'Your sign-up could not be saved. Try again.',
+    unknown: "This address isn't a neighbor yet. Choose Sign up.",
+    tooManyCodes: 'Too many codes asked for. Try again in a minute.',
+    invalid: "This address doesn't look right.",
+    notSent: 'The code could not be sent. Try again.',
+    expired: "This code doesn't work or has expired.",
+    tooManyTries: 'Too many tries. Try again in a minute.',
+    wrongCode: "This code doesn't work.",
+  },
+}
+const messages = (lang) => MESSAGES[lang] ?? MESSAGES.fr
+
+function sendError(error, mode, lang) {
+  const m = messages(lang)
+  if (error.code === 'otp_disabled' && mode === 'in') return m.unknown
+  if (error.status === 429 || error.code === 'over_email_send_rate_limit') return m.tooManyCodes
+  if (error.code === 'email_address_invalid') return m.invalid
+  return m.notSent
 }
 
-function codeError(error) {
-  if (error.code === 'otp_expired') return 'Ce code ne fonctionne pas ou a expiré.'
-  if (error.status === 429) return 'Trop d’essais. Réessayez dans une minute.'
-  return 'Ce code ne fonctionne pas.'
+function codeError(error, lang) {
+  const m = messages(lang)
+  if (error.code === 'otp_expired') return m.expired
+  if (error.status === 429) return m.tooManyTries
+  return m.wrongCode
 }
 
 export const useAccount = () => useContext(AccountContext)

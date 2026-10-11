@@ -4,10 +4,12 @@ import { Image } from 'expo-image'
 import * as ImagePicker from 'expo-image-picker'
 import { getLocales } from 'expo-localization'
 import { Picker } from '@react-native-picker/picker'
+import { useGlobalSearchParams } from 'expo-router'
 import { useReducedMotion } from 'react-native-reanimated'
 import Svg, { Path } from 'react-native-svg'
 import { useAccount } from './account'
 import COUNTRIES from './countries'
+import { i18n } from './i18n'
 import { APPEAR, FadePressable, Rise, RiseLines } from './motion'
 import { Neighbours } from './NeighbourLanding'
 import Rule from './Rule'
@@ -24,6 +26,73 @@ const AVATAR_PART = 152
 // The envelope's breathing, much softer than the frame's.
 const BREATH = { frame: 1.035, envelope: 1.012, half: 1200 }
 
+// The sign-up's words. The placeholders (Victor Hugo, France) stay as they
+// are in both languages.
+const COPY = {
+  fr: {
+    takeSelfie: 'Prendre un selfie',
+    choosePhoto: 'Choisir une photo',
+    removePhoto: 'Retirer la photo',
+    cancel: 'Annuler',
+    camera: 'L’appareil photo n’est pas autorisé : Réglages > The Neighbor.',
+    missing: 'Le prénom, le nom et le pays sont demandés.',
+    missingActivity: 'Dites ce que vous faites sur votre photo.',
+    confirm: 'Envoyer votre profil ?',
+    visibleWithAvatar: 'Votre prénom, votre pays et votre avatar seront visibles des autres voisins.',
+    visible: 'Votre prénom et votre pays seront visibles des autres voisins.',
+    send: 'Envoyer',
+    firstName: 'Prénom*',
+    lastName: 'Nom*',
+    country: 'Pays*',
+    countryLabel: (name) => `Pays : ${name ?? 'à choisir'}`,
+    avatar: 'Avatar de voisin',
+    optional: 'Optionnel',
+    changePhoto: 'Changer la photo',
+    activity: 'Activité*',
+    activityPlaceholder: 'Manger des sandwiches…',
+    retake: 'Reprendre la photo',
+    importSelfie: 'Importer un selfie',
+    // In capitals as written: see Frame.
+    importSelfieCaps: 'IMPORTER\nUN SELFIE',
+    sendProfile: 'Envoyer mon profil',
+    close: 'Fermer',
+  },
+  en: {
+    takeSelfie: 'Take a selfie',
+    choosePhoto: 'Choose a photo',
+    removePhoto: 'Remove the photo',
+    cancel: 'Cancel',
+    camera: 'The camera is not allowed: Settings > The Neighbor.',
+    missing: 'Your first name, last name and country are needed.',
+    missingActivity: 'Say what you are doing in your photo.',
+    confirm: 'Send your profile?',
+    visibleWithAvatar: 'Your first name, country and avatar will be visible to the other neighbors.',
+    visible: 'Your first name and country will be visible to the other neighbors.',
+    send: 'Send',
+    firstName: 'First name*',
+    lastName: 'Last name*',
+    country: 'Country*',
+    countryLabel: (name) => `Country: ${name ?? 'to choose'}`,
+    avatar: 'Neighbor avatar',
+    optional: 'Optional',
+    changePhoto: 'Change the photo',
+    activity: 'Activity*',
+    activityPlaceholder: 'Eating sandwiches…',
+    retake: 'Retake the photo',
+    importSelfie: 'Upload a selfie',
+    importSelfieCaps: 'UPLOAD\nA SELFIE',
+    sendProfile: 'Send my profile',
+    close: 'Close',
+  },
+}
+
+// The countries in the reader's language and alphabetical order, as
+// [code, name]. countries.js holds [code, French, English] in French order.
+const countryNames = (lang) =>
+  lang === 'en'
+    ? COUNTRIES.map(([code, , en]) => [code, en]).sort((a, b) => a[1].localeCompare(b[1], 'en'))
+    : COUNTRIES.map(([code, fr]) => [code, fr])
+
 // The sign-up, once a new address's code is accepted: one page, chosen on
 // comparison sheets. The first name, surname and country are required, in
 // the landing's fields; the neighbour's avatar is optional. Before a photo,
@@ -36,6 +105,9 @@ const BREATH = { frame: 1.035, envelope: 1.012, half: 1200 }
 // until the profile can go, then red, and iOS's alert asks first. The
 // answers go to the profile (account.js).
 export default function SignUpForm({ onDone }) {
+  const { lang } = useGlobalSearchParams()
+  const copy = COPY[lang] ?? COPY.fr
+  const countries = useMemo(() => countryNames(lang), [lang])
   const { saveProfile } = useAccount()
   const [firstName, setFirstName] = useState('')
   const [lastName, setLastName] = useState('')
@@ -59,11 +131,11 @@ export default function SignUpForm({ onDone }) {
   const ready = !!(firstName.trim() && lastName.trim() && country && (!photo || activity.trim()))
   const lift = useKeyboardLift()
 
-  const countryName = useMemo(() => COUNTRIES.find(([code]) => code === country)?.[1], [country])
+  const countryName = useMemo(() => countries.find(([code]) => code === country)?.[1], [countries, country])
 
   // iOS's action sheet, as in Photos or Messages.
   const choosePhoto = () => {
-    const options = ['Prendre un selfie', 'Choisir une photo', ...(photo ? ['Retirer la photo'] : []), 'Annuler']
+    const options = [copy.takeSelfie, copy.choosePhoto, ...(photo ? [copy.removePhoto] : []), copy.cancel]
     ActionSheetIOS.showActionSheetWithOptions(
       { options, cancelButtonIndex: options.length - 1, destructiveButtonIndex: photo ? 2 : undefined },
       async (i) => {
@@ -75,7 +147,7 @@ export default function SignUpForm({ onDone }) {
         let result
         if (i === 0) {
           const { granted } = await ImagePicker.requestCameraPermissionsAsync()
-          if (!granted) return setError('L’appareil photo n’est pas autorisé : Réglages > The Neighbor.')
+          if (!granted) return setError(copy.camera)
           result = await ImagePicker.launchCameraAsync({ ...options, cameraType: ImagePicker.CameraType.front })
         } else {
           result = await ImagePicker.launchImageLibraryAsync(options)
@@ -92,21 +164,19 @@ export default function SignUpForm({ onDone }) {
     if (!ready) {
       setError(
         !firstName.trim() || !lastName.trim() || !country
-          ? 'Le prénom, le nom et le pays sont demandés.'
-          : 'Dites ce que vous faites sur votre photo.',
+          ? copy.missing
+          : copy.missingActivity,
       )
       return false
     }
     setError(null)
     Keyboard.dismiss()
     Alert.alert(
-      'Envoyer votre profil ?',
-      photo
-        ? 'Votre prénom, votre pays et votre avatar seront visibles des autres voisins.'
-        : 'Votre prénom et votre pays seront visibles des autres voisins.',
+      copy.confirm,
+      photo ? copy.visibleWithAvatar : copy.visible,
       [
-        { text: 'Annuler', style: 'cancel' },
-        { text: 'Envoyer', style: 'default', isPreferred: true, onPress: send },
+        { text: copy.cancel, style: 'cancel' },
+        { text: copy.send, style: 'default', isPreferred: true, onPress: send },
       ],
     )
     return true
@@ -120,7 +190,7 @@ export default function SignUpForm({ onDone }) {
       country: COUNTRIES.find(([code]) => code === country)[2],
       activity: activity.trim(),
       photo: photo?.base64,
-    })
+    }, lang)
     setBusy(false)
     if (failed) setError(failed)
     else onDone?.()
@@ -128,15 +198,15 @@ export default function SignUpForm({ onDone }) {
 
   return (
     <Animated.View style={{ transform: [{ translateY: lift.shift }] }}>
-      <RiseLines style={styles.title} step={APPEAR.menu.title}>S’inscrire</RiseLines>
+      <RiseLines style={styles.title} step={APPEAR.menu.title}>{(i18n[lang] ?? i18n.fr).signUp}</RiseLines>
 
       <Rise step={APPEAR.menu.subtitle}>
         <View style={styles.names}>
-          <Field label="Prénom*" placeholder="Victor" value={firstName} onChangeText={setFirstName} textContentType="givenName" autoComplete="given-name" />
-          <Field label="Nom*" placeholder="Hugo" value={lastName} onChangeText={setLastName} textContentType="familyName" autoComplete="family-name" />
+          <Field label={copy.firstName} placeholder="Victor" value={firstName} onChangeText={setFirstName} textContentType="givenName" autoComplete="given-name" />
+          <Field label={copy.lastName} placeholder="Hugo" value={lastName} onChangeText={setLastName} textContentType="familyName" autoComplete="family-name" />
         </View>
-        <Pressable onPress={openCountries} accessibilityRole="button" accessibilityLabel={`Pays : ${countryName ?? 'à choisir'}`}>
-          <Text style={[styles.label, styles.spaced]}>Pays*</Text>
+        <Pressable onPress={openCountries} accessibilityRole="button" accessibilityLabel={copy.countryLabel(countryName)}>
+          <Text style={[styles.label, styles.spaced]}>{copy.country}</Text>
           <View style={styles.choice}>
             <Text style={[styles.input, !countryName && styles.placeholder]}>{countryName ?? 'France'}</Text>
             {/* The back chevron, turned to point down. */}
@@ -147,20 +217,20 @@ export default function SignUpForm({ onDone }) {
       </Rise>
 
       <Rise step={APPEAR.menu.rule}>
-        <Text style={[styles.label, styles.section]}>Avatar de voisin</Text>
-        <Text style={[styles.label, styles.optional]}>Optionnel</Text>
+        <Text style={[styles.label, styles.section]}>{copy.avatar}</Text>
+        <Text style={[styles.label, styles.optional]}>{copy.optional}</Text>
         <View style={styles.avatarPart}>
         {photo ? (
           <View style={styles.taken}>
-            <Pressable onPress={choosePhoto} accessibilityRole="button" accessibilityLabel="Changer la photo">
+            <Pressable onPress={choosePhoto} accessibilityRole="button" accessibilityLabel={copy.changePhoto}>
               <Frame photo={photo} />
             </Pressable>
             <View style={styles.words}>
               <Field
-                label="Activité*"
+                label={copy.activity}
                 value={activity}
                 onChangeText={setActivity}
-                placeholder="Manger des sandwiches…"
+                placeholder={copy.activityPlaceholder}
                 autoCapitalize="sentences"
                 maxLength={60}
                 inputStyle={styles.activity}
@@ -169,14 +239,14 @@ export default function SignUpForm({ onDone }) {
                 onBlur={lift.onBlur}
               />
               <Pressable onPress={choosePhoto} hitSlop={10} accessibilityRole="button" style={styles.retake}>
-                <Text style={styles.retakeText}>Reprendre la photo</Text>
+                <Text style={styles.retakeText}>{copy.retake}</Text>
               </Pressable>
             </View>
           </View>
         ) : (
           <View style={styles.pictures}>
-            <Pressable onPress={choosePhoto} accessibilityRole="button" accessibilityLabel="Importer un selfie">
-              <Frame />
+            <Pressable onPress={choosePhoto} accessibilityRole="button" accessibilityLabel={copy.importSelfie}>
+              <Frame invite={copy.importSelfieCaps} />
             </Pressable>
             <Text style={styles.arrow}>&gt;</Text>
             <View style={styles.example}>
@@ -189,7 +259,7 @@ export default function SignUpForm({ onDone }) {
 
       <Rise step={APPEAR.menu.rule} extraDelay={APPEAR.menu.stagger}>
         <Rule style={styles.line} />
-        <Envelope ready={ready} busy={busy} onPress={submit} />
+        <Envelope ready={ready} busy={busy} onPress={submit} label={copy.sendProfile} />
         {error ? <Text style={styles.error}>{error}</Text> : null}
       </Rise>
 
@@ -198,6 +268,8 @@ export default function SignUpForm({ onDone }) {
         value={country}
         onChange={setCountry}
         onClose={() => setChoosing(false)}
+        countries={countries}
+        closeLabel={copy.close}
       />
     </Animated.View>
   )
@@ -254,7 +326,7 @@ function useKeyboardLift() {
 // The envelope and "Envoyer mon profil", breathing softly: ink until the
 // profile can be sent, then red. A tap too soon shakes it; a sent profile
 // flies off with it while it is saved.
-function Envelope({ ready, busy, onPress }) {
+function Envelope({ ready, busy, onPress, label }) {
   const reduceMotion = useReducedMotion()
   const breath = useBreath(BREATH.envelope, !reduceMotion)
   const shake = useRef(new Animated.Value(0)).current
@@ -269,7 +341,7 @@ function Envelope({ ready, busy, onPress }) {
   }
 
   return (
-    <Pressable onPress={press} disabled={busy} hitSlop={14} accessibilityRole="button" accessibilityLabel="Envoyer mon profil" accessibilityState={{ disabled: !ready }} style={styles.send}>
+    <Pressable onPress={press} disabled={busy} hitSlop={14} accessibilityRole="button" accessibilityLabel={label} accessibilityState={{ disabled: !ready }} style={styles.send}>
       <Animated.View style={[styles.sendInner, { transform: [{ translateX: shake }, { scale: breath }] }]}>
         {busy ? (
           <ActivityIndicator color={colors.red} style={styles.envelope} />
@@ -279,7 +351,7 @@ function Envelope({ ready, busy, onPress }) {
             <Path d="M3 3.6 C9 9 14.5 13.3 20 16.4 C25.6 13.2 31 9 37.2 3.3" fill="none" stroke={color} strokeWidth={1.9} strokeLinecap="round" strokeLinejoin="round" />
           </Svg>
         )}
-        <Text style={[styles.sendText, { color }]}>Envoyer mon profil</Text>
+        <Text style={[styles.sendText, { color }]}>{label}</Text>
       </Animated.View>
     </Pressable>
   )
@@ -331,7 +403,7 @@ function edgePath(w, h) {
 
 // The frame: dashed, breathing, with "+ Prendre un selfie" inside until a
 // photo is chosen, then the photo inside a plain drawn line.
-function Frame({ photo }) {
+function Frame({ photo, invite }) {
   const { width, height } = FRAME
   const reduceMotion = useReducedMotion()
   const scale = useBreath(BREATH.frame, !photo && !reduceMotion)
@@ -346,7 +418,7 @@ function Frame({ photo }) {
           <Text style={styles.plus}>+</Text>
           {/* In capitals as written: with textTransform, iOS lays the lines
               out at the lowercase width and they sit off centre. */}
-          <Text style={styles.inviteText}>{'IMPORTER\nUN SELFIE'}</Text>
+          <Text style={styles.inviteText}>{invite}</Text>
         </View>
       )}
     </Animated.View>
@@ -354,17 +426,17 @@ function Frame({ photo }) {
 }
 
 // iOS's wheel of countries, in a sheet at the foot of the screen.
-function CountryPicker({ visible, value, onChange, onClose }) {
+function CountryPicker({ visible, value, onChange, onClose, countries, closeLabel }) {
   return (
     <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose}>
-      <Pressable style={styles.shade} onPress={onClose} accessibilityLabel="Fermer" />
+      <Pressable style={styles.shade} onPress={onClose} accessibilityLabel={closeLabel} />
       <View style={styles.sheet}>
         <FadePressable onPress={onClose} hitSlop={12} accessibilityRole="button" style={styles.done}>
           <Text style={styles.link}>OK</Text>
         </FadePressable>
         <Picker selectedValue={value ?? 'FR'} onValueChange={onChange} itemStyle={styles.wheel}>
-          {COUNTRIES.map(([code, fr]) => (
-            <Picker.Item key={code} label={fr} value={code} />
+          {countries.map(([code, name]) => (
+            <Picker.Item key={code} label={name} value={code} />
           ))}
         </Picker>
       </View>

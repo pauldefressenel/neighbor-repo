@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { KeyboardAvoidingView, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native'
-import { useNavigation } from 'expo-router'
+import { useGlobalSearchParams, useNavigation } from 'expo-router'
 import { useScrollToTop } from 'expo-router/react-navigation'
 import { useReducedMotion } from 'react-native-reanimated'
 import { useAccount } from '../../account'
@@ -8,17 +8,46 @@ import { CheckBox } from '../../DrawnIcons'
 import Masthead from '../../Masthead'
 import NeighbourLanding from '../../NeighbourLanding'
 import SignUpForm from '../../SignUpForm'
+import { i18n } from '../../i18n'
 import { APPEAR, AppearContext, Rise, RiseLines } from '../../motion'
 import Rule from '../../Rule'
 import { categoryType, colors, fonts, menu as menuStyle } from '../../theme'
 
 // The games, for readers who have signed up. They don't exist yet: the list
-// is laid out like the Rubriques list, with names to be decided.
-const GAMES = [
-  { name: 'Mots croisés', subtitle: 'Une grille par numéro' },
-  { name: 'Qui a écrit ?', subtitle: "Retrouver l'auteur d'une phrase" },
-  { name: 'Le Mot juste', subtitle: 'Un mot par jour' },
-]
+// is laid out like the Rubriques list, with names to be decided. The English
+// is the website's (src/VoisinagePage.jsx).
+const GAMES = {
+  fr: [
+    { name: 'Mots croisés', subtitle: 'Une grille par numéro' },
+    { name: 'Qui a écrit ?', subtitle: "Retrouver l'auteur d'une phrase" },
+    { name: 'Le Mot juste', subtitle: 'Un mot par jour' },
+  ],
+  en: [
+    { name: 'Crossword', subtitle: 'One grid per issue' },
+    { name: 'Who Wrote It?', subtitle: 'Find the author of a sentence' },
+    { name: 'The Right Word', subtitle: 'One word a day' },
+  ],
+}
+
+// The signed-in page's words, as on the website.
+const COPY = {
+  fr: {
+    games: 'Jeux',
+    soon: 'Bientôt',
+    account: 'Votre compte',
+    signOut: 'Se déconnecter',
+    newsletter: 'Recevoir la lettre du Neighbor',
+    newsletterNote: 'Les nouveaux textes et les nouvelles du journal, par e-mail.',
+  },
+  en: {
+    games: 'Games',
+    soon: 'Soon',
+    account: 'Your account',
+    signOut: 'Sign out',
+    newsletter: "Get the Neighbor's letter",
+    newsletterNote: 'New pieces and news from the paper, by e-mail.',
+  },
+}
 
 // Voisinage: signed out, the landing (NeighbourLanding.js: what being a
 // neighbour means, the neighbours one at a time, and the e-mail field that
@@ -79,19 +108,23 @@ export default function VoisinageScreen() {
 }
 
 function Neighbourhood() {
+  const { lang } = useGlobalSearchParams()
+  const t = i18n[lang] ?? i18n.fr
+  const copy = COPY[lang] ?? COPY.fr
+  const games = GAMES[lang] ?? GAMES.fr
   const { member, setNewsletter, signOut } = useAccount()
   const menu = APPEAR.menu
   return (
     <>
-      <RiseLines style={menuStyle.title} step={menu.title}>Voisinage</RiseLines>
+      <RiseLines style={menuStyle.title} step={menu.title}>{t.neighborhood}</RiseLines>
       <Rise step={menu.subtitle}>
-        <Text style={styles.sectionLabel}>Jeux</Text>
+        <Text style={styles.sectionLabel}>{copy.games}</Text>
       </Rise>
-      {GAMES.map((game, i) => (
+      {games.map((game, i) => (
         <View key={game.name} style={menuStyle.block}>
           <Rise step={menu.name} extraDelay={i * menu.stagger} style={styles.line}>
             <Text style={menuStyle.name}>{i + 1}. {game.name}</Text>
-            <Text style={styles.soon}>Bientôt</Text>
+            <Text style={styles.soon}>{copy.soon}</Text>
           </Rise>
           <Rise step={menu.subtitle} extraDelay={i * menu.stagger}>
             <Text style={menuStyle.subtitle}>{game.subtitle}</Text>
@@ -102,25 +135,25 @@ function Neighbourhood() {
         </View>
       ))}
 
-      <Rise step={menu.rule} extraDelay={GAMES.length * menu.stagger}>
-        <Text style={styles.sectionLabel}>Votre compte</Text>
+      <Rise step={menu.rule} extraDelay={games.length * menu.stagger}>
+        <Text style={styles.sectionLabel}>{copy.account}</Text>
         <Text style={styles.email}>{member.email}</Text>
-        <NewsletterBox checked={member.newsletter} onToggle={() => setNewsletter(!member.newsletter)} />
+        <NewsletterBox copy={copy} checked={member.newsletter} onToggle={() => setNewsletter(!member.newsletter)} />
         <Pressable onPress={signOut} hitSlop={8} accessibilityRole="button" style={styles.signOut}>
-          <Text style={styles.signOutText}>Se déconnecter</Text>
+          <Text style={styles.signOutText}>{copy.signOut}</Text>
         </Pressable>
       </Rise>
     </>
   )
 }
 
-function NewsletterBox({ checked, onToggle }) {
+function NewsletterBox({ copy, checked, onToggle }) {
   return (
     <Pressable style={styles.option} onPress={onToggle} accessibilityRole="checkbox" accessibilityState={{ checked }}>
       <CheckBox checked={checked} />
       <View style={styles.optionText}>
-        <Text style={styles.optionTitle}>Recevoir la lettre du Neighbor</Text>
-        <Text style={styles.optionNote}>Les nouveaux textes et les nouvelles du journal, par e-mail.</Text>
+        <Text style={styles.optionTitle}>{copy.newsletter}</Text>
+        <Text style={styles.optionNote}>{copy.newsletterNote}</Text>
       </View>
     </Pressable>
   )

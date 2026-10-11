@@ -18,7 +18,7 @@ export const i18n = {
   fr: {
     language: 'Français',
     switchTo: 'en',
-    latest: 'En Couverture',
+    latest: 'A La Une',
     by: 'de',
     aboutHeading: {
       category: 'A propos',

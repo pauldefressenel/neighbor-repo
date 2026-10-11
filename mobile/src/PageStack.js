@@ -2,6 +2,7 @@ import { View } from 'react-native'
 import { router, useGlobalSearchParams, useSegments } from 'expo-router'
 import Stack from 'expo-router/js-stack'
 import { useReducedMotion } from 'react-native-reanimated'
+import { i18n } from './i18n'
 import Masthead from './Masthead'
 import { PAGE, PAGE_REDUCED, pageTransition } from './motion'
 import { colors } from './theme'
@@ -19,8 +20,8 @@ import { colors } from './theme'
 //
 // `root` is the tab's first page, for a back arrow on a page opened straight
 // from a link, with nothing to go back to. `backLabel` names the arrow for
-// VoiceOver, given the current route's segments.
-export default function PageStack({ root, backLabel = () => 'Retour' }) {
+// VoiceOver, given the current route's segments and the language's strings.
+export default function PageStack({ root, backLabel = (segments, t) => t.back }) {
   // From the URL: the stack's screens don't inherit the tab's params.
   const { lang } = useGlobalSearchParams()
   const segments = useSegments()
@@ -31,7 +32,7 @@ export default function PageStack({ root, backLabel = () => 'Retour' }) {
 
   return (
     <View style={{ flex: 1, backgroundColor: colors.paper }}>
-      <Masthead onBack={deeper ? back : undefined} backLabel={backLabel(segments)} />
+      <Masthead onBack={deeper ? back : undefined} backLabel={backLabel(segments, i18n[lang] ?? i18n.fr)} />
       <Stack
         screenOptions={{
           headerShown: false,

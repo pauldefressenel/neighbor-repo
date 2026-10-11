@@ -20,19 +20,19 @@ export const RUBRIQUES = [
   {
     slug: { en: 'essays-criticism', fr: 'essais-critiques' },
     label: { en: 'Essays & Criticism', fr: 'Essais & Critiques' },
-    subtitle: { fr: 'Livres, Cinema, Arts Croises' },
+    subtitle: { en: 'Books, Film, Mosaic', fr: 'Livres, Cinema, Arts Croises' },
     sanity: ['literature-review', 'the-arts'],
   },
   {
     slug: { en: 'prose-poetry', fr: 'prose-poesie' },
     label: { en: 'Prose & Poetry', fr: 'Prose & Poésie' },
-    subtitle: { fr: 'Nouvelles, Récits, Poèmes' },
+    subtitle: { en: 'Short Stories, Prose, Poems', fr: 'Nouvelles, Récits, Poèmes' },
     sanity: ['fiction-poetry'],
   },
   {
     slug: { en: 'portraits', fr: 'portraits' },
     label: { en: 'Portraits', fr: 'Portraits' },
-    subtitle: { fr: 'Artistes, Amis' },
+    subtitle: { en: 'Artists, Friends', fr: 'Artistes, Amis' },
     sanity: ['portraits'],
   },
 ]

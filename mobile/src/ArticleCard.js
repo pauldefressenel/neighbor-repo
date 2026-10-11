@@ -1,14 +1,16 @@
 import { StyleSheet, Text, View } from 'react-native'
 import { Image } from 'expo-image'
+import { useGlobalSearchParams } from 'expo-router'
 import { longDate } from '../../shared/dates'
 import { card, type } from '../../shared/tokens'
 import BalancedText from './BalancedText'
+import { i18n } from './i18n'
 import { APPEAR, Pressed, Rise } from './motion'
 import { urlFor } from './sanity'
 import { categoryType, colors, fonts, titleType } from './theme'
 
-// "9 mai 2026", as on the website (shared/dates.js).
-export const frenchDate = (iso) => longDate(iso, 'fr')
+// "9 mai 2026" / "May 9, 2026", as on the website (shared/dates.js).
+export const articleDate = (iso, lang) => longDate(iso, lang === 'en' ? 'en' : 'fr')
 
 // An article as a centred title page: category, title and excerpt, then the
 // illustration, then the byline and date. A portrait (PortraitCard.js) passes
@@ -18,7 +20,9 @@ export const frenchDate = (iso) => longDate(iso, 'fr')
 // sets AppearContext, it rises all at once (APPEAR.card). (Each part on its
 // own beat felt too drawn out.)
 export default function ArticleCard({ category, title, excerpt, author, mainImage, publishedAt, picture, pictureInset }) {
-  const date = publishedAt ? frenchDate(publishedAt) : null
+  const { lang } = useGlobalSearchParams()
+  const t = i18n[lang] ?? i18n.fr
+  const date = publishedAt ? articleDate(publishedAt, lang) : null
   return (
     <View>
       <Rise step={APPEAR.card}>
@@ -50,7 +54,7 @@ export default function ArticleCard({ category, title, excerpt, author, mainImag
           </Pressed>
         )}
         <Pressed>
-          {author ? <Text style={styles.author}>de {author}</Text> : null}
+          {author ? <Text style={styles.author}>{t.by} {author}</Text> : null}
           {date ? <Text style={styles.date}>{date}</Text> : null}
         </Pressed>
       </Rise>

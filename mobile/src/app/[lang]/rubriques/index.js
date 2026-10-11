@@ -2,6 +2,7 @@ import { useCallback, useRef } from 'react'
 import { StyleSheet, Text, View } from 'react-native'
 import { router, useFocusEffect, useGlobalSearchParams } from 'expo-router'
 import { useReducedMotion } from 'react-native-reanimated'
+import { i18n } from '../../../i18n'
 import { APPEAR, AppearContext, FadePressable, PRESS, Rise, RiseLines } from '../../../motion'
 import Rule from '../../../Rule'
 import { prefetchSectionArticles } from '../../../sanity'
@@ -15,6 +16,8 @@ export default function RubriquesScreen() {
   // an undefined lang made every rubrique link to /undefined/…, which
   // redirected to En Couverture.
   const { lang } = useGlobalSearchParams()
+  const t = i18n[lang] ?? i18n.fr
+  const l = i18n[lang] ? lang : 'fr'
 
   // One rubrique per tap: further taps are ignored until the list is back in
   // focus, so quick double taps can't stack two rubriques.
@@ -44,7 +47,7 @@ export default function RubriquesScreen() {
     <View style={styles.screen}>
       <AppearContext.Provider value={{ since: shown, still: reduceMotion }}>
         <View style={styles.body}>
-          <RiseLines style={styles.title} step={menu.title}>Rubriques</RiseLines>
+          <RiseLines style={styles.title} step={menu.title}>{t.rubriques}</RiseLines>
           {SECTIONS.map((section, i) => (
             <FadePressable
               key={section.slug}
@@ -52,14 +55,14 @@ export default function RubriquesScreen() {
               pressScale={PRESS.scale}
               onPress={() => open(section.slug)}
               accessibilityRole="link"
-              accessibilityLabel={section.label}
+              accessibilityLabel={section.label[l]}
             >
               <Rise step={menu.name} extraDelay={i * menu.stagger} style={styles.line}>
-                <Text style={styles.name}>{i + 1}. {section.label}</Text>
+                <Text style={styles.name}>{i + 1}. {section.label[l]}</Text>
                 <Text style={styles.chevron}>&gt;</Text>
               </Rise>
               <Rise step={menu.subtitle} extraDelay={i * menu.stagger}>
-                <Text style={styles.subtitle}>{section.subtitle}</Text>
+                <Text style={styles.subtitle}>{section.subtitle[l]}</Text>
               </Rise>
               <Rise step={menu.rule} extraDelay={i * menu.stagger}>
                 <Rule style={styles.rule} />

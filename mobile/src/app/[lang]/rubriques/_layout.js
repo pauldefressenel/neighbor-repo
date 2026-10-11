@@ -6,7 +6,7 @@ export default function RubriquesLayout() {
   return (
     <PageStack
       root="/rubriques"
-      backLabel={(segments) => (segments.at(-1) === '[section]' ? 'Retour aux rubriques' : 'Retour')}
+      backLabel={(segments, t) => (segments.at(-1) === '[section]' ? t.backToRubriques : t.back)}
     />
   )
 }

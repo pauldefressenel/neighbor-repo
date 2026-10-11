@@ -5,6 +5,7 @@ import { useGlobalSearchParams } from 'expo-router'
 import { useIsFocused } from 'expo-router/react-navigation'
 import { CODE_LENGTH, isEmail, useAccount } from './account'
 import { MONTHS } from '../../shared/dates'
+import { i18n } from './i18n'
 import { APPEAR, FadePressable, NEIGHBOUR, Rise, RiseLines, usePlayOn } from './motion'
 import Rule from './Rule'
 import { avatarUrl, getNeighbours } from './supabase'
@@ -18,7 +19,10 @@ const AHEAD = 3
 // too big).
 const AVATAR = 135
 
-const MODES = { up: "S'inscrire", in: 'Se connecter' }
+const MODES = {
+  fr: { up: "S'inscrire", in: 'Se connecter' },
+  en: { up: 'Sign up', in: 'Sign in' },
+}
 
 // The text under the address changes with the link, so choosing one shows:
 // what being a neighbour brings to someone signing up, a welcome back to
@@ -26,20 +30,68 @@ const MODES = { up: "S'inscrire", in: 'Se connecter' }
 // "Voisin" and "voisins" are set in italic, as the paper's own word. "News-letter" keeps
 // an ordinary hyphen on purpose: the line may break after "news-", which
 // fills the first line (a non-breaking hyphen was tried).
+// In English, "neighbor" and "neighbors" take the italic.
 const DESCRIPTIONS = {
-  up: (
-    <>
-      En devenant <Text style={{ fontFamily: fonts.garamondItalic }}>voisin</Text>, vous accédez à la news-letter, à
-      des mini-jeux, et bien plus encore.
-    </>
-  ),
-  in: (
-    <>
-      Vous revoilà{'\u00a0'}! Vos <Text style={{ fontFamily: fonts.garamondItalic }}>voisins</Text> vous ont gardé une
-      place. Le voisinage a bien changé, venez voir.
-    </>
-  ),
+  fr: {
+    up: (
+      <>
+        En devenant <Text style={{ fontFamily: fonts.garamondItalic }}>voisin</Text>, vous accédez à la news-letter, à
+        des mini-jeux, et bien plus encore.
+      </>
+    ),
+    in: (
+      <>
+        Vous revoilà{'\u00a0'}! Vos <Text style={{ fontFamily: fonts.garamondItalic }}>voisins</Text> vous ont gardé une
+        place. Le voisinage a bien changé, venez voir.
+      </>
+    ),
+  },
+  en: {
+    up: (
+      <>
+        When becoming a <Text style={{ fontFamily: fonts.garamondItalic }}>neighbor</Text>, you get access to the
+        newsletter, mini-games, and much more.
+      </>
+    ),
+    in: (
+      <>
+        Welcome back! Your <Text style={{ fontFamily: fonts.garamondItalic }}>neighbors</Text> kept you a seat. The
+        neighborhood has changed, come and see.
+      </>
+    ),
+  },
 }
+
+// The sign-in's other words.
+const COPY = {
+  fr: {
+    sent: 'Envoyé à l\u2019instant.',
+    resent: 'Un nouveau code vient de partir.',
+    invalid: "Cette adresse n'est pas valide.",
+    codeLength: (n) => `Le code a ${n} chiffres.`,
+    placeholder: 'votre adresse e-mail',
+    emailLabel: (mode) => `Votre adresse e-mail, pour ${mode.toLowerCase()}`,
+    change: 'Modifier',
+    codeLabel: 'Le code reçu par e-mail',
+    resend: 'Renvoyer',
+    send: 'Envoyer',
+    since: (month) => `Depuis ${month}`,
+  },
+  en: {
+    sent: 'Just sent.',
+    resent: 'A new code is on its way.',
+    invalid: "This address doesn't look right.",
+    codeLength: (n) => `The code has ${n} digits.`,
+    placeholder: 'your e-mail address',
+    emailLabel: (mode) => `Your e-mail address, to ${mode.toLowerCase()}`,
+    change: 'Change',
+    codeLabel: 'The code sent by e-mail',
+    resend: 'Resend',
+    send: 'Send',
+    since: (month) => `Since ${month}`,
+  },
+}
+const copyFor = (lang) => (COPY[lang] ? lang : 'fr')
 
 // Voisinage for a reader who isn't signed in. Under the centred title,
 // "S'inscrire" and "Se connecter" (the chosen one red), with the address
@@ -53,13 +105,15 @@ const DESCRIPTIONS = {
 // dinkus: it separates articles, and there are none here. Chosen on a
 // comparison sheet (option B).
 export default function NeighbourLanding() {
+  const { lang } = useGlobalSearchParams()
   const [mode, setMode] = useState('up')
+  const l = copyFor(lang)
   return (
     <>
-      <RiseLines style={styles.title} step={APPEAR.menu.title}>Voisinage</RiseLines>
+      <RiseLines style={styles.title} step={APPEAR.menu.title}>{(i18n[lang] ?? i18n.fr).neighborhood}</RiseLines>
       <Rise step={APPEAR.menu.subtitle}>
         <View style={styles.links}>
-          {Object.entries(MODES).map(([key, label]) => (
+          {Object.entries(MODES[l]).map(([key, label]) => (
             <FadePressable
               key={key}
               onPress={() => setMode(key)}
@@ -76,7 +130,7 @@ export default function NeighbourLanding() {
       <Rise step={APPEAR.menu.rule}>
         {/* Keyed by the link, so choosing the other one rises the new text in. */}
         <Rise key={mode} step={APPEAR.swap}>
-          <Text style={styles.description}>{DESCRIPTIONS[mode]}</Text>
+          <Text style={styles.description}>{DESCRIPTIONS[l][mode]}</Text>
         </Rise>
       </Rise>
       <Rise step={APPEAR.menu.rule} extraDelay={APPEAR.menu.stagger} style={styles.stage}>
@@ -89,24 +143,23 @@ export default function NeighbourLanding() {
 // The address, then the code, both checked by Supabase (account.js). Signing
 // in with an address it doesn't know is refused; signing up with one it
 // knows simply signs that neighbour in.
-const SENT = 'Envoyé à l\u2019instant.'
-const RESENT = 'Un nouveau code vient de partir.'
-
 function SignIn({ mode }) {
   const { sendCode, verifyCode } = useAccount()
   // The e-mail is written in the app's language.
   const { lang = 'fr' } = useGlobalSearchParams()
+  const copy = COPY[copyFor(lang)]
+  const modes = MODES[copyFor(lang)]
   const [email, setEmail] = useState('')
   const [sent, setSent] = useState(false)
   const [code, setCode] = useState('')
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState(null)
-  const [note, setNote] = useState(SENT)
+  const [note, setNote] = useState(copy.sent)
 
   const send = async () => {
     if (busy) return
     if (!isEmail(email)) {
-      setError("Cette adresse n'est pas valide.")
+      setError(copy.invalid)
       return
     }
     setError(null)
@@ -116,20 +169,20 @@ function SignIn({ mode }) {
     if (failed) setError(failed)
     else {
       setSent(true)
-      setNote(SENT)
+      setNote(copy.sent)
     }
   }
 
   const resend = async () => {
     const failed = await sendCode(email.trim(), mode, lang)
     if (failed) setError(failed)
-    else setNote(RESENT)
+    else setNote(copy.resent)
   }
 
   const verify = async (value = code) => {
     if (busy) return
     if (value.length !== CODE_LENGTH) {
-      setError(`Le code a ${CODE_LENGTH} chiffres.`)
+      setError(copy.codeLength(CODE_LENGTH))
       return
     }
     setError(null)
@@ -168,7 +221,7 @@ function SignIn({ mode }) {
               if (error) setError(null)
             }}
             onSubmitEditing={send}
-            placeholder="votre adresse e-mail"
+            placeholder={copy.placeholder}
             placeholderTextColor={colors.faint}
             keyboardType="email-address"
             textContentType="emailAddress"
@@ -178,16 +231,16 @@ function SignIn({ mode }) {
             returnKeyType="send"
             editable={!sent && !busy}
             selectionColor={colors.red}
-            accessibilityLabel={`Votre adresse e-mail, pour ${MODES[mode].toLowerCase()}`}
+            accessibilityLabel={copy.emailLabel(modes[mode])}
           />
           {sent ? (
             <View style={styles.editSlot}>
               <FadePressable onPress={change} hitSlop={12} accessibilityRole="button">
-                <Text style={styles.edit}>Modifier</Text>
+                <Text style={styles.edit}>{copy.change}</Text>
               </FadePressable>
             </View>
           ) : (
-            <Arrow busy={busy} onPress={send} />
+            <Arrow busy={busy} onPress={send} label={copy.send} />
           )}
         </Animated.View>
         <Animated.View style={[styles.drawn, { transform: [{ scaleX: redraw }] }]}>
@@ -199,7 +252,7 @@ function SignIn({ mode }) {
         // Rises as it opens: the page's appear time has long passed, so
         // Rise plays it at once.
         <Rise step={APPEAR.menu.subtitle}>
-          <Text style={styles.label}>Le code reçu par e-mail</Text>
+          <Text style={styles.label}>{copy.codeLabel}</Text>
           <View style={styles.row}>
             <TextInput
               style={[styles.input, styles.code]}
@@ -218,9 +271,9 @@ function SignIn({ mode }) {
               autoFocus
               editable={!busy}
               selectionColor={colors.red}
-              accessibilityLabel="Le code reçu par e-mail"
+              accessibilityLabel={copy.codeLabel}
             />
-            <Arrow busy={busy} onPress={() => verify()} style={styles.arrowOnCode} />
+            <Arrow busy={busy} onPress={() => verify()} style={styles.arrowOnCode} label={copy.send} />
           </View>
           <Rule />
           {error ? (
@@ -229,7 +282,7 @@ function SignIn({ mode }) {
             <Text style={styles.note}>
               {note}{' '}
               <Text style={styles.underline} onPress={resend} accessibilityRole="button">
-                Renvoyer
+                {copy.resend}
               </Text>
             </Text>
           )}
@@ -242,10 +295,10 @@ function SignIn({ mode }) {
 }
 
 // The chevron that sends a field, or a spinner while it is sent.
-function Arrow({ busy, onPress, style }) {
+function Arrow({ busy, onPress, style, label }) {
   if (busy) return <ActivityIndicator color={colors.ink} style={styles.editSlot} />
   return (
-    <FadePressable onPress={onPress} hitSlop={12} accessibilityRole="button" accessibilityLabel="Envoyer">
+    <FadePressable onPress={onPress} hitSlop={12} accessibilityRole="button" accessibilityLabel={label}>
       {/* The masthead's back chevron, pointing on. */}
       <Text style={[styles.arrow, style]}>&gt;</Text>
     </FadePressable>
@@ -256,10 +309,14 @@ function Arrow({ busy, onPress, style }) {
 // the neighbours can't be fetched: the field still works). Every couple of
 // seconds it fades to the next one, and a tap doesn't stop it (stopping on
 // a tap was tried).
-// Only neighbours with an activity are shown. The month comes without its
+// Only neighbours with an activity are shown, in the app's language
+// (`activity_fr` / `activity_en`), else as they typed it (a neighbour not
+// translated yet). The month comes without its
 // year: some neighbours joined in 2025, before the dates the old database
 // kept, so a year would be wrong for them.
 export function Neighbours({ example = false, size = AVATAR }) {
+  const { lang } = useGlobalSearchParams()
+  const l = copyFor(lang)
   const [list, setList] = useState(null)
   const [index, setIndex] = useState(0)
   // `ready` is a ref, so the first avatar's arrival also bumps this to draw.
@@ -342,7 +399,8 @@ export function Neighbours({ example = false, size = AVATAR }) {
 
   const n = list?.[index]
   if (!n || !ready.current.has(n.id)) return example ? <View style={{ width: size, height: size }} /> : null
-  const month = MONTHS.fr[new Date(n.created_at).getMonth()]
+  const activity = (n[`activity_${l}`] || n.activity).trim()
+  const month = MONTHS[l][new Date(n.created_at).getMonth()]
   // The picture centred, its words flush left under it.
   const image = (
     <Image
@@ -358,21 +416,21 @@ export function Neighbours({ example = false, size = AVATAR }) {
   // activity centred under the avatar, without the month.
   if (example) {
     return (
-      <Animated.View style={{ opacity: shown }} accessible accessibilityLabel={`${n.first_name}, ${n.activity}`}>
+      <Animated.View style={{ opacity: shown }} accessible accessibilityLabel={`${n.first_name}, ${activity}`}>
         {image}
         <Text style={[styles.name, styles.exampleName]}>{n.first_name}</Text>
-        <Text style={[styles.activity, styles.exampleActivity]}>{n.activity.trim()}</Text>
+        <Text style={[styles.activity, styles.exampleActivity]}>{activity}</Text>
       </Animated.View>
     )
   }
 
   return (
-    <View accessible accessibilityLabel={`${n.first_name}, ${n.activity}, depuis ${month}`}>
+    <View accessible accessibilityLabel={`${n.first_name}, ${activity}. ${COPY[l].since(month)}`}>
       <Animated.View style={[styles.neighbour, { opacity: shown }]}>
         {image}
         <Text style={styles.name}>{n.first_name}</Text>
-        <Text style={styles.activity}>{n.activity.trim()}</Text>
-        <Text style={styles.since}>Depuis {month}</Text>
+        <Text style={styles.activity}>{activity}</Text>
+        <Text style={styles.since}>{COPY[l].since(month)}</Text>
       </Animated.View>
     </View>
   )

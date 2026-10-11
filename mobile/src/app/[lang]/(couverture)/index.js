@@ -2,6 +2,7 @@ import { useCallback } from 'react'
 import { View } from 'react-native'
 import { useGlobalSearchParams } from 'expo-router'
 import ArticleList from '../../../ArticleList'
+import { i18n } from '../../../i18n'
 import { getLatestArticles } from '../../../sanity'
 import { colors } from '../../../theme'
 
@@ -16,7 +17,7 @@ export default function LatestScreen() {
     <View style={{ flex: 1, backgroundColor: colors.paper }}>
       <ArticleList
         lang={lang}
-        title="En Couverture"
+        title={(i18n[lang] ?? i18n.fr).latest}
         fetchArticles={fetchArticles}
         articleHref={(article) => `/${lang}/articles/${article.slug.current}`}
       />

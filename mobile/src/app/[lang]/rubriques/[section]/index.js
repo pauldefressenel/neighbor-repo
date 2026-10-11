@@ -20,7 +20,7 @@ export default function SectionScreen() {
     <View style={{ flex: 1, backgroundColor: colors.paper }}>
       <ArticleList
         lang={lang}
-        title={section.label}
+        title={section.label[lang] ?? section.label.fr}
         fetchArticles={fetchArticles}
         articleHref={(article) => `/${lang}/rubriques/${section.slug}/${article.slug.current}`}
       />

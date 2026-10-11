@@ -1,7 +1,9 @@
 import { Pressable, StyleSheet, Text, View } from 'react-native'
+import { useGlobalSearchParams } from 'expo-router'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { TabIcon } from './DrawnIcons'
 import PaperFade from './PaperFade'
+import { i18n } from './i18n'
 import Rule from './Rule'
 import { categoryType, colors } from './theme'
 
@@ -14,20 +16,14 @@ const icons = {
   'a-propos': 'a-propos',
 }
 
-// French-only for now, like the rest of the app's chrome.
-const LABELS = {
-  '(couverture)': 'A La Une',
-  rubriques: 'Rubriques',
-  voisinage: 'Voisinage',
-  'a-propos': 'A Propos',
-}
-
 // Rendered by the Tabs navigator (its `tabBar` prop). Icons and labels are
 // in ink; a red dot under the label marks the current tab. Pressing the
 // current tab again lets the navigator scroll its list to the top, or pop a
 // rubrique back to the list.
 export default function TabBar({ state, navigation }) {
   const insets = useSafeAreaInsets()
+  const { lang } = useGlobalSearchParams()
+  const labels = (i18n[lang] ?? i18n.fr).tabs
   return (
     <View style={[styles.bar, { paddingBottom: insets.bottom }]}>
       {/* Above the line, the paper fades out into the page, as under the
@@ -36,7 +32,7 @@ export default function TabBar({ state, navigation }) {
       {/* The masthead's hand-drawn line, turned upside down so the two
           aren't the same: its sag is right of centre, bowing up. */}
       <Rule style={styles.rule} />
-      <View style={styles.tabs}>
+      <View style={[styles.tabs, lang === 'en' && styles.tabsEn]}>
         {state.routes.map((route, i) => {
           const icon = icons[route.name]
           if (!icon) return null
@@ -48,16 +44,18 @@ export default function TabBar({ state, navigation }) {
           return (
             <Pressable
               key={route.key}
-              style={styles.tab}
+              style={[styles.tab, lang === 'en' && route.name === 'rubriques' && styles.sectionsEn]}
               onPress={onPress}
               accessibilityRole="tab"
               accessibilityState={{ selected: focused }}
-              accessibilityLabel={LABELS[route.name]}
+              accessibilityLabel={labels[route.name]}
             >
               <View style={styles.icon}>
                 <TabIcon name={icon} />
               </View>
-              <Text style={styles.label}>{LABELS[route.name]}</Text>
+              <View style={styles.labelBox}>
+                <Text style={styles.label} numberOfLines={1}>{labels[route.name]}</Text>
+              </View>
               <View style={[styles.dot, focused && styles.dotOn]} />
             </Pressable>
           )
@@ -80,10 +78,19 @@ const styles = StyleSheet.create({
     marginBottom: -2,
   },
   // Inset from the screen's sides, so the four tabs sit closer together
-  // than they would spread across the full width.
+  // than they would spread across the full width. English's longer labels
+  // ("Neighborhood") get the tabs spread wider.
   tabs: {
     flexDirection: 'row',
     paddingHorizontal: 28,
+  },
+  tabsEn: {
+    paddingHorizontal: 12,
+  },
+  // In English, Sections sits a little left of its share of the bar, set
+  // by eye.
+  sectionsEn: {
+    transform: [{ translateX: -11 }],
   },
   tab: {
     flex: 1,
@@ -98,6 +105,14 @@ const styles = StyleSheet.create({
   icon: {
     height: 25,
     justifyContent: 'flex-end',
+  },
+  // Wider than a tab (84pt on a 393pt screen in French, 92pt in English), centred on it, so a
+  // long label overflows evenly into its neighbours' room instead of being
+  // cut: "Neighborhood" is wider than its tab. Its neighbours' labels are
+  // short enough for the two never to meet.
+  labelBox: {
+    width: 120,
+    alignItems: 'center',
   },
   // The cards' category type, but in ink, at 14pt, and tightened a little
   // more (-0.06em against their -0.05em). (16pt, read off the mock-up, was

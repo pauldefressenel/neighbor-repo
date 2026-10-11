@@ -22,11 +22,13 @@ submitted yet.
 - **French first.** `/` goes to `/fr` when the phone's language is French or
   its region a French-speaking country (`app/index.js`, with
   `expo-localization`; the country list duplicates the website's
-  `middleware.js`), else to `/en`. The chrome (tab labels, dates,
-  "de <author>", the A Propos copy) is hard-coded in French. The masthead's
-  language selector switches to `/en`, which fetches the English articles
-  and About page but keeps the French chrome; `i18n.js` holds only the few
-  strings that already exist in both languages.
+  `middleware.js`), else to `/en`. The masthead's language selector switches
+  to `/en`, which fetches the English articles and About page, and the whole
+  app follows the language. The titles and tab labels are in `i18n.js` and
+  `../shared/sections.js`, worded as on the website; the Voisinage pages,
+  the sign-up and the account's messages keep a `COPY` (or `MESSAGES`) per
+  language in their own file, the English taken from the website's
+  `VoisinagePage.jsx` where it has it. The rubriques' URL slugs stay French in both.
 - **Articles** open from any card (`ArticleScreen.js`), laid out like the
   website's article page. Audio readings (`audioFile`) aren't played yet.
 - **A Propos** shows the text of the Studio's `about-fr` document
@@ -109,8 +111,8 @@ Navigation details that are easy to break:
   category below (measured to the letters). The first card has no line above
   it. Portraits are ruled off the same way.
 - `ArticleCard.js` — a centred title page: category, title, excerpt,
-  illustration, "de <author>", and the date in French, formatted by hand
-  rather than with `Intl`.
+  illustration, "de/by <author>", and the date in the page's language,
+  formatted by hand rather than with `Intl` (`../shared/dates.js`).
   - The title shares `titleType` (theme.js) with the page title: NeighborFont
     35pt, -0.03em letter-spacing, 1.1 line height, Regular (Medium page
     titles were tried and rejected). It is balanced, and
@@ -140,7 +142,8 @@ Navigation details that are easy to break:
   The two slots are 64pt wide to hold it, the language ends 28pt from the
   edge, and it stands on the wordmark's baseline.
   (It replaced "Fr" opening a red "En" beside it.) Switching keeps the page, except that an article goes back to the
-  list it was opened from (article slugs differ between languages).
+  list it was opened from (article slugs differ between languages). The
+  website goes to the home page instead.
 - `NeighbourLanding.js` — Voisinage signed out, chosen on a comparison
   sheet (option B). Under the centred "Voisinage" title (no dinkus: it
   separates articles, and there are none here), 90pt down:

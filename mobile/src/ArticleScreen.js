@@ -3,7 +3,7 @@ import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native'
 import { useNavigation } from 'expo-router'
 import { useScrollToTop } from 'expo-router/react-navigation'
 import { useReducedMotion } from 'react-native-reanimated'
-import { frenchDate } from './ArticleCard'
+import { articleDate } from './ArticleCard'
 import ArticleText, { readingMinutes } from './ArticleText'
 import LateSpinner from './LateSpinner'
 import { i18n } from './i18n'
@@ -53,7 +53,7 @@ export default function ArticleScreen({ lang, slug }) {
     load()
   }, [load])
 
-  const date = article?.publishedAt ? frenchDate(article.publishedAt) : null
+  const date = article?.publishedAt ? articleDate(article.publishedAt, lang) : null
   // "Anna Canonne, 20 mai 2026." on one line, closed by a full stop.
   const byline = [article?.author, date].filter(Boolean).join(', ')
   const bylineText = byline ? `${byline}.` : ''

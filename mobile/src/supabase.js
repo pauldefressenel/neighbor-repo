@@ -2,7 +2,8 @@
 // supabase/migrations). Articles stay in Sanity (sanity.js); this is only
 // for the readers. The key is the project's public one, made to ship inside
 // apps: it can read only what the database's rules let anyone read, here
-// the `neighbours` view (first name, avatar, country, activity, date) and
+// the `neighbours` view (first name, avatar, country, activity, in French
+// and English too, date) and
 // the public avatars, and a signed-in neighbour their own profile. The
 // neighbours are read over plain REST; signing in goes through supabase-js.
 import AsyncStorage from '@react-native-async-storage/async-storage'
@@ -16,7 +17,7 @@ const KEY =
 export const avatarUrl = (path) => `${URL}/storage/v1/object/public/avatars/${path}`
 
 export async function getNeighbours() {
-  const res = await fetch(`${URL}/rest/v1/neighbours?select=id,first_name,avatar_path,activity,created_at`, {
+  const res = await fetch(`${URL}/rest/v1/neighbours?select=id,first_name,avatar_path,activity,activity_fr,activity_en,created_at`, {
     headers: { apikey: KEY },
   })
   if (!res.ok) throw new Error(`neighbours: ${res.status}`)

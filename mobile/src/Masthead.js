@@ -62,10 +62,12 @@ export default function Masthead({ onBack, backLabel = 'Retour' }) {
 
 // Both languages side by side, FR then EN: the current one in ink, the
 // other faint (the current one in red, the other in ink, was tried). A tap
-// anywhere on the pair shows the same page in the other language (it
-// replaced a selector that opened a row with the other language beside it). Article slugs differ between languages, so from an
-// article it goes to the list the article was opened from. The account
-// (account.js) sits above the [lang] segment, so it survives the switch.
+// anywhere on the pair shows the same page in the other language (the
+// website goes to the home page instead; the app did too for a while). It
+// replaced a selector that opened a row with the other language beside it.
+// Article slugs differ between languages, so from an article it goes to the
+// list the article was opened from. The account (account.js) sits above the
+// [lang] segment, so it survives the switch.
 function Language() {
   const { lang } = useGlobalSearchParams()
   const pathname = usePathname()
