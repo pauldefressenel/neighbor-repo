@@ -16,13 +16,20 @@ import './ArticlePage.css'
 export default function ArticlePage() {
   const { lang, slug } = useParams()
   const [article, setArticle] = useState(null)
+  // The page builds up from the moment it opened, as the lists do: an
+  // article that arrives late doesn't wait out time already past.
+  const [since] = useState(() => performance.now())
+  const [elapsed, setElapsed] = useState(0)
   const location = useLocation()
   const navigate = useNavigate()
   const t = i18n[lang] ?? i18n.en
 
   useEffect(() => {
-    getArticleBySlug(slug).then(setArticle)
-  }, [slug])
+    getArticleBySlug(slug).then((loaded) => {
+      setElapsed(performance.now() - since)
+      setArticle(loaded)
+    })
+  }, [slug, since])
 
   if (!article) return null
 
@@ -31,7 +38,7 @@ export default function ArticlePage() {
   const byline = [article.author, date].filter(Boolean).join(', ')
 
   return (
-    <main className="article-page" lang={article.language ?? lang}>
+    <main className="article-page" lang={article.language ?? lang} style={{ '--appear-elapsed': `${Math.round(elapsed)}ms` }}>
       {/* Back to the page the article was opened from, as in the app; opened
           straight from a link, with nothing to go back to, its rubrique. */}
       <Link

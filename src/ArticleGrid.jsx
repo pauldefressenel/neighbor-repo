@@ -28,12 +28,11 @@ function CardGrid({ articles }) {
 }
 
 // The lines between columns. Each runs from the grid's top down through the
-// last row with a card on its left, so every card stands in a closed box,
-// a lone last card included, and on to the line under that row if there is
-// one; in a last row that isn't full, a gap with no card on its left has no
-// line (running the grid's full height, they drew empty boxes), and a line
-// under the row closes its cards' boxes, as far as the last one's line
-// (`row-end-rule`), as the line between rows would: 30px under the cards.
+// last row with a card on its left, and on to the line under that row if
+// there is one; in a last row that isn't full, a gap with no card on its left
+// has no line (running the grid's full height, they drew empty boxes). The
+// last row has no line under it: the lines beside its cards stop at their
+// foot. (A line under a short last row, closing its boxes, was tried.)
 // Measured, again whenever the grid changes size (images arriving, the
 // window resized). On a page that builds up, they rise in on the line's step
 // (appear.line in shared/tokens.js, with the first cards), or at once if the
@@ -41,20 +40,17 @@ function CardGrid({ articles }) {
 function ColumnRules({ grid }) {
   const rise = useLineRise()
   const [heights, setHeights] = useState([])
-  const [end, setEnd] = useState(null)
   useLayoutEffect(() => {
     const el = grid.current
     const measure = () => {
       const cols = Number(getComputedStyle(el).getPropertyValue('--cols')) || 1
       const cards = [...el.children].filter((c) => c.classList.contains('article-card'))
       const top = el.getBoundingClientRect().top
-      // A short last row: how many cards, and where the line under it goes.
+      // The foot of a short last row: its lines all stop there.
       const start = Math.floor((cards.length - 1) / cols) * cols
-      const span = cards.length - start
-      const foot = span < cols
-        ? Math.max(...cards.slice(start).map((c) => c.offsetTop + c.offsetHeight)) + ROW_END
+      const foot = cards.length - start < cols
+        ? Math.max(...cards.slice(start).map((c) => c.offsetTop + c.offsetHeight))
         : null
-      setEnd(foot == null ? null : { span, foot })
       setHeights([1, 2, 3].map((k) => {
         const last = cards.findLastIndex((_, i) => i % cols === k - 1)
         if (last < 0) return 0
@@ -80,19 +76,9 @@ function ColumnRules({ grid }) {
           style={{ '--k': k, height: heights[k - 1] ? `${heights[k - 1]}px` : 0, ...rise }}
         />
       ))}
-      {end && (
-        <Rule
-          className={`row-end-rule${rise ? ' column-rule--rise' : ''}`}
-          style={{ '--span': end.span, top: `${end.foot - 4}px`, ...rise }}
-        />
-      )}
     </>
   )
 }
-
-// From the foot of a row's cards to the middle of the line under it (the
-// next card's line: its 30px margin, then half its 8px).
-const ROW_END = 34
 
 // The line's step, as a delay left to wait, or null outside a page that
 // builds up.

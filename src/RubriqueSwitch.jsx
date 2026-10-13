@@ -10,8 +10,10 @@ import './RubriqueSwitch.css'
 // towards a drawn chevron that scrolls it on, or back once at the end
 // (option A of a comparison sheet). On Portraits it opens scrolled to the
 // end. It sits in the fixed header, under its line, so the paper's fade falls
-// below it. The names rise in one after another, then the line, each time
-// it appears (from another page, not between the four, where it stays put). A name shrinks while held, as in the app;
+// below it. Its line draws itself from the middle outwards while the names
+// rise one after another, then the arrow (D of the switch-appear sheet; the
+// names first, then the line and arrow rising, came first, then the line
+// drawn before the names), each time it appears (from another page, not between the four, where it stays put). A name shrinks while held, as in the app;
 // tracked by pointer rather than :active, which phones apply only for an
 // instant on a quick tap, so the shrink jumped. Only the words shrink, not
 // the link: a shrinking link pulled its edge out from under the finger, and
@@ -70,7 +72,7 @@ export default function RubriqueSwitch({ lang, t }) {
               onPointerUp={release}
               onPointerLeave={release}
               onPointerCancel={release}
-              style={{ animationDelay: `${50 + i * 50}ms` }}
+              style={{ animationDelay: `${100 + i * 70}ms` }}
             >
               <span className="rubrique-switch-label">{label}</span>
             </NavLink>

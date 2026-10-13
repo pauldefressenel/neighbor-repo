@@ -83,22 +83,9 @@
     left: calc(var(--k) * (100% + var(--gap)) / var(--cols) - var(--gap) / 2 - 4px);
     color: #000;
   }
-
-  /* Under a short last row, a line across its cards to the middle of the gap
-     after the last one, where that card's line comes down to meet it, so
-     those cards' boxes close too. ArticleGrid.jsx sets --span and top. */
-  .articles-grid .row-end-rule {
-    display: block;
-    position: absolute;
-    left: 0;
-    width: calc(var(--span) * (100% + var(--gap)) / var(--cols) - var(--gap) / 2);
-    height: 8px;
-    color: #000;
-  }
 }
 
 .column-rule,
-.row-end-rule,
 .strip-rule {
   display: none;
 }

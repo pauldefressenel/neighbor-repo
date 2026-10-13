@@ -3,6 +3,28 @@
    characters a line; Framer's 650 ran to 80), which falls back to the 20px
    page gutter once the window is narrower. */
 
+/* Building up as in the app (appear.article in shared/tokens.js): the
+   category and byline (and the back arrow), then the title, then the reading
+   time and text, each fading in while rising on its spring. Each delay
+   counts from the page opening, less the time the article took to arrive
+   (--appear-elapsed, ArticlePage.jsx). */
+.article-page {
+  --rise: var(--appear-article-heading-rise);
+  --article-rise-heading: rise var(--appear-article-heading-duration) var(--appear-article-heading-easing)
+    max(0ms, var(--appear-article-heading-delay) - var(--appear-elapsed, 0ms)) both;
+  --article-rise-title: rise var(--appear-article-title-duration) var(--appear-article-title-easing)
+    max(0ms, var(--appear-article-title-delay) - var(--appear-elapsed, 0ms)) both;
+  --article-rise-body: rise var(--appear-article-body-duration) var(--appear-article-body-easing)
+    max(0ms, var(--appear-article-body-delay) - var(--appear-elapsed, 0ms)) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .article-page,
+  .article-page * {
+    animation: none !important;
+  }
+}
+
 .article-page {
   width: min(600px, 100% - 40px);
   margin: 100px auto 0;
@@ -19,7 +41,7 @@
   margin: -10px -12px 18px;
   color: #000;
   -webkit-tap-highlight-color: transparent;
-  animation: appear-10 0.3s var(--ease-spring) 0.15s both;
+  animation: var(--article-rise-heading);
 }
 
 /* About has no arrow: its heading keeps the arrow's room. */
@@ -32,7 +54,7 @@
 }
 
 .article-page-heading {
-  animation: appear-10 0.3s var(--ease-spring) 0.15s both;
+  animation: var(--article-rise-heading);
 }
 
 /* The cards' category, on the left. */
@@ -68,7 +90,7 @@
   line-height: 1.1;
   color: #000;
   text-wrap: balance;
-  animation: appear-10 0.3s var(--ease-spring) 0.2s both;
+  animation: var(--article-rise-title);
 }
 
 /* With neither category nor byline, the title takes their place at the top. */
@@ -80,11 +102,11 @@
 .article-page-reading {
   margin-top: 2px;
   margin-bottom: 48px;
-  animation: appear-10 0.3s var(--ease-spring) 0.3s both;
+  animation: var(--article-rise-body);
 }
 
 .article-page-text {
-  animation: appear-10 0.3s var(--ease-spring) 0.3s both;
+  animation: var(--article-rise-body);
 }
 
 /* EB Garamond 21px on 31px lines, paragraphs 1.4em apart, justified and

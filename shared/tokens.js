@@ -76,6 +76,15 @@ export const appear = {
   card: { rise: 5, delay: 400, spring: { duration: 200, bounce: 0 } },
   line: { rise: 5, delay: 400, spring: { duration: 200, bounce: 0 } },
   max: 5,
+  // An article's page, top to bottom: the category and byline (and the
+  // website's back arrow), the title, then the reading time and text. The
+  // app's APPEAR.article (mobile/src/motion.js), which the app keeps its own
+  // copy of; the website reads these.
+  article: {
+    heading: { rise: 10, delay: 300, spring: { duration: 400, bounce: 0 } },
+    title: { rise: 10, delay: 350, spring: { duration: 400, bounce: 0 } },
+    body: { rise: 10, delay: 400, spring: { duration: 400, bounce: 0 } },
+  },
 }
 
 // A spring as the app plays it (motion.js springConfig: Framer's duration
@@ -122,7 +131,15 @@ export const cssVariables = () => {
     '--title-mark-below': `${titleMark.below}px`,
     '--header-fade': `${headerFade}px`,
     ...Object.fromEntries(
-      Object.entries({ title: appear.titleLines, 'title-mark': appear.titleMark, card: appear.card, line: appear.line }).flatMap(([name, step]) => {
+      Object.entries({
+        title: appear.titleLines,
+        'title-mark': appear.titleMark,
+        card: appear.card,
+        line: appear.line,
+        'article-heading': appear.article.heading,
+        'article-title': appear.article.title,
+        'article-body': appear.article.body,
+      }).flatMap(([name, step]) => {
         const { ms, easing } = springCurve(step.spring)
         return [
           [`--appear-${name}-rise`, `${step.rise}px`],

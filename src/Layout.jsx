@@ -9,6 +9,7 @@ import LatestPage from './LatestPage'
 import AboutPage from './AboutPage'
 import VoisinagePage from './VoisinagePage'
 import Footer from './Footer'
+import SwitchAppearSheet from './SwitchAppearSheet' // TEMPORARY
 import Rule from './Rule'
 import RubriqueSwitch from './RubriqueSwitch'
 
@@ -62,7 +63,7 @@ export default function Layout() {
   const { pathname } = useLocation()
   // Latest and the three rubriques: the pages under the phone's Rubriques
   // switch.
-  const listPage = [`/${lang}`, `/${lang}/essays-criticism`, `/${lang}/prose-poetry`, `/${lang}/portraits`].includes(pathname.replace(/\/$/, ''))
+  const listPage = [`/${lang}`, `/${lang}/essays-critiques`, `/${lang}/prose-poetry`, `/${lang}/portraits`].includes(pathname.replace(/\/$/, ''))
   // The other language opens on the same page (the URLs are the same in
   // both but for the language), except an article, which opens its
   // rubrique: the translation has another slug, if there is one. As in the
@@ -162,13 +163,16 @@ export default function Layout() {
         <Rule className="header-rule" />
         {/* Phones: the app's masthead line, edge to edge. */}
         <Rule className="header-rule-phone" drawn />
-        {/* Phones: the app's Rubriques switch, over the three lists. */}
-        {listPage && <RubriqueSwitch lang={lang} t={t} />}
+        {/* Phones: the app's Rubriques switch, over the three lists. Keyed by
+            the language, so switching it plays the switch's entrance again. */}
+        {listPage && <RubriqueSwitch key={lang} lang={lang} t={t} />}
       </header>
 
 
       <Routes>
         <Route index element={<LatestPage key={useLocation().pathname} />} />
+        {/* TEMPORARY: ways for the phone's Rubriques switch to appear. */}
+        <Route path="switch-appear" element={<SwitchAppearSheet />} />
         <Route path="about" element={ABOUT_OPEN ? <AboutPage /> : <Navigate to={`/${lang}`} replace />} />
         <Route
           path="neighborhood"
@@ -177,7 +181,7 @@ export default function Layout() {
         {Object.entries(LEGACY_SECTIONS).map(([from, to]) => (
           <Route key={from} path={`${from}/*`} element={<LegacySection to={to} />} />
         ))}
-        <Route path=":section/:slug" element={<ArticlePage />} />
+        <Route path=":section/:slug" element={<ArticlePage key={useLocation().pathname} />} />
         <Route path=":section" element={<SectionPage key={useLocation().pathname} />} />
       </Routes>
       <Footer lang={lang} />

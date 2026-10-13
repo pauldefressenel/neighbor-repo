@@ -1,7 +1,7 @@
 // The one list of rubriques, read by the website (src/sections.js), the app
 // (mobile/src/sections.js) and the Studio (studio/structure.js,
 // studio/schemas/article.js). An article's Sanity `section` names its
-// rubrique: the first value of the rubrique's `sanity`. Essays & Criticism
+// rubrique: the first value of the rubrique's `sanity`. Essays & Critiques
 // also lists `the-arts`, an old section merged into `literature-review`
 // (import/merge-sections.mjs), so an article still holding it is found
 // wherever it is looked for.
@@ -19,8 +19,8 @@
 // story's form, a portrait's trade).
 export const RUBRIQUES = [
   {
-    slug: { en: 'essays-criticism', fr: 'essais-critiques' },
-    label: { en: 'Essays & Criticism', fr: 'Essais & Critiques' },
+    slug: { en: 'essays-critiques', fr: 'essais-critiques' },
+    label: { en: 'Essays & Critiques', fr: 'Essais & Critiques' },
     subtitle: { en: 'Books, Film, Music, Crossroads', fr: 'Livres, Cinema, Musique, Arts Croises' },
     sanity: ['literature-review', 'the-arts'],
     // What the piece is about, chosen after reading them all (2026-10-13);

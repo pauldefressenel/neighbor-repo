@@ -21,6 +21,8 @@ export const ABOUT_OPEN = false
 // them in production; Layout does the same in development.
 export const LEGACY_SECTIONS = {
   'fiction-poetry': 'prose-poetry',
-  'literature-review': 'essays-criticism',
-  'the-arts': 'essays-criticism',
+  'literature-review': 'essays-critiques',
+  'the-arts': 'essays-critiques',
+  // Essays & Critiques was Essays & Criticism until 2026-10-13.
+  'essays-criticism': 'essays-critiques',
 }

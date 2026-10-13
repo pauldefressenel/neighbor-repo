@@ -1,0 +1,148 @@
+/* TEMPORARY: SwitchAppearSheet.jsx. Self-contained, so it can go in one
+   piece. The switch is redrawn here at phone width (RubriqueSwitch.css). */
+.sa-sheet {
+  margin-top: 100px;
+  padding: 20px 0 80px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.sa-replay {
+  font-family: 'Averia Libre', sans-serif;
+  font-size: 15px;
+  text-transform: uppercase;
+  letter-spacing: -0.05em;
+  color: var(--red);
+  background: none;
+  border: none;
+  padding: 10px;
+  margin-bottom: 24px;
+  cursor: pointer;
+}
+
+.sa-option {
+  margin-bottom: 56px;
+  width: min(375px, 100%);
+}
+
+.sa-letter {
+  font-family: 'NeighborFont', serif;
+  font-size: 40px;
+  line-height: 1;
+  color: var(--red);
+  text-align: center;
+  margin: 0 0 18px;
+}
+
+.sa-switch {
+  display: block;
+  width: 100%;
+  padding: 0;
+  border: none;
+  background: none;
+  text-align: left;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.sa-bar {
+  position: relative;
+  display: block;
+}
+
+.sa-row {
+  display: flex;
+  gap: 15px;
+  overflow: hidden;
+  padding: 0 40px 0 16px;
+  -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 100px), transparent calc(100% - 22px));
+  mask-image: linear-gradient(to right, #000 calc(100% - 100px), transparent calc(100% - 22px));
+}
+
+.sa-name {
+  flex: none;
+  font-family: 'Averia Libre', sans-serif;
+  font-size: 15px;
+  letter-spacing: -0.05em;
+  line-height: 1.1;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: #000;
+}
+
+.sa-name--active {
+  color: var(--red);
+}
+
+.sa-arrow {
+  position: absolute;
+  right: 18px;
+  top: 50%;
+  transform: translateY(-50%);
+  line-height: 0;
+  color: #000;
+}
+
+.sa-arrow svg {
+  transform: scaleX(-1);
+}
+
+.sa-rule {
+  display: block;
+  width: calc(100% - 32px);
+  height: 8px;
+  margin: 15px 16px 0;
+  color: #000;
+}
+
+/* The steps. */
+@keyframes sa-rise {
+  from { opacity: 0; transform: translateY(var(--sa-rise, 5px)); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes sa-draw {
+  from { clip-path: inset(-4px 100% -4px 0); }
+  to { clip-path: inset(-4px 0 -4px 0); }
+}
+
+@keyframes sa-draw-middle {
+  from { clip-path: inset(-4px 50% -4px 50%); }
+  to { clip-path: inset(-4px 0 -4px 0); }
+}
+
+/* A: as now. */
+.sa-A .sa-name { animation: sa-rise 300ms cubic-bezier(0.22, 1, 0.36, 1) calc(50ms + var(--i) * 50ms) backwards; }
+.sa-A .sa-arrow,
+.sa-A .sa-rule { animation: sa-rise 300ms cubic-bezier(0.22, 1, 0.36, 1) 200ms backwards; }
+.sa-A .sa-arrow { animation-name: sa-arrow-rise; }
+
+@keyframes sa-arrow-rise {
+  from { opacity: 0; transform: translateY(calc(-50% + 5px)); }
+  to { opacity: 1; transform: translateY(-50%); }
+}
+
+/* B: names, then the line drawn left to right. */
+.sa-B .sa-name { animation: sa-rise 300ms cubic-bezier(0.22, 1, 0.36, 1) calc(50ms + var(--i) * 50ms) backwards; }
+.sa-B .sa-rule { animation: sa-draw 500ms cubic-bezier(0.65, 0, 0.35, 1) 250ms backwards; }
+.sa-B .sa-arrow { animation: sa-arrow-rise 300ms cubic-bezier(0.22, 1, 0.36, 1) 600ms backwards; }
+
+/* C: the line drawn first, then the names rise onto it. */
+.sa-C .sa-rule { animation: sa-draw 450ms cubic-bezier(0.65, 0, 0.35, 1) 50ms backwards; }
+.sa-C .sa-name { animation: sa-rise 300ms cubic-bezier(0.22, 1, 0.36, 1) calc(400ms + var(--i) * 50ms) backwards; }
+.sa-C .sa-arrow { animation: sa-arrow-rise 300ms cubic-bezier(0.22, 1, 0.36, 1) 600ms backwards; }
+
+/* D: the line from the middle outwards, the names rising with it. */
+.sa-D .sa-rule { animation: sa-draw-middle 500ms cubic-bezier(0.65, 0, 0.35, 1) 50ms backwards; }
+.sa-D .sa-name { animation: sa-rise 300ms cubic-bezier(0.22, 1, 0.36, 1) calc(100ms + var(--i) * 50ms) backwards; }
+.sa-D .sa-arrow { animation: sa-arrow-rise 300ms cubic-bezier(0.22, 1, 0.36, 1) 300ms backwards; }
+
+/* E: all together, one block rising 8px. */
+.sa-E .sa-bar,
+.sa-E .sa-rule { --sa-rise: 8px; animation: sa-rise 400ms cubic-bezier(0.22, 1, 0.36, 1) 50ms backwards; }
+
+/* F: the pen draws the line, each name rising as it passes beneath. */
+.sa-F .sa-rule { animation: sa-draw 700ms linear 50ms backwards; }
+.sa-F .sa-name { animation: sa-rise 300ms cubic-bezier(0.22, 1, 0.36, 1) calc(50ms + var(--i) * 140ms) backwards; }
+.sa-F .sa-arrow { animation: sa-arrow-rise 300ms cubic-bezier(0.22, 1, 0.36, 1) 650ms backwards; }
