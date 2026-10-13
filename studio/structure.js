@@ -18,7 +18,7 @@ const rubriques = (lang) =>
   RUBRIQUES.map((r) => ({ title: r.label[lang], sections: r.sanity }))
 
 // Fills in language and section for a new article, so writers never set them
-// by hand. Registered in sanity.config.js.
+// by hand, and the publication date as today. Registered in sanity.config.js.
 export const articleTemplate = {
   id: 'article-in-section',
   title: 'Article',
@@ -27,7 +27,7 @@ export const articleTemplate = {
     { name: 'lang', type: 'string' },
     { name: 'section', type: 'string' },
   ],
-  value: ({ lang, section }) => ({ language: lang, section }),
+  value: ({ lang, section }) => ({ language: lang, section, publishedAt: new Date().toISOString() }),
 }
 
 // Sets a new À la Une document's language.

@@ -2,6 +2,7 @@ import { defineField, defineType } from 'sanity'
 import { BlockquoteIcon } from '@sanity/icons'
 import { ScaleSlider } from '../scaleSlider.jsx'
 import { CategoryInput, categoriesFor } from '../categoryInput.jsx'
+import { RubriqueInput } from '../rubriqueInput.jsx'
 import { RUBRIQUES } from '../../shared/sections.js'
 
 export const article = defineType({
@@ -34,21 +35,6 @@ export const article = defineType({
           { title: 'English', value: 'en' },
           { title: 'French', value: 'fr' },
         ],
-      },
-      validation: Rule => Rule.required(),
-    }),
-    defineField({
-      name: 'section',
-      title: 'Rubrique',
-      type: 'string',
-      // Hidden: the rubrique folder the article is created in sets it
-      // (structure.js), and it decides where the article is listed and its
-      // address. (It was shown read-only first, in the article's language.)
-      hidden: true,
-      options: {
-        // The three rubriques (shared/sections.js), each stored as its first
-        // Sanity value.
-        list: RUBRIQUES.map((r) => ({ title: r.label.fr, value: r.sanity[0] })),
       },
       validation: Rule => Rule.required(),
     }),
@@ -144,6 +130,27 @@ export const article = defineType({
       name: 'publishedAt',
       title: 'Published At',
       type: 'datetime',
+      // The moment the article is created; change it if need be. (Also set
+      // by the folder's template, structure.js.)
+      initialValue: () => new Date().toISOString(),
+    }),
+    defineField({
+      name: 'section',
+      title: 'Rubrique',
+      type: 'string',
+      description: 'Set by the rubrique folder the article was created in.',
+      // Read-only, last in the form: the rubrique folder the article is
+      // created in sets it (structure.js), and it decides where the article
+      // is listed and its address. Shown as the rubrique's name in the
+      // article's language (rubriqueInput.jsx). (It was hidden for a while.)
+      readOnly: true,
+      components: { input: RubriqueInput },
+      options: {
+        // The three rubriques (shared/sections.js), each stored as its first
+        // Sanity value.
+        list: RUBRIQUES.map((r) => ({ title: r.label.fr, value: r.sanity[0] })),
+      },
+      validation: Rule => Rule.required(),
     }),
   ],
   preview: {
