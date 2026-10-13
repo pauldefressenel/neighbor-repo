@@ -5,7 +5,7 @@ import { getArticleBySlug } from './sanity/queries'
 import { longDate } from '../shared/dates.js'
 import { readingMinutes } from './readingMinutes'
 import { rubriqueOf } from './sections'
-import { fadeOut, leaving } from './fade'
+import { fadeOut, leaving, opening } from './fade'
 import { i18n } from './i18n'
 import Arrow from './Arrow'
 import './ArticlePage.css'
@@ -16,11 +16,17 @@ import './ArticlePage.css'
 // Above them, the app's back arrow.
 export default function ArticlePage() {
   const { lang, slug } = useParams()
+  // Opened from a card (fade.js opening): its fetch, already under way, and
+  // what the card showed, so the heading needn't wait for it.
+  const [opened] = useState(() => (opening.slug === slug ? { ...opening } : null))
+  useEffect(() => { opening.slug = null }, [])
   const [article, setArticle] = useState(null)
-  // The page builds up from the moment it opened, as the lists do: an
-  // article that arrives late doesn't wait out time already past.
-  const [since] = useState(() => performance.now())
-  const [elapsed, setElapsed] = useState(0)
+  // The page builds up from the moment it opened (from a card, the tap), as
+  // the lists do: what arrives late doesn't wait out time already past. The
+  // heading counts from the page drawn, the text from its arrival.
+  const [since] = useState(() => opened?.since ?? performance.now())
+  const [elapsed] = useState(() => performance.now() - since)
+  const [bodyElapsed, setBodyElapsed] = useState(0)
   const location = useLocation()
   const navigate = useNavigate()
   const t = i18n[lang] ?? i18n.en
@@ -30,43 +36,50 @@ export default function ArticlePage() {
   useEffect(() => { leaving.article = true }, [])
 
   useEffect(() => {
-    getArticleBySlug(slug).then((loaded) => {
-      setElapsed(performance.now() - since)
+    const load = opened?.slug === slug ? opened.article : getArticleBySlug(slug)
+    load.then((loaded) => {
+      setBodyElapsed(performance.now() - since)
       setArticle(loaded)
     })
-  }, [slug, since])
+  }, [slug, since, opened])
 
-  // Until the article arrives, an empty page a screen tall, so the footer
-  // doesn't show for a moment at the foot of the window.
-  if (!article) return <main className="article-page article-page--loading" />
+  // Until the article arrives, the card's heading, else an empty page a
+  // screen tall, so the footer doesn't show for a moment at the foot of the
+  // window.
+  const shown = article ?? (opened?.slug === slug ? opened.card : null)
+  if (!shown) return <main className="article-page article-page--loading" />
 
   // "Anna Canonne, 20 mai 2026." on one line, closed by a full stop.
-  const date = article.publishedAt ? longDate(article.publishedAt, lang) : null
-  const byline = [article.author, date].filter(Boolean).join(', ')
+  const date = shown.publishedAt ? longDate(shown.publishedAt, lang) : null
+  const byline = [shown.author, date].filter(Boolean).join(', ')
 
   return (
-    <main className="article-page" lang={article.language ?? lang} style={{ '--appear-elapsed': `${Math.round(elapsed)}ms` }}>
+    <main
+      className={`article-page${article ? '' : ' article-page--loading'}`}
+      lang={shown.language ?? lang}
+      style={{ '--appear-elapsed': `${Math.round(elapsed)}ms`, '--appear-body-elapsed': `${Math.round(bodyElapsed)}ms` }}
+    >
       {/* Back to the page the article was opened from, as in the app; opened
           straight from a link, with nothing to go back to, its rubrique. */}
       <Link
-        to={`/${lang}/${rubriqueOf(article.section)}`}
+        to={`/${lang}/${rubriqueOf(shown.section)}`}
         className="article-page-back"
         aria-label={t.back}
         onClick={(e) => {
           e.preventDefault()
-          const to = location.key === 'default' ? `/${lang}/${rubriqueOf(article.section)}` : -1
+          const to = location.key === 'default' ? `/${lang}/${rubriqueOf(shown.section)}` : -1
           fadeOut(e.currentTarget.closest('main')).then(() => navigate(to))
         }}
       >
         <Arrow />
       </Link>
       <ArticleHeading
-        category={article.category}
+        category={shown.category}
         byline={byline ? `${byline}.` : ''}
-        title={article.title}
-        readingTime={`${readingMinutes(article)} min.`}
+        title={shown.title}
+        readingTime={article ? `${readingMinutes(article)} min.` : null}
       />
-      <ArticleText body={article.body ?? []} poems={article.poems ?? []} />
+      {article && <ArticleText body={article.body ?? []} poems={article.poems ?? []} />}
     </main>
   )
 }

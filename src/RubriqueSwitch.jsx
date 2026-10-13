@@ -1,6 +1,5 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { NavLink, useLocation } from 'react-router-dom'
-import Rule from './Rule'
 import { leaving } from './fade'
 import './RubriqueSwitch.css'
 
@@ -93,7 +92,7 @@ export default function RubriqueSwitch({ lang, t }) {
           </svg>
         </button>
       </div>
-      <Rule className="rubrique-switch-rule" drawn />
+      <span className="rubrique-switch-rule" aria-hidden="true" />
     </nav>
   )
 }

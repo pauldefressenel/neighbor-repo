@@ -17,16 +17,6 @@ export const fadeOut = (...els) => fade(els, 300, 'ease-in-out')
 // The same fade played backwards, for a list come back to.
 export const fadeIn = (el) => fade([el], 300, 'ease-in-out', [{ opacity: 0 }, { opacity: 1 }], 'backwards')
 
-// A thin black line, on top of the fade of what holds it: at the same pace
-// it seemed to stay after the words around it had gone, and on the iPhone
-// its own fade alone still left it there, so it also draws itself back into
-// its middle, its entrance played backwards (RubriqueSwitch.css).
-export const fadeLine = (el) =>
-  fade([el], 200, 'ease-out', [
-    { opacity: 1, clipPath: 'inset(-4px 0 -4px 0)' },
-    { opacity: 0, clipPath: 'inset(-4px 50% -4px 50%)' },
-  ])
-
 // Set while an article page is open, so the phone's Rubriques switch, coming
 // back with the list, rises in whole rather than playing its entrance
 // (RubriqueSwitch.jsx, which clears it).
@@ -38,6 +28,14 @@ export const leaving = { article: false }
 // the card as it is tapped: the list's path, the card's slug and how far
 // down the window its top was.
 export const back = { from: null, slug: null, top: 0 }
+
+// From a card to its article, as a magazine turns the page: the card, as it
+// is tapped, starts fetching the article and hands over what it already
+// shows (category, title, author, date), so the article's heading builds up
+// the moment the list has faded, timed from the tap, and its text follows
+// as soon as it arrives, with no blank page in between. Taken by
+// ArticlePage for that slug only.
+export const opening = { slug: null, since: 0, card: null, article: null }
 
 // For a list page (`main`, its <main>): whether it is being come back to,
 // and the style that holds it unseen until its cards are `ready`; then it

@@ -1,14 +1,15 @@
-import { useContext, useLayoutEffect, useRef } from 'react'
+import { useContext, useEffect, useLayoutEffect, useRef } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { longDate } from '../shared/dates.js'
 import { illustrationSize } from '../shared/illustration.js'
 import { appear } from '../shared/tokens.js'
 import { AppearContext, delayLeft } from './appear'
-import { back, fadeLine, fadeOut } from './fade'
+import { back, fadeOut, opening } from './fade'
 import { i18n } from './i18n'
 import Rule from './Rule'
 import { urlFor } from './sanity/client'
 import { rubriqueOf } from './sections'
+import { getArticleBySlug } from './sanity/queries'
 import './ArticleCard.css'
 
 // The app's card (mobile/src/ArticleCard.js): a centred title page with the
@@ -29,6 +30,28 @@ export default function ArticleCard({ category, title, excerpt, author, mainImag
   const link = useRef(null)
   const navigate = useNavigate()
   const to = `/${language}/${rubriqueOf(section)}/${slug.current}`
+  // The line under the phone's Rubriques switch goes LINE_GONE after a
+  // finger touches the card, not once it lifts, when the iPhone sends the
+  // click; it comes back if the touch turns into a scroll or doesn't open
+  // the article.
+  const opened = useRef(false)
+  const hiding = useRef(null)
+  const showLine = (shown) => {
+    const line = document.querySelector('.rubrique-switch-rule')
+    if (line) line.style.visibility = shown ? '' : 'hidden'
+  }
+  const hideLine = () => {
+    if (hiding.current) return
+    hiding.current = setTimeout(() => showLine(false), LINE_GONE)
+  }
+  // Not after the card has gone: the line would be another page's.
+  useEffect(() => () => clearTimeout(hiding.current), [])
+  const restoreLine = () => setTimeout(() => {
+    if (opened.current) return
+    clearTimeout(hiding.current)
+    hiding.current = null
+    showLine(true)
+  }, 100)
   useLayoutEffect(() => {
     if (since == null || appearIndex == null) return
     const el = link.current
@@ -57,12 +80,23 @@ export default function ArticleCard({ category, title, excerpt, author, mainImag
       ref={link}
       // The page fades out before the article opens, at its top, the phone's
       // Rubriques switch with it (fade.js), noting where the card stood for
-      // the way back. Not when it is opened in a new tab.
+      // the way back, while the article is already being fetched (opening).
+      // Not when it is opened in a new tab.
+      onPointerDown={(e) => { if (e.isPrimary && e.button === 0) hideLine() }}
+      onPointerCancel={restoreLine}
+      onPointerUp={restoreLine}
       onClick={(e) => {
         if (e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return
         e.preventDefault()
         Object.assign(back, { from: window.location.pathname, slug: slug.current, top: e.currentTarget.getBoundingClientRect().top })
-        fadeLine(document.querySelector('.rubrique-switch-rule'))
+        Object.assign(opening, {
+          slug: slug.current,
+          since: performance.now(),
+          card: { category, title, author, publishedAt, section, language },
+          article: getArticleBySlug(slug.current),
+        })
+        opened.current = true
+        hideLine()
         fadeOut(e.currentTarget.closest('main'), document.querySelector('.rubrique-switch')).then(() => {
           window.scrollTo(0, 0)
           navigate(to)
@@ -93,6 +127,9 @@ function Illustration({ image, scale, title }) {
     </div>
   )
 }
+
+// From the touch to the line under the Rubriques switch going.
+const LINE_GONE = 100 // ms
 
 const PHONE = '(max-width: 699.98px)'
 

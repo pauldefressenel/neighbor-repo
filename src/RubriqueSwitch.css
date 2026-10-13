@@ -108,20 +108,25 @@
   }
 
   /* 19px from the names to the stroke, in the middle of its 8px box, across
-     the page less 16px each side. It draws itself from the middle outwards
-     as the names rise (RubriqueSwitch.jsx sets their delays). */
+     the page less 16px each side: the header's drawn line (Rule.jsx's
+     drawing at 390px, stretched to the width as the app does), painted as
+     the switch's own background rather than an SVG of its own, so it fades
+     with the names when a card is tapped and comes back with them (the SVG,
+     on its own layer, stayed behind on the iPhone). It draws itself from
+     the middle outwards as the names rise (RubriqueSwitch.jsx sets their
+     delays). */
   .rubrique-switch-rule {
     display: block;
     width: calc(100% - 32px);
     height: 8px;
     margin: 15px 16px 0;
-    color: #000;
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 390 8' preserveAspectRatio='none'%3E%3Cpath d='M 0 4 C 0 4 30.104 2.358 140 4 C 249.896 5.642 390 4 390 4' fill='none' stroke='%23000' stroke-width='1'/%3E%3C/svg%3E") center / 100% 100% no-repeat;
     animation: rubrique-switch-draw 500ms cubic-bezier(0.65, 0, 0.35, 1) 200ms backwards;
   }
 
   @keyframes rubrique-switch-draw {
-    from { clip-path: inset(-4px 50% -4px 50%); }
-    to { clip-path: inset(-4px 0 -4px 0); }
+    from { background-size: 0% 100%; }
+    to { background-size: 100% 100%; }
   }
 
   /* The page starts under the header and the switch (22 + 16.5 + 15 + 8px),

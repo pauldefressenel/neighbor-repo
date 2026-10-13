@@ -6,8 +6,9 @@
 /* Building up as in the app (appear.article in shared/tokens.js): the
    category and byline (and the back arrow), then the title, then the reading
    time and text, each fading in while rising on its spring. Each delay
-   counts from the page opening, less the time the article took to arrive
-   (--appear-elapsed, ArticlePage.jsx). */
+   counts from the page opening (from a card, the tap), less the time the
+   page took to be drawn (--appear-elapsed) or, for the reading time and
+   text, the article to arrive (--appear-body-elapsed, ArticlePage.jsx). */
 .article-page {
   --rise: var(--appear-article-heading-rise);
   --article-rise-heading: rise var(--appear-article-heading-duration) var(--appear-article-heading-easing)
@@ -15,7 +16,7 @@
   --article-rise-title: rise var(--appear-article-title-duration) var(--appear-article-title-easing)
     max(0ms, var(--appear-article-title-delay) - var(--appear-elapsed, 0ms)) both;
   --article-rise-body: rise var(--appear-article-body-duration) var(--appear-article-body-easing)
-    max(0ms, var(--appear-article-body-delay) - var(--appear-elapsed, 0ms)) both;
+    max(0ms, var(--appear-article-body-delay) - var(--appear-body-elapsed, var(--appear-elapsed, 0ms))) both;
 }
 
 @media (prefers-reduced-motion: reduce) {
