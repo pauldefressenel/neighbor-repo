@@ -32,13 +32,14 @@
   }
 }
 
-/* The line between two cards: 48px below the date above, 50px above the
-   category below, as in the app's ArticleList. */
+/* The line between two cards: 34px below the date above, 36px above the
+   category below (the app's ArticleList has 48 and 50, which ran long on the
+   website's phones). Wider screens set their own (SectionPage.css). */
 .card-rule {
   display: block;
   width: 100%;
   height: 8px;
-  margin: 48px 0 50px;
+  margin: 34px 0 36px;
   color: #000;
 }
 
@@ -68,7 +69,7 @@
 }
 
 /* The card's width less an inset each side, as in the app, its lines
-   balanced. */
+   balanced. (Set on the left at the card's full width was tried.) */
 .article-description {
   align-self: stretch;
   padding: 0 var(--excerpt-inset);
@@ -94,6 +95,14 @@
 .article-image > img {
   display: block;
   object-fit: contain;
+}
+
+/* Phones: the box, and the drawing in it, at 90% of the card's width,
+   centred (the card's full width looked large, 80% small). */
+@media (max-width: 699.98px) {
+  .article-image {
+    width: 90%;
+  }
 }
 
 .article-image--placeholder {
@@ -176,7 +185,8 @@
     margin-top: 7px;
   }
 
-  /* More room around the illustration than on a phone. */
+  /* More room around the illustration than on a phone. The drawing stays
+     centred in its box (at the left, in line with the text, was tried). */
   .article-image {
     margin: 36px 0;
   }

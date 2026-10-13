@@ -3,11 +3,10 @@ import { RUBRIQUES } from '../shared/sections.js'
 // French first: the app serves the French edition only for now.
 const languages = [
   { title: 'Français', value: 'fr' },
-  { title: 'English', value: 'en' },
+  { title: 'Anglais', value: 'en' },
 ]
 
-const aboutTitle = { en: 'About', fr: 'A Propos' }
-const frontTitle = { en: 'Latest', fr: 'À la Une' }
+const frontTitle = { en: 'Top Stories', fr: 'A La Une' }
 
 // The three rubriques, from the list the website and the app share
 // (shared/sections.js). Each lists the articles whose `section` is among
@@ -33,7 +32,7 @@ export const articleTemplate = {
 // Sets a new À la Une document's language.
 export const frontTemplate = {
   id: 'front-page',
-  title: 'À la Une',
+  title: 'A La Une',
   schemaType: 'frontPage',
   parameters: [{ name: 'lang', type: 'string' }],
   value: ({ lang }) => ({ language: lang }),
@@ -77,11 +76,6 @@ export const structure = (S) =>
                         ])
                     )
                 ),
-                S.divider(),
-                // One fixed document per language, so it opens straight into the editor.
-                S.listItem()
-                  .title(aboutTitle[lang])
-                  .child(S.document().schemaType('aboutPage').documentId(`about-${lang}`)),
               ])
           )
       )

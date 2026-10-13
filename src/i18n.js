@@ -10,11 +10,15 @@ const nav = (lang) => RUBRIQUES.map((r) => ({ label: r.label[lang], value: r.slu
 export const i18n = {
   en: {
     ...shared.en,
+    // The home page; the app's English, if it comes, keeps shared's Latest.
+    latest: 'Top Stories',
     sections: nav('en'),
     neighborhood: 'The Neighborhood',
     about: 'About',
     // The phone menu drops the article: "Neighborhood", not "The Neighborhood".
     menuNeighborhood: 'Neighborhood',
+    // An article's back arrow, for screen readers.
+    back: 'Back',
     // The footer (Footer.jsx): its two columns' headings and the e-mail
     // link.
     footer: {
@@ -30,6 +34,7 @@ export const i18n = {
     neighborhood: 'Le Voisinage',
     about: 'A Propos',
     menuNeighborhood: 'Voisinage',
+    back: 'Retour',
     footer: {
       sections: 'Rubriques',
       paper: 'Le journal',

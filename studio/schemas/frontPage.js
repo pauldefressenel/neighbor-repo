@@ -1,13 +1,13 @@
 import { defineField, defineType } from 'sanity'
 
-// À la Une: the articles on a language's home page (the website's Latest,
+// À la Une: the articles on a language's home page (the website's Top Stories,
 // the app's A La Une), in the order they appear. One document per language,
 // with fixed ids `front-fr` / `front-en`, opened straight from the sidebar
 // (structure.js). It replaced each article's `featured` field, which couldn't
 // set the order and quietly dropped all but the newest four.
 export const frontPage = defineType({
   name: 'frontPage',
-  title: 'À la Une',
+  title: 'A La Une',
   type: 'document',
   fields: [
     defineField({
@@ -48,6 +48,6 @@ export const frontPage = defineType({
   ],
   preview: {
     select: { language: 'language' },
-    prepare: ({ language }) => ({ title: language === 'en' ? 'À la Une — English' : 'À la Une — Français' }),
+    prepare: ({ language }) => ({ title: language === 'en' ? 'Top Stories — Anglais' : 'A La Une — Français' }),
   },
 })

@@ -1,84 +1,134 @@
+/* An article's page, and About's, as in the app (mobile/src/ArticleScreen.js
+   ArticleHeading and ArticleText.js), in a 600px column (about 73
+   characters a line; Framer's 650 ran to 80), which falls back to the 20px
+   page gutter once the window is narrower. */
+
 .article-page {
-  /* Framer holds the column at 650px and falls back to the 20px page gutter
-     once the viewport is narrower than that. */
-  width: min(650px, 100% - 40px);
-  margin: 0 auto;
-  padding: 120px 0 80px;
+  width: min(600px, 100% - 40px);
+  margin: 100px auto 0;
+  padding: 36px 0 80px;
 }
 
-
-.article-page-title {
-  font-family: 'NeighborFont', serif;
-  font-size: 48px;
-  font-weight: 400;
-  line-height: 1.1;
-  letter-spacing: -0.03em;
+/* The back arrow (the Portraits row's drawn chevron), on the left above the
+   heading, rising with it, and black throughout (red on hover was tried,
+   and stuck after a tap on phones). Its padding widens what a finger can hit without
+   moving it. */
+.article-page-back {
+  display: inline-block;
+  padding: 10px 12px;
+  margin: -10px -12px 18px;
   color: #000;
-  margin: 0 0 10px;
-  text-align: center;
+  -webkit-tap-highlight-color: transparent;
   animation: appear-10 0.3s var(--ease-spring) 0.15s both;
 }
 
-/* Framer stacks these: author on one line, date beneath, both centred.
-   Matches the /Detail Page/Subtitle text style (EB Garamond 21px / 1em). */
-.article-page-author,
-.article-page-date {
+/* About has no arrow: its heading keeps the arrow's room. */
+.article-page--about {
+  padding-top: 60px;
+}
+
+.article-page-back svg {
+  display: block;
+}
+
+.article-page-heading {
+  animation: appear-10 0.3s var(--ease-spring) 0.15s both;
+}
+
+/* The cards' category, on the left. */
+.article-page-category {
+  font-family: 'Averia Libre', sans-serif;
+  font-size: var(--category-size);
+  letter-spacing: var(--category-tracking);
+  line-height: var(--category-leading);
+  color: var(--red);
+  text-transform: uppercase;
+}
+
+/* "Author, date.", right under the category, and the reading time. */
+.article-page-byline {
   font-family: 'EB Garamond', serif;
   font-size: 21px;
-  line-height: 1em;
+  line-height: 24px;
   color: #000;
-  text-align: center;
-  margin: 0;
+}
+
+.article-page-category + .article-page-byline {
+  margin-top: 4px;
+}
+
+/* Larger than the app's 42pt (56px, 48px on phones), on the left, its
+   lines balanced (the app leaves them unbalanced). */
+.article-page-title {
+  margin-top: 6px;
+  font-family: 'NeighborFont', serif;
+  font-weight: 400;
+  font-size: var(--article-title-size, 56px);
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+  color: #000;
+  text-wrap: balance;
   animation: appear-10 0.3s var(--ease-spring) 0.2s both;
 }
 
-.article-page-author {
-  margin-bottom: 8px;
+/* With neither category nor byline, the title takes their place at the top. */
+.article-page-title--alone {
+  margin-top: 0;
 }
 
-.article-page-date {
+/* "6 min." under the title, 48px above the text. */
+.article-page-reading {
+  margin-top: 2px;
   margin-bottom: 48px;
+  animation: appear-10 0.3s var(--ease-spring) 0.3s both;
 }
 
-.article-page-rule {
-  display: none;
+.article-page-text {
+  animation: appear-10 0.3s var(--ease-spring) 0.3s both;
 }
 
+/* EB Garamond 21px on 31px lines, paragraphs 1.4em apart, justified and
+   hyphenated in the article's language (the page's `lang`; without
+   hyphenation, phones' lines gaped). The app's text is ragged. */
 .article-page-body {
   font-family: 'EB Garamond', serif;
   font-size: 21px;
-  line-height: 1.55;
+  line-height: 31px;
   color: #000;
-  animation: appear-10 0.3s var(--ease-spring) 0.3s both;
+  text-align: justify;
+  hyphens: auto;
+  -webkit-hyphens: auto;
 }
 
-.article-page-body p {
-  margin: 0 0 1.4em;
+.article-page-body p + p {
+  margin-top: 1.4em;
 }
 
+/* The drop cap: a NeighborFont letter over the first two lines. */
 .article-page-body > p:first-child::first-letter {
-  font-family: 'NeighborFont', serif;
-  font-size: 96px;
-  color: var(--red);
   float: left;
-  line-height: 0.78;
-  margin-right: 14px;
-  margin-top: 8px;
+  font-family: 'NeighborFont', serif;
+  font-size: 64px;
+  line-height: 52px;
+  margin: 6px 8px 0 0;
 }
 
+/* The website's quieter italic. */
 .article-citation {
   font-style: italic;
   font-size: 0.95em;
+  color: #555;
 }
 
+/* A poem: 48px above, its title in 24px, its lines 0.4em apart. */
 .article-page-poem {
   margin-top: 48px;
-  animation: appear-10 0.3s var(--ease-spring) 0.3s both;
 }
 
 .article-page-poem-title {
   font-family: 'EB Garamond', serif;
   font-size: 24px;
+  line-height: 1.2;
   font-weight: 400;
   margin: 0 0 24px;
 }
@@ -86,26 +136,23 @@
 .article-page-poem p {
   font-family: 'EB Garamond', serif;
   font-size: 21px;
-  line-height: 1.55;
+  line-height: 31px;
   margin: 0 0 0.4em;
   white-space: pre-wrap;
 }
 
+/* Phones: 28px each side rather than the page's 20px gutter. */
 @media (max-width: 699.98px) {
-  /* Clears the shorter single-row phone header. */
   .article-page {
-    padding: 80px 0 60px;
-  }
-
-  .article-page-body > p:first-child::first-letter {
-    font-size: 72px;
-    margin-right: 10px;
+    width: calc(100% - 56px);
+    margin-top: 60px;
+    --article-title-size: 48px;
   }
 }
 
 /* Under the one-row header on wide screens (Layout.css). */
 @media (min-width: 1400px) {
   .article-page {
-    padding-top: 94px;
+    margin-top: 74px;
   }
 }

@@ -2,7 +2,7 @@ import { useContext, useLayoutEffect, useRef } from 'react'
 import { Link } from 'react-router-dom'
 import { longDate } from '../shared/dates.js'
 import { illustrationSize } from '../shared/illustration.js'
-import { appear, card } from '../shared/tokens.js'
+import { appear } from '../shared/tokens.js'
 import { AppearContext, delayLeft } from './appear'
 import { i18n } from './i18n'
 import Rule from './Rule'
@@ -76,9 +76,14 @@ function Illustration({ image, scale, title }) {
 
 const PHONE = '(max-width: 699.98px)'
 
+// The share of the card a one-line title may fill on a phone before it goes
+// onto two lines: more than the app's card.titleMaxFill (0.8), which split
+// titles the website's phones had room for.
+const TITLE_MAX_FILL = 0.9
+
 // The title, balanced by CSS. On phones it follows the app's rule
 // (BalancedText's maxFill): a title that fits on one line but runs wider
-// than card.titleMaxFill of the card goes onto two balanced lines; a title
+// than TITLE_MAX_FILL of the card goes onto two balanced lines; a title
 // that already takes two lines or more keeps the card's full width. CSS can't
 // tell a title's line count, so it is measured, again once the fonts arrive
 // and whenever the card changes width.
@@ -94,7 +99,7 @@ function CardTitle({ children }) {
       const lines = new Set([...range.getClientRects()].map((r) => Math.round(r.top))).size
       const width = range.getBoundingClientRect().width
       // Just narrower than its one line, so balancing splits it evenly in two.
-      if (lines === 1 && width > card.titleMaxFill * el.parentElement.clientWidth) {
+      if (lines === 1 && width > TITLE_MAX_FILL * el.parentElement.clientWidth) {
         el.style.maxWidth = `${Math.floor(width) - 1}px`
       }
     }

@@ -53,6 +53,6 @@ export const aboutPage = defineType({
   ],
   preview: {
     select: { title: 'title', language: 'language' },
-    prepare: ({ title, language }) => ({ title, subtitle: language === 'fr' ? 'Français' : 'English' }),
+    prepare: ({ title, language }) => ({ title, subtitle: language === 'fr' ? 'Français' : 'Anglais' }),
   },
 })

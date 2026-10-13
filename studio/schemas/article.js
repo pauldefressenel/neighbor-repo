@@ -75,9 +75,9 @@ export const article = defineType({
       description: 'At 1 the drawing is as tall as every other card\'s; slide right to make it bigger, left to make it smaller. The text above and below moves with it.',
       type: 'number',
       initialValue: 1,
-      options: { min: 0.5, max: 1.5, step: 0.05, default: 1 },
+      options: { min: 0.5, max: 2, step: 0.05, default: 1 },
       components: { input: ScaleSlider },
-      validation: Rule => Rule.min(0.5).max(1.5),
+      validation: Rule => Rule.min(0.5).max(2),
       hidden: ({ document }) => !document?.mainImage,
     }),
     defineField({

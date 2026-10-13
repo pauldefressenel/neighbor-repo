@@ -1,0 +1,131 @@
+/* TEMPORARY: ArticleSheet.jsx. Self-contained, so it can go in one piece. */
+.article-sheet {
+  margin-top: 100px;
+  padding: 20px 0 80px;
+}
+
+.sheet-option {
+  margin-bottom: 72px;
+}
+
+.sheet-letter {
+  font-family: 'NeighborFont', serif;
+  font-size: 40px;
+  line-height: 1;
+  color: var(--red);
+  text-align: center;
+  margin: 0 0 18px;
+}
+
+/* Desktop beside phone when there's room, one under the other otherwise. */
+.sheet-frames {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 32px;
+}
+
+.sheet-frame {
+  max-width: 100%;
+  max-height: 900px;
+  overflow: hidden;
+  outline: 1px solid rgba(0, 0, 0, 0.15);
+  background: var(--paper);
+  /* The article fades out at the frame's foot. */
+  -webkit-mask-image: linear-gradient(to bottom, #000 85%, transparent);
+  mask-image: linear-gradient(to bottom, #000 85%, transparent);
+}
+
+.sheet-desktop { width: 1000px; }
+.sheet-phone { width: 375px; }
+
+/* The page's own top margin is for the header, which the frames leave out. */
+.sheet-frame .article-page,
+.sheet-frame .old-page {
+  margin-top: 0;
+  animation: none;
+}
+
+.sheet-phone .article-page,
+.sheet-phone .old-page {
+  width: calc(100% - 40px);
+}
+
+/* B and C: the phone's title size, which the frame's width can't trigger. */
+.sheet-phone .article-page {
+  width: calc(100% - 56px);
+  --article-title-size: 48px;
+}
+
+/* A: the article page before the app's layout. */
+.old-page {
+  width: min(650px, 100% - 40px);
+  margin: 0 auto;
+  padding: 60px 0 40px;
+}
+
+.old-title {
+  font-family: 'NeighborFont', serif;
+  font-size: 48px;
+  font-weight: 400;
+  line-height: 1.1;
+  letter-spacing: -0.03em;
+  margin: 0 0 10px;
+  text-align: center;
+}
+
+.old-author,
+.old-date {
+  font-family: 'EB Garamond', serif;
+  font-size: 21px;
+  line-height: 1em;
+  text-align: center;
+  margin: 0;
+}
+
+.old-author { margin-bottom: 8px; }
+.old-date { margin-bottom: 48px; }
+
+.old-body {
+  font-family: 'EB Garamond', serif;
+  font-size: 21px;
+  line-height: 1.55;
+}
+
+.old-body p { margin: 0 0 1.4em; }
+
+.old-body > p:first-child::first-letter {
+  font-family: 'NeighborFont', serif;
+  font-size: 96px;
+  color: var(--red);
+  float: left;
+  line-height: 0.78;
+  margin-right: 14px;
+  margin-top: 8px;
+}
+
+.sheet-phone .old-body > p:first-child::first-letter {
+  font-size: 72px;
+  margin-right: 10px;
+}
+
+/* C: B with larger type on desktop. */
+.sheet-C .sheet-desktop .article-page-title {
+  font-size: 56px;
+}
+
+.sheet-C .sheet-desktop .article-page-body {
+  font-size: 22px;
+  line-height: 34px;
+}
+
+.sheet-C .sheet-desktop .article-page-body > p:first-child::first-letter {
+  font-size: 104px;
+  line-height: 84px;
+  margin: 8px 10px 0 0;
+}
+
+.sheet-frame * {
+  animation: none !important;
+}

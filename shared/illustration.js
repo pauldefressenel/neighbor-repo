@@ -3,7 +3,7 @@ import { card } from './tokens.js'
 // How an illustration is drawn, as the proportions of its box and its width
 // in the card's. The drawing, trimmed to its ink (import/trim-illustrations.mjs),
 // stands the standard height (card.illustrationAspect), times the article's
-// `illustrationScale` (0.5 to 1.5, a slider in the Studio), unless that would make
+// `illustrationScale` (0.5 to 2, a slider in the Studio), unless that would make
 // it wider than the card: then it is the card's width. The box is exactly as
 // tall as the drawing, so the text above and below keeps its distance and
 // moves with it.
