@@ -80,15 +80,20 @@
 }
 
 .article-image {
-  /* Every illustration gets the same box: the card's width, at the
-     vignettes' shared proportions (about 1818×572). A few vignettes are
-     taller (around 2:1); they are scaled down to fit inside the box rather
-     than cropped. */
+  /* The card's width, and just as tall as the drawing, which is centred in
+     it (shared/illustration.js sets both). With no illustration yet, the
+     standard height. */
   width: 100%;
   aspect-ratio: var(--illustration-aspect);
-  object-fit: contain;
-  display: block;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   margin: var(--card-image-gap) 0;
+}
+
+.article-image > img {
+  display: block;
+  object-fit: contain;
 }
 
 .article-image--placeholder {
@@ -169,13 +174,6 @@
 
   .article-card--portrait .article-author {
     margin-top: 7px;
-  }
-
-  /* No date on a portrait here, only the author (on a phone it has both).
-     A drawn line before the byline, and the byline set right or centred,
-     were tried. */
-  .article-card--portrait .article-date {
-    display: none;
   }
 
   /* More room around the illustration than on a phone. */

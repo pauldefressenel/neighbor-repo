@@ -30,8 +30,9 @@ npx expo start         # iPhone app → scan the QR code with Expo Go
 | `import/` | One-off tooling: the Framer scraper/importer that seeded the dataset, and the About page seed. |
 | `public/portraits/` | Sprite frames for the seven animated portraits. |
 
-Content types: `article` (all sections, both languages, with `featured` driving
-each language's homepage) and `aboutPage` (one document per language).
+Content types: `article` (all sections, both languages), `frontPage` (À la Une:
+each language's homepage articles, in order) and `aboutPage` (one document per
+language).
 
 ## Deploy
 

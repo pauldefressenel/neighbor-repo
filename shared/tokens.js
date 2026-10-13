@@ -30,8 +30,12 @@ export const card = {
   excerptInset: 20,
   // Above and below the illustration, on a phone.
   imageGap: 30, // (22 to 26 felt tight)
-  // The vignettes' shared proportions (about 1818×572).
-  illustrationAspect: 1818 / 572,
+  // An illustration's height: the card's width at these proportions. Each
+  // drawing, trimmed to its ink (import/trim-illustrations.mjs), stands this
+  // tall, times its article's illustrationScale (shared/illustration.js).
+  // (The box was the vignettes' own 1818×572 at first, and then each drawing
+  // took the same area of a 2.4 box, which was not liked.)
+  illustrationAspect: 3.2,
   // A one-line title wider than this share of the card goes onto two lines.
   titleMaxFill: 0.8,
 }
@@ -118,7 +122,7 @@ export const cssVariables = () => {
     '--title-mark-below': `${titleMark.below}px`,
     '--header-fade': `${headerFade}px`,
     ...Object.fromEntries(
-      Object.entries({ title: appear.titleLines, 'title-mark': appear.titleMark, card: appear.card }).flatMap(([name, step]) => {
+      Object.entries({ title: appear.titleLines, 'title-mark': appear.titleMark, card: appear.card, line: appear.line }).flatMap(([name, step]) => {
         const { ms, easing } = springCurve(step.spring)
         return [
           [`--appear-${name}-rise`, `${step.rise}px`],

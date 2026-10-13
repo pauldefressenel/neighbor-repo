@@ -113,7 +113,7 @@
   /* The page starts under the header and the switch (22 + 16.5 + 15 + 8px),
      the title 22px under the line, as in the app. */
   .page:has(.rubrique-switch) .main {
-    margin-top: calc(60px + 62px);
+    --main-top: calc(60px + 62px);
     padding-top: 22px;
   }
 }

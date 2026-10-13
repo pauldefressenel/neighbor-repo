@@ -1,6 +1,7 @@
 import { useContext, useLayoutEffect, useRef } from 'react'
 import { Link } from 'react-router-dom'
 import { longDate } from '../shared/dates.js'
+import { illustrationSize } from '../shared/illustration.js'
 import { appear, card } from '../shared/tokens.js'
 import { AppearContext, delayLeft } from './appear'
 import { i18n } from './i18n'
@@ -16,7 +17,7 @@ import './ArticleCard.css'
 // the card separates it from the one before (on phones the first card has
 // none); on wider screens the first card of each row stretches it across the
 // grid (SectionPage.css).
-export default function ArticleCard({ category, title, excerpt, author, mainImage, publishedAt, slug, language, section, picture, pictureStyle, appearIndex, riseOnScroll }) {
+export default function ArticleCard({ category, title, excerpt, author, mainImage, illustrationScale, publishedAt, slug, language, section, picture, pictureStyle, appearIndex, riseOnScroll }) {
   const t = i18n[language] ?? i18n.en
   // On a page that builds up, the first cards rise in as in the app, once the
   // title's asterisk is up, or at once if they arrived later than that. With
@@ -55,11 +56,21 @@ export default function ArticleCard({ category, title, excerpt, author, mainImag
       {picture
         ? <div className="article-picture" style={pictureStyle}>{picture}</div>
         : mainImage
-          ? <img className="article-image" src={urlFor(mainImage).width(1200).url()} alt={title} />
+          ? <Illustration image={mainImage} scale={illustrationScale} title={title} />
           : <div className="article-image article-image--placeholder" />}
       {author && <p className="article-author">{t.by} {author}</p>}
       {publishedAt && <p className="article-date">{longDate(publishedAt, language)}</p>}
     </Link>
+  )
+}
+
+// The drawing in a box just as tall as it (shared/illustration.js).
+function Illustration({ image, scale, title }) {
+  const { aspect, width } = illustrationSize(image, scale)
+  return (
+    <div className="article-image" style={{ aspectRatio: aspect }}>
+      <img src={urlFor(image).width(1200).url()} alt={title} style={{ width: `${width * 100}%`, height: '100%' }} />
+    </div>
   )
 }
 

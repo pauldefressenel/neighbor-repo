@@ -1,6 +1,12 @@
+/* At least the rest of the window under the header (--main-top, set per
+   header below), so on a short page (Portraits, a rubrique with few
+   articles) the footer starts at the window's foot and only shows once the
+   reader scrolls. */
 .main {
+  --main-top: 100px;
   padding: 40px 50px 80px;
-  margin-top: 100px;
+  margin-top: var(--main-top);
+  min-height: calc(100vh - var(--main-top));
 }
 
 /* While a list is still being fetched, the page is a screen tall, so the
@@ -48,11 +54,6 @@
     margin-bottom: 0;
   }
 
-  /* Portraits, a row of cards rather than a grid, centre their title. */
-  .main .page-title:has(+ .title-mark + .portrait-strip) {
-    text-align: center;
-  }
-
   .main .title-mark:has(+ :is(.articles-grid, .portrait-strip)) {
     display: none;
   }
@@ -64,6 +65,54 @@
   /* The space between rows: 30 + 8 + 32px, closer than the phone's cards. */
   .articles-grid .card-rule {
     margin: 30px 0 32px;
+  }
+
+  /* One drawn line down each gap between columns, crossing the lines
+     between rows, as long as ArticleGrid.jsx measures (to the foot of the
+     last card to its right). The k-th stands in the middle of the k-th gap;
+     those past the last gap stay hidden. */
+  .articles-grid {
+    position: relative;
+  }
+
+  .articles-grid .column-rule {
+    display: block;
+    position: absolute;
+    top: 0;
+    width: 8px;
+    left: calc(var(--k) * (100% + var(--gap)) / var(--cols) - var(--gap) / 2 - 4px);
+    color: #000;
+  }
+
+  /* Under a short last row, a line across its cards to the middle of the gap
+     after the last one, where that card's line comes down to meet it, so
+     those cards' boxes close too. ArticleGrid.jsx sets --span and top. */
+  .articles-grid .row-end-rule {
+    display: block;
+    position: absolute;
+    left: 0;
+    width: calc(var(--span) * (100% + var(--gap)) / var(--cols) - var(--gap) / 2);
+    height: 8px;
+    color: #000;
+  }
+}
+
+.column-rule,
+.row-end-rule,
+.strip-rule {
+  display: none;
+}
+
+/* Rising in with the first cards (ArticleGrid.jsx sets the delay): the
+   lines between columns, and the Portraits row's lines and arrows. */
+.column-rule--rise {
+  --rise: var(--appear-line-rise);
+  animation: rise var(--appear-line-duration) var(--appear-line-easing) backwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .column-rule--rise {
+    animation: none;
   }
 }
 
@@ -94,6 +143,7 @@
     width: calc(var(--cols) * 100% + (var(--cols) - 1) * var(--gap));
   }
   .articles-grid > :nth-child(-n + 3) .card-rule { display: none; }
+  .articles-grid .column-rule-3 { display: none; }
 }
 
 @media (min-width: 700px) and (max-width: 899.98px) {
@@ -111,6 +161,7 @@
     width: calc(var(--cols) * 100% + (var(--cols) - 1) * var(--gap));
   }
   .articles-grid > :nth-child(-n + 2) .card-rule { display: none; }
+  .articles-grid :is(.column-rule-2, .column-rule-3) { display: none; }
 }
 
 /* Portraits: on phones the strip is just its cards, in the usual column
@@ -126,7 +177,9 @@
    fills the window between header and footer). A move slides the track by
    one card (`--shift`, ArticleGrid.jsx); at rest it is shifted one card left,
    past the lead copy. Card widths come from the viewport's own width
-   (container units). No lines. */
+   (container units). Set 76px under the title, 40px lower than the grids
+   (it was centred in the height left under it), with a drawn line in the gap left
+   of each card, sliding with it. */
 @media (min-width: 700px) {
   .main:has(.portrait-strip) {
     flex: 1;
@@ -140,21 +193,23 @@
     --edge: 44px; /* between the arrows and the cards */
     display: flex;
     align-items: center;
-    margin-top: auto;
-    margin-bottom: auto;
+    margin-top: 76px;
   }
 
   /* The space between the arrows and the cards belongs to the viewport, and
      its edges fade there: a card dissolves as it slides through. Card sizes
      come from the content box (container units), so the cards at rest sit
-     clear of the fade. */
+     clear of the fade. The fade only begins past the line in the gap beside
+     the first and last cards, so neither line shows at rest. */
   .strip-viewport {
     flex: 1;
     min-width: 0;
     padding: 0 var(--edge);
     overflow: hidden;
     container-type: inline-size;
-    mask-image: linear-gradient(to right, transparent, #000 var(--edge), #000 calc(100% - var(--edge)), transparent);
+    position: relative;
+    --clear: calc(var(--edge) - var(--strip-gap) / 2 + 6px);
+    mask-image: linear-gradient(to right, transparent var(--clear), #000 var(--edge), #000 calc(100% - var(--edge)), transparent calc(100% - var(--clear)));
   }
 
   .articles-grid--portraits {
@@ -178,12 +233,31 @@
   .strip-item,
   .strip-item--lead {
     display: block;
+    position: relative;
     flex: none;
     width: var(--card);
   }
 
   .articles-grid--portraits .card-rule {
     display: none;
+  }
+
+  /* In the middle of the gap left of the card, its lower 90% and 20px
+     more: from the card's top it rose above the portraits' figures (85%
+     was a bit short). */
+  .strip-rule {
+    display: block;
+    position: absolute;
+    top: calc(10% - 20px);
+    /* Set, not left to top and bottom: an SVG takes its own height. */
+    height: calc(90% + 20px);
+    width: 8px;
+    left: calc(var(--strip-gap) / -2 - 4px);
+    color: #000;
+  }
+
+  .strip-moved .strip-rule {
+    animation: none;
   }
 
   /* A chevron is narrow: the padding widens what can be clicked, and the
@@ -218,12 +292,13 @@
     --visible: 3;
     --strip-gap: 40px;
   }
+
 }
 
 /* Wide screens: the one-row header is 74px tall (Layout.css). */
-@media (min-width: 1200px) {
+@media (min-width: 1400px) {
   .main {
-    margin-top: 74px;
+    --main-top: 74px;
   }
 }
 
@@ -232,7 +307,7 @@
   /* The phone header is a single 60px row, so the page starts higher. */
   .main {
     padding: 40px 20px 60px;
-    margin-top: 60px;
+    --main-top: 60px;
   }
 
   .articles-grid {

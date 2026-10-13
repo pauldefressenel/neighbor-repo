@@ -19,20 +19,18 @@ const CARD = `
   author,
   excerpt,
   mainImage,
+  illustrationScale,
   publishedAt
 `
 
-// The homepage (Latest / En Couverture) is editorially chosen, not simply the
-// newest articles: an article appears there when its `featured` field names
-// this language.
-const FEATURED_FLAG = { en: 'English', fr: 'French' }
-
+// The home page (Latest / A La Une) is editorially chosen: the articles in
+// the language's À la Une document (studio/schemas/frontPage.js), in its
+// order, leaving out any since deleted or unpublished.
 export const fetchLatestArticles = (client, language) =>
   client.fetch(
-    `*[_type == "article" && language == $language && featured == $featured]
-      | order(publishedAt desc) [0...4] { ${CARD} }`,
-    { language, featured: FEATURED_FLAG[language] ?? FEATURED_FLAG.en }
-  )
+    `*[_id == $id][0].articles[]-> { ${CARD} }`,
+    { id: `front-${language === 'fr' ? 'fr' : 'en'}` }
+  ).then((articles) => (articles ?? []).filter((a) => a?._id))
 
 // Every article in one rubrique, newest first: `sections` is its Sanity
 // sections (sections.js).

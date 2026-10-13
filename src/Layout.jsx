@@ -12,10 +12,14 @@ import Footer from './Footer'
 import Rule from './Rule'
 import RubriqueSwitch from './RubriqueSwitch'
 
-// The nav: the three rubriques, then The Neighborhood and About once they
-// open.
+// A La Une / Latest, first in the nav: the home page.
+const latest = (t) => ({ label: t.latest, value: '', home: true })
+
+// The nav: A La Une, the three rubriques, then The Neighborhood and About
+// once they open.
 function navSections(t) {
   return [
+    latest(t),
     ...t.sections,
     ...(NEIGHBORHOOD_OPEN ? [{ label: t.neighborhood, value: 'neighborhood' }] : []),
     ...(ABOUT_OPEN ? [{ label: t.about, value: 'about' }] : []),
@@ -27,10 +31,11 @@ function navSections(t) {
 function HeaderLinks({ items, lang, className }) {
   return (
     <nav className={className}>
-      {items.map(({ label, value }) => (
+      {items.map(({ label, value, home }) => (
         <NavLink
-          key={value}
-          to={`/${lang}/${value}`}
+          key={label}
+          to={home ? `/${lang}` : `/${lang}/${value}`}
+          end={home}
           className={({ isActive }) => `section-link${isActive ? ' section-link--active' : ''}`}
         >
           {label}
@@ -58,26 +63,30 @@ export default function Layout() {
   // Latest and the three rubriques: the pages under the phone's Rubriques
   // switch.
   const listPage = [`/${lang}`, `/${lang}/essays-criticism`, `/${lang}/prose-poetry`, `/${lang}/portraits`].includes(pathname.replace(/\/$/, ''))
-  // The other language opens on its home page (Latest), from wherever the
-  // reader is. (The app keeps the page instead.)
+  // The other language opens on the same page (the URLs are the same in
+  // both but for the language), except an article, which opens its
+  // rubrique: the translation has another slug, if there is one. As in the
+  // app (mobile/src/Masthead.js). It opened the home page at first.
   const switchLanguage = () => {
     setLangOpen(false)
     // Remembered for a year: the bare address (middleware.js, App.jsx) opens
     // in this language rather than the one picked by location.
     document.cookie = `lang=${t.switchTo}; path=/; max-age=31536000; samesite=lax`
-    navigate(`/${t.switchTo}`)
+    // /:lang/:page or /:lang/:rubrique/:slug: only the first is kept.
+    const page = pathname.split('/').filter(Boolean)[1]
+    navigate(page ? `/${t.switchTo}/${page}` : `/${t.switchTo}`)
   }
 
   return (
     <div className="page">
       <header className="header">
         <div className="header-top">
-          <HeaderLinks items={t.sections} lang={lang} className="header-links header-links--left" />
+          <HeaderLinks items={[latest(t), ...t.sections]} lang={lang} className="header-links header-links--left" />
           <Link to={`/${lang}`} className="site-title">
             The Neighbor
           </Link>
           <div className="header-meta">
-            <HeaderLinks items={navSections(t).slice(t.sections.length)} lang={lang} className="header-links" />
+            <HeaderLinks items={navSections(t).slice(t.sections.length + 1)} lang={lang} className="header-links" />
             {/* Framer: the selector opens a row with the other language rather than switching outright. */}
             <span className="lang-menu">
               <button
@@ -125,12 +134,16 @@ export default function Layout() {
             </span>
           </div>
         </div>
+        {/* 750–1399: the hand-drawn line under the wordmark's row, and
+            another under the nav, edge to edge. */}
+        <Rule className="header-rule-mid" />
         <nav className="sections-nav">
-          {navSections(t).map(({ label, value }) =>
-            value ? (
+          {navSections(t).map(({ label, value, home }) =>
+            value || home ? (
               <NavLink
                 key={label}
-                to={`/${lang}/${value}`}
+                to={home ? `/${lang}` : `/${lang}/${value}`}
+                end={home}
                 className={({ isActive }) =>
                   `section-link${isActive ? ' section-link--active' : ''}`
                 }
@@ -144,6 +157,7 @@ export default function Layout() {
             )
           )}
         </nav>
+        <Rule className="header-rule-mid" />
         {/* Wide screens: the hand-drawn line under the one-row header. */}
         <Rule className="header-rule" />
         {/* Phones: the app's masthead line, edge to edge. */}

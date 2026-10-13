@@ -44,8 +44,10 @@ function penStroke(width) {
 }
 
 // `drawn` keeps the drawing at any width, as the app does: the phone
-// header's full-width line.
-export default function Rule({ className = '', drawn = false }) {
+// header's full-width line. `vertical` draws the same line standing up, as
+// long as the element is tall (8px wide): the lines between the grids'
+// columns (ArticleGrid.jsx).
+export default function Rule({ className = '', drawn = false, vertical = false, style }) {
   const ref = useRef(null)
   const [width, setWidth] = useState(390)
 
@@ -53,17 +55,19 @@ export default function Rule({ className = '', drawn = false }) {
     const el = ref.current
     if (!el) return
     const observer = new ResizeObserver(([entry]) => {
-      if (entry.contentRect.width > 0) setWidth(entry.contentRect.width)
+      const length = vertical ? entry.contentRect.height : entry.contentRect.width
+      if (length > 0) setWidth(length)
     })
     observer.observe(el)
     return () => observer.disconnect()
-  }, [])
+  }, [vertical])
 
+  const path = width > LONG && !drawn
+    ? <path d={penStroke(width)} fill="currentColor" />
+    : <path d={original(width)} fill="none" stroke="currentColor" strokeWidth="1" vectorEffect="non-scaling-stroke" />
   return (
-    <svg ref={ref} className={`rule ${className}`} viewBox={`0 0 ${width} ${HEIGHT}`} preserveAspectRatio="none" aria-hidden="true">
-      {width > LONG && !drawn
-        ? <path d={penStroke(width)} fill="currentColor" />
-        : <path d={original(width)} fill="none" stroke="currentColor" strokeWidth="1" vectorEffect="non-scaling-stroke" />}
+    <svg ref={ref} className={`rule ${className}`} style={style} viewBox={vertical ? `0 0 ${HEIGHT} ${width}` : `0 0 ${width} ${HEIGHT}`} preserveAspectRatio="none" aria-hidden="true">
+      {vertical ? <g transform={`translate(${HEIGHT} 0) rotate(90)`}>{path}</g> : path}
     </svg>
   )
 }

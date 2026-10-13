@@ -2,6 +2,7 @@ import { StyleSheet, Text, View } from 'react-native'
 import { Image } from 'expo-image'
 import { useGlobalSearchParams } from 'expo-router'
 import { longDate } from '../../shared/dates'
+import { illustrationSize } from '../../shared/illustration'
 import { card, type } from '../../shared/tokens'
 import BalancedText from './BalancedText'
 import { i18n } from './i18n'
@@ -24,7 +25,7 @@ export const articleDate = (iso, lang) => longDate(iso, lang === 'en' ? 'en' : '
 // then the category, title and excerpt, and the author and date stand at the
 // bottom left, at the foot of the card's box however tall it is made (the
 // Portraits slideshow makes every card as tall as the tallest).
-export default function ArticleCard({ category, title, excerpt, author, mainImage, publishedAt, picture, pictureInset, pictureFirst }) {
+export default function ArticleCard({ category, title, excerpt, author, mainImage, illustrationScale, publishedAt, picture, pictureInset, pictureFirst }) {
   const { lang } = useGlobalSearchParams()
   const t = i18n[lang] ?? i18n.fr
   const date = publishedAt ? articleDate(publishedAt, lang) : null
@@ -74,7 +75,7 @@ export default function ArticleCard({ category, title, excerpt, author, mainImag
           </View>
         ) : (
           <Pressed>
-            <Illustration title={title} mainImage={mainImage} />
+            <Illustration title={title} mainImage={mainImage} scale={illustrationScale} />
           </Pressed>
         )}
         <Pressed>
@@ -96,13 +97,16 @@ const GARAMOND_RISE = 1.5
 // The least room between a portrait's excerpt and its signature.
 const SIGNATURE_GAP = 30
 
-// Every illustration gets the same box, as on the website: the card's width,
-// at the vignettes' shared proportions (card.illustrationAspect). A few
-// vignettes are taller; they are scaled down to fit inside it rather than
-// cropped.
-function Illustration({ title, mainImage }) {
+// As on the website: the drawing in a box the card's width and just as tall
+// as it (shared/illustration.js), so the text keeps its distance from it.
+function Illustration({ title, mainImage, scale }) {
   if (!mainImage) return <View style={[styles.image, styles.placeholder]} />
-  return <Image style={styles.image} source={urlFor(mainImage).width(1200).url()} contentFit="contain" accessibilityLabel={title} transition={200} />
+  const { aspect, width } = illustrationSize(mainImage, scale)
+  return (
+    <View style={[styles.image, styles.imageBox, { aspectRatio: aspect }]}>
+      <Image style={{ width: `${width * 100}%`, height: '100%' }} source={urlFor(mainImage).width(1200).url()} contentFit="contain" accessibilityLabel={title} transition={200} />
+    </View>
+  )
 }
 
 const centred = { textAlign: 'center', color: colors.ink }
@@ -140,6 +144,10 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     marginTop: card.imageGap - GARAMOND_RISE,
     marginBottom: card.imageGap + GARAMOND_RISE,
+  },
+  imageBox: {
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   // A portrait's animation, centred, in the illustration's place, with the
   // same room above and below the figure itself (less the room it leaves in

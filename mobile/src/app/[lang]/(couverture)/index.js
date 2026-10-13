@@ -10,8 +10,8 @@ import { SECTIONS } from '../../../sections'
 import { useTabEntered } from '../../../motion'
 import { colors } from '../../../theme'
 
-// The Rubriques tab: A La Une (the articles the editors flag as featured for
-// this language) and the three rubriques in the RubriqueSwitch over the
+// The Rubriques tab: A La Une (the articles the editors list, in order, in
+// the language's À la Une document) and the three rubriques in the RubriqueSwitch over the
 // chosen one's page, Portraits as the slideshow (PortraitsPage.js). It opens
 // on A La Une; tapping the tab again, or coming back to it, returns there.
 // Picking a page replaces the one below, which builds up again. The masthead
@@ -24,10 +24,13 @@ const TITLE_TOP = 22
 
 export default function RubriquesScreen() {
   // From the URL: a stack's screens don't inherit the tab's params.
-  const { lang } = useGlobalSearchParams()
+  // `rubrique`: the language switch, from an article, opens its rubrique
+  // (Masthead.js).
+  const { lang, rubrique } = useGlobalSearchParams()
   const t = i18n[lang] ?? i18n.fr
+  const asked = SECTIONS.some((s) => s.slug === rubrique) ? rubrique : null
   // A rubrique's slug, or LATEST.
-  const [current, setCurrent] = useState(LATEST)
+  const [current, setCurrent] = useState(asked ?? LATEST)
   const section = SECTIONS.find((s) => s.slug === current)
 
   // Back on A La Une each time the tab is entered again, and built up again.
@@ -38,6 +41,12 @@ export default function RubriquesScreen() {
   if (entered !== landed) {
     setLanded(entered)
     setCurrent(LATEST)
+  }
+  // The rubrique the language switch asks for, once each time it asks.
+  const [answered, setAnswered] = useState(asked)
+  if (asked !== answered) {
+    setAnswered(asked)
+    if (asked) setCurrent(asked)
   }
   // And when the tab is tapped while already in front (which also pops an
   // article and scrolls to the top).

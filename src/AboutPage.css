@@ -76,7 +76,7 @@
 }
 
 /* Under the one-row header on wide screens (Layout.css). */
-@media (min-width: 1200px) {
+@media (min-width: 1400px) {
   .about-page {
     margin-top: 74px;
   }

@@ -45,7 +45,7 @@ _layout.js                  fonts, splash screen, the AccountProvider, a <Slot> 
 index.js                    → /fr or /en, from the phone's language and region
 [lang]/_layout.js           Tabs with the custom TabBar: (couverture), voisinage, a-propos (in that order)
 [lang]/(couverture)/_layout.js         a PageStack (PageStack.js), without the masthead's fade on its first page
-[lang]/(couverture)/index.js           the Articles tab (/fr; "Rubriques" in the code): A La Une (articles whose `featured` is "French"), Essais & Critiques, Prose & Poésie or Portraits, picked in the RubriqueSwitch; it lands on A La Une
+[lang]/(couverture)/index.js           the Articles tab (/fr; "Rubriques" in the code): A La Une (the articles in the language's À la Une document, in its order), Essais & Critiques, Prose & Poésie or Portraits, picked in the RubriqueSwitch; it lands on A La Une
 [lang]/(couverture)/articles/[slug].js an article opened from the Rubriques tab (/fr/articles/<slug>)
 [lang]/a-propos.js          About: the about-<lang> text, set like an article
 [lang]/voisinage.js         Voisinage: the landing (NeighbourLanding), whose e-mail and code fields sign up or in; then the sign-up (SignUpForm) for a new account; signed in, the games, none built yet, and the account
@@ -171,9 +171,10 @@ Navigation details that are easy to break:
   type at 16pt, the current one in ink, the other faint; a tap switches.
   The two slots are 64pt wide to hold it, the language ends 28pt from the
   edge, and it stands on the wordmark's baseline.
-  (It replaced "Fr" opening a red "En" beside it.) Switching keeps the page, except that an article goes back to the
-  list it was opened from (article slugs differ between languages). The
-  website goes to the home page instead.
+  (It replaced "Fr" opening a red "En" beside it.) Switching keeps the page, except that an article opens its own
+  rubrique in the Rubriques switch (`?rubrique=`, read by
+  `(couverture)/index.js`; article slugs differ between languages). The
+  website does the same.
 - `NeighbourLanding.js` — Voisinage signed out, chosen on a comparison
   sheet (option B). Under the centred "Voisinage" title (no dinkus: it
   separates articles, and there are none here), 90pt down:

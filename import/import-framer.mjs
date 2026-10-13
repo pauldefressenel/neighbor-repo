@@ -5,10 +5,12 @@
 //   SANITY_TOKEN=… node import/import-framer.mjs --write --images   # also refresh existing images
 //   node import/import-framer.mjs --only anchor        # restrict to one slug
 //
-// Framer is treated as the source of truth for everything it renders, including
-// which entries are featured (its two homepages render exactly those). Fields
-// Framer does not expose — audioFile, audioQuote, translationSlug — are carried
-// over from the existing Sanity document so they survive the import.
+// Framer is treated as the source of truth for everything it renders, except
+// which entries are on the home pages: that is the À la Une documents
+// (studio/schemas/frontPage.js), which this leaves alone. Fields Framer does
+// not expose — audioFile, audioQuote, translationSlug, illustrationScale —
+// are carried over from the existing Sanity document so they survive the
+// import.
 
 import { readFileSync, writeFileSync } from 'node:fs'
 import { dirname, join } from 'node:path'
@@ -53,7 +55,7 @@ if (!entries.length) {
 }
 
 const existing = await client.fetch(
-  `*[_type == "article"]{ _id, "slug": slug.current, translationSlug, featured, audioFile, audioQuote, mainImage }`
+  `*[_type == "article"]{ _id, "slug": slug.current, translationSlug, audioFile, audioQuote, mainImage, illustrationScale }`
 )
 const byId = new Map(existing.map((d) => [d._id, d]))
 
@@ -147,7 +149,9 @@ for (const e of entries) {
       title: e.title,
       slug: { _type: 'slug', current: e.slug },
       language: e.language,
-      section: e.section,
+      // The Arts was merged into Essais & Critiques' `literature-review`
+      // (shared/sections.js).
+      section: e.section === 'the-arts' ? 'literature-review' : e.section,
       category: e.category,
       author: e.author,
       excerpt: e.excerpt,
@@ -162,7 +166,7 @@ for (const e of entries) {
     // Carry over anything Framer does not render.
     const translationSlug = translationFor(e)
     if (translationSlug) doc.translationSlug = translationSlug
-    doc.featured = e.featured ?? prior?.featured ?? 'NO'
+    if (prior?.illustrationScale != null) doc.illustrationScale = prior.illustrationScale
     if (prior?.audioFile) doc.audioFile = prior.audioFile
     if (prior?.audioQuote) doc.audioQuote = prior.audioQuote
 

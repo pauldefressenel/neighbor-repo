@@ -221,7 +221,6 @@ for (const row of rows) {
       body: htmlToBlocks(row['Text']),
       poems: buildPoems(row),
       publishedAt: row['Date'] || undefined,
-      featured: row['Latest'] || 'NO',
     }
 
     const translationSlug = extractSlug(row['Traduction'])

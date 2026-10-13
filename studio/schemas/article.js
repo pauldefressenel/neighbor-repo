@@ -1,6 +1,9 @@
 import { defineField, defineType } from 'sanity'
 import { BlockquoteIcon } from '@sanity/icons'
-import { RUBRIQUES, SANITY_SECTIONS } from '../../shared/sections.js'
+import { ScaleSlider } from '../scaleSlider.jsx'
+import { CategoryInput, categoriesFor } from '../categoryInput.jsx'
+import { RubriqueInput } from '../rubriqueInput.jsx'
+import { RUBRIQUES } from '../../shared/sections.js'
 
 export const article = defineType({
   name: 'article',
@@ -23,7 +26,11 @@ export const article = defineType({
     defineField({
       name: 'language',
       title: 'Language',
+      description: 'Set by the language folder the article was created in.',
       type: 'string',
+      // Read-only, like the rubrique: the sidebar's folder sets it
+      // (structure.js).
+      readOnly: true,
       options: {
         list: [
           { title: 'English', value: 'en' },
@@ -34,19 +41,31 @@ export const article = defineType({
     }),
     defineField({
       name: 'section',
-      title: 'Section',
+      title: 'Rubrique',
+      description: 'Set by the rubrique the article was created in.',
       type: 'string',
+      // Read-only: the sidebar's rubrique sets it (structure.js), and it
+      // decides where the article is listed and its address. Shown as the
+      // rubrique's name in the article's language (rubriqueInput.jsx).
+      readOnly: true,
+      components: { input: RubriqueInput },
       options: {
-        // The four sections (shared/sections.js), in the rubriques' order.
-        list: RUBRIQUES.flatMap((r) => r.sanity).map((value) => ({ title: SANITY_SECTIONS[value].en, value })),
+        // The three rubriques (shared/sections.js), each stored as its first
+        // Sanity value.
+        list: RUBRIQUES.map((r) => ({ title: r.label.fr, value: r.sanity[0] })),
       },
       validation: Rule => Rule.required(),
     }),
     defineField({
       name: 'category',
       title: 'Category',
+      description: 'The red word above the title. Essais & Critiques picks from its list.',
       type: 'string',
-      validation: Rule => Rule.required(),
+      components: { input: CategoryInput },
+      validation: Rule => Rule.required().custom((value, { document }) => {
+        const options = categoriesFor(document?.section, document?.language)
+        return !value || !options || options.includes(value) || `Pick one of: ${options.join(', ')}`
+      }),
     }),
     defineField({
       name: 'author',
@@ -67,6 +86,17 @@ export const article = defineType({
       title: 'Main Image',
       type: 'image',
       options: { hotspot: true },
+    }),
+    defineField({
+      name: 'illustrationScale',
+      title: 'Illustration size',
+      description: 'At 1 the drawing is as tall as every other card\'s; slide right to make it bigger, left to make it smaller. The text above and below moves with it.',
+      type: 'number',
+      initialValue: 1,
+      options: { min: 0.5, max: 1.5, step: 0.05, default: 1 },
+      components: { input: ScaleSlider },
+      validation: Rule => Rule.min(0.5).max(1.5),
+      hidden: ({ document }) => !document?.mainImage,
     }),
     defineField({
       name: 'body',
@@ -106,20 +136,6 @@ export const article = defineType({
       title: 'Translation Slug',
       description: 'Slug of the translated version of this article',
       type: 'string',
-    }),
-    defineField({
-      name: 'featured',
-      title: 'Featured',
-      description: 'Show this article in the Latest strip on the homepage of that language',
-      type: 'string',
-      options: {
-        list: [
-          { title: 'Not featured', value: 'NO' },
-          { title: 'Featured — English homepage', value: 'English' },
-          { title: 'Featured — French homepage', value: 'French' },
-        ],
-      },
-      initialValue: 'NO',
     }),
     defineField({
       name: 'audioFile',
