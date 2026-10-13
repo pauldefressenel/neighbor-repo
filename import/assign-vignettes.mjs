@@ -1,7 +1,9 @@
 // Sets each article's main image to its new vignette. The vignettes come
 // numbered per rubrique, 1 being the oldest French article; the table below
-// names them. Each French article's English translation gets the same
-// drawing. English-only articles are not covered.
+// names them. It gave each French article's English translation the same
+// drawing through `translationSlug`, deleted since (2026-10-13), so run
+// again it sets the French articles only. English-only articles are not
+// covered.
 //
 //   node import/assign-vignettes.mjs <vignettes dir>                    # dry run
 //   SANITY_TOKEN=<token> node import/assign-vignettes.mjs <dir> --write
@@ -67,7 +69,7 @@ const bare = (s) => (s ?? '').normalize('NFD').replace(/[\u0300-\u036f]/g, '')
 
 // Every article, published and draft copies alike.
 const articles = await client.fetch(
-  `*[_type == "article"]{ _id, "slug": slug.current, translationSlug, mainImage }`,
+  `*[_type == "article"]{ _id, "slug": slug.current, mainImage }`,
   {},
   { perspective: 'raw' },
 )
@@ -80,7 +82,7 @@ for (const [folder, slugs] of Object.entries(VIGNETTES)) {
     if (!existsSync(file)) throw new Error(`missing ${file}`)
     const fr = articles.find((a) => a.slug === slug)
     if (!fr) throw new Error(`no article ${slug}`)
-    const pair = new Set([bare(slug), bare(fr.translationSlug)].filter(Boolean))
+    const pair = new Set([bare(slug)])
     const docs = articles.filter((a) => pair.has(bare(a.slug)))
     plan.push({ file, label: `${folder}/${i + 1}.png`, docs })
   }

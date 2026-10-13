@@ -129,11 +129,6 @@ function htmlToBlocks(html) {
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
-function extractSlug(path) {
-  if (!path?.trim()) return undefined
-  return path.split('/').pop() || undefined
-}
-
 function buildPoems(row) {
   const poems = []
 
@@ -222,9 +217,6 @@ for (const row of rows) {
       poems: buildPoems(row),
       publishedAt: row['Date'] || undefined,
     }
-
-    const translationSlug = extractSlug(row['Traduction'])
-    if (translationSlug) doc.translationSlug = translationSlug
 
     const audioFile = row['Audio File']?.trim()
     if (audioFile) doc.audioFile = audioFile

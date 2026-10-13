@@ -103,7 +103,7 @@ Framer uses different breakpoints per page. The section pages' set (≥1200 / 90
 
 - Three document types: `article` (`studio/schemas/article.js`), `frontPage` (`studio/schemas/frontPage.js`: À la Une, one per language with fixed ids `front-fr` / `front-en`, an ordered list of references to that language's articles, which the website's Latest and the app's A La Une show in that order; `import/seed-front.mjs` created them from the old `featured` field, then removed that field) and `aboutPage` (`studio/schemas/aboutPage.js`). There is one `aboutPage` per language, with fixed ids `about-en` / `about-fr`: `title`, `body`, `founders[]` (name + image).
 - Article core fields: `title`, `slug`, `language` (`en`/`fr`), `section`, `category`, `author`, `excerpt`, `mainImage`, `body`, `publishedAt`
-- Additional fields: `poems` (array of titled poem objects with block content), `translationSlug` (links to the translated version), `audioFile` (URL), `audioQuote`, `illustrationScale` (0.5–1.5, a slider: the card's drawing height). The old `featured` field went with À la Une
+- Additional fields: `poems` (array of titled poem objects with block content), `audioFile` (URL), `audioQuote`, `illustrationScale` (0.5–1.5, a slider: the card's drawing height). The old `featured` field went with À la Une
 - `section` names the article's rubrique, hidden in the Studio, like `language`, both set by the folder the article was created in: `literature-review` (Essais & Critiques), `fiction-poetry` (Prose & Poésie) or `portraits`. The old `the-arts` was merged into `literature-review` (`import/merge-sections.mjs`); Essais & Critiques still finds it, and the Framer import maps it. (The Neighborhood is frontend-only, not a Sanity section)
 - Studio sidebar (`studio/structure.js`): Language (Français first) → À la Une (Latest in English), then the app's three rubriques → articles, plus the About page for that language. Essais & Critiques covers both `literature-review` and `the-arts`; a new article there is simply `literature-review`, the two being no longer told apart. An initial-value template fills `language` and `section`, so writers never set those fields by hand. The rubriques, and the `section` field's options, come from `shared/sections.js`.
 - Sanity project ID: `9hw8z0gm`, dataset: `production`
@@ -122,14 +122,16 @@ the cutover. Two scripts keep Sanity in step with it:
   Une is set in the Studio). Fetched HTML is cached in `import/.framer-cache`.
 - `import-framer.mjs` — upserts that JSON into Sanity. Dry run by default. Document
   ids follow the original `article-<de-accented-slug>` scheme so entries update in
-  place rather than duplicating. `translationSlug`, `audioFile`, `audioQuote` and
-  `illustrationScale` are not rendered by Framer, so they are carried over from the existing document;
-  unpaired translations are reported for manual linking. Every `--write` first
+  place rather than duplicating. `audioFile`, `audioQuote` and
+  `illustrationScale` are not rendered by Framer, so they are carried over from the existing document.
+  Articles no longer record their translation: `translationSlug` was deleted
+  (`import/drop-translation-slug.mjs`, which saved the pairs first). Every `--write` first
   dumps the current dataset to `import/backup-<timestamp>.ndjson`.
 
 `assign-vignettes.mjs` sets articles' main images from a folder of vignettes
 numbered per rubrique (`essais-critiques/1.png` is the oldest French essay). Each
-image also goes to the article's translation. The slug-to-number table is in the
+image went to the article's translation too, through `translationSlug`; run
+again, it sets the French articles only. The slug-to-number table is in the
 script; the vignettes themselves live outside the repo. Illustrations are drawn
 full width in one box at the vignettes' proportions (about 1818×572); a taller
 one is scaled down to fit, never cropped, on the site and in the app.

@@ -128,12 +128,6 @@ export const article = defineType({
       }],
     }),
     defineField({
-      name: 'translationSlug',
-      title: 'Translation Slug',
-      description: 'Slug of the translated version of this article',
-      type: 'string',
-    }),
-    defineField({
       name: 'audioFile',
       title: 'Audio File',
       description: 'URL of an audio reading for this article',

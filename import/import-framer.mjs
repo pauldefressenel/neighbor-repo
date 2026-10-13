@@ -8,7 +8,7 @@
 // Framer is treated as the source of truth for everything it renders, except
 // which entries are on the home pages: that is the À la Une documents
 // (studio/schemas/frontPage.js), which this leaves alone. Fields Framer does
-// not expose — audioFile, audioQuote, translationSlug, illustrationScale —
+// not expose — audioFile, audioQuote, illustrationScale —
 // are carried over from the existing Sanity document so they survive the
 // import.
 
@@ -55,25 +55,9 @@ if (!entries.length) {
 }
 
 const existing = await client.fetch(
-  `*[_type == "article"]{ _id, "slug": slug.current, translationSlug, audioFile, audioQuote, mainImage, illustrationScale }`
+  `*[_type == "article"]{ _id, "slug": slug.current, audioFile, audioQuote, mainImage, illustrationScale }`
 )
 const byId = new Map(existing.map((d) => [d._id, d]))
-
-// ── translation pairing ───────────────────────────────────────────────────────
-
-// Framer does not render the link between an article and its translation, so
-// keep whatever Sanity already knows and derive the obvious -en/-fr pairs.
-const slugs = new Set(entries.map((e) => e.slug))
-function translationFor(entry) {
-  const prior = byId.get(docId(entry.slug))?.translationSlug
-  if (prior) return prior
-  const m = entry.slug.match(/^(.*)-(en|fr)$/)
-  if (m) {
-    const other = `${m[1]}-${m[2] === 'en' ? 'fr' : 'en'}`
-    if (slugs.has(other)) return other
-  }
-  return undefined
-}
 
 // ── image upload ──────────────────────────────────────────────────────────────
 
@@ -116,12 +100,6 @@ if (orphans.length) {
   console.log()
 }
 
-const unpaired = entries.filter((e) => !translationFor(e))
-if (unpaired.length) {
-  console.log(`No translation link for ${unpaired.length} entr${unpaired.length === 1 ? 'y' : 'ies'} — set these by hand in Studio:`)
-  for (const e of unpaired) console.log(`  ? ${e.language}  ${e.slug}`)
-  console.log()
-}
 
 if (!WRITE) {
   console.log('Dry run — nothing written. Re-run with --write (and SANITY_TOKEN set) to apply.\n')
@@ -164,8 +142,6 @@ for (const e of entries) {
     if (image) doc.mainImage = image
 
     // Carry over anything Framer does not render.
-    const translationSlug = translationFor(e)
-    if (translationSlug) doc.translationSlug = translationSlug
     if (prior?.illustrationScale != null) doc.illustrationScale = prior.illustrationScale
     if (prior?.audioFile) doc.audioFile = prior.audioFile
     if (prior?.audioQuote) doc.audioQuote = prior.audioQuote
