@@ -1,0 +1,127 @@
+/* The app's Rubriques switch (RubriqueSwitch.jsx), on phones only. */
+.rubrique-switch {
+  display: none;
+}
+
+@media (max-width: 699.98px) {
+  /* 22px under the header's line. */
+  .rubrique-switch {
+    display: block;
+    padding-top: 22px;
+  }
+
+  .rubrique-switch-bar {
+    position: relative;
+  }
+
+  /* The row scrolls sideways, 15px between the names, and fades out over
+     its last 100px towards the arrow. The padding gives the names 12px more
+     to tap above and below (taken back by the margin), and room at the end
+     to scroll the last one clear of the arrow. */
+  .rubrique-switch-row {
+    display: flex;
+    gap: 15px;
+    overflow-x: auto;
+    scrollbar-width: none;
+    padding: 12px 40px 12px 16px;
+    margin: -12px 0;
+    -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 100px), transparent calc(100% - 22px));
+    mask-image: linear-gradient(to right, #000 calc(100% - 100px), transparent calc(100% - 22px));
+  }
+
+  /* At the end, the fade moves to the start, where the names now hide. */
+  .rubrique-switch-row--end {
+    -webkit-mask-image: linear-gradient(to left, #000 calc(100% - 100px), transparent calc(100% - 16px));
+    mask-image: linear-gradient(to left, #000 calc(100% - 100px), transparent calc(100% - 16px));
+  }
+
+  .rubrique-switch-row::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* The website's drawn chevron, pointing on; turned round at the end. */
+  .rubrique-switch-arrow {
+    position: absolute;
+    right: 6px;
+    top: 50%;
+    transform: translateY(-50%);
+    padding: 10px 12px;
+    border: none;
+    background: none;
+    color: #000;
+    line-height: 0;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    --rise: 5px;
+    animation: rise 300ms cubic-bezier(0.22, 1, 0.36, 1) 200ms backwards;
+  }
+
+  .rubrique-switch-arrow svg {
+    transform: scaleX(-1);
+    transition: transform 250ms ease;
+  }
+
+  .rubrique-switch-arrow--back svg {
+    transform: none;
+  }
+
+  .rubrique-switch-link {
+    font-family: 'Averia Libre', sans-serif;
+    font-weight: 400;
+    flex: none;
+    font-size: 15px;
+    letter-spacing: -0.05em;
+    line-height: 1.1;
+    text-transform: uppercase;
+    white-space: nowrap;
+    color: #000;
+    text-decoration: none;
+    -webkit-tap-highlight-color: transparent;
+    --rise: 5px;
+    animation: rise 300ms cubic-bezier(0.22, 1, 0.36, 1) backwards;
+  }
+
+  .rubrique-switch-link--active {
+    color: var(--red);
+  }
+
+  /* Held, a name shrinks as in the app (PRESS in mobile/src/motion.js),
+     without fading, and comes back more slowly once let go. (Option B of
+     the press sheet; a softer 95% was tried.) */
+  .rubrique-switch-label {
+    display: block;
+    transition: transform 320ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .rubrique-switch-link--pressed .rubrique-switch-label {
+    transform: scale(0.9);
+    transition: transform 150ms cubic-bezier(0.25, 0.1, 0.25, 1);
+  }
+
+  /* 19px from the names to the stroke, in the middle of its 8px box, across
+     the page less 16px each side. */
+  .rubrique-switch-rule {
+    display: block;
+    width: calc(100% - 32px);
+    height: 8px;
+    margin: 15px 16px 0;
+    color: #000;
+    --rise: 5px;
+    animation: rise 300ms cubic-bezier(0.22, 1, 0.36, 1) 200ms backwards;
+  }
+
+  /* The page starts under the header and the switch (22 + 16.5 + 15 + 8px),
+     the title 22px under the line, as in the app. */
+  .page:has(.rubrique-switch) .main {
+    margin-top: calc(60px + 62px);
+    padding-top: 22px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rubrique-switch-link,
+  .rubrique-switch-arrow,
+  .rubrique-switch-rule {
+    animation: none;
+  }
+}

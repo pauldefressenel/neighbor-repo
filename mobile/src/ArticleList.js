@@ -17,8 +17,9 @@ import { colors, fonts, rubriquesTitle } from './theme'
 // a column of article cards with a line between each two, and pull to
 // refresh. The title sits where the Rubriques list's does, and the page builds
 // up as it appears (APPEAR in motion.js). `fetchArticles` must be stable
-// (useCallback). Tapping a card opens `articleHref(article)`.
-export default function ArticleList({ lang, title, fetchArticles, articleHref }) {
+// (useCallback). Tapping a card opens `articleHref(article)`. `titleTop`
+// replaces the room above the title (under the Rubriques switch).
+export default function ArticleList({ lang, title, titleTop, fetchArticles, articleHref }) {
   const t = i18n[lang] ?? i18n.en
   const [articles, setArticles] = useState(null)
   const [failed, setFailed] = useState(false)
@@ -110,10 +111,7 @@ export default function ArticleList({ lang, title, fetchArticles, articleHref })
       ItemSeparatorComponent={Separator}
       ListHeaderComponent={
         <AppearContext.Provider value={appearFor(0)}>
-          <RiseLines style={titleStyle}>{title}</RiseLines>
-          <Rise step={APPEAR.titleMark} style={styles.titleMark}>
-            <Text style={styles.asterisk} accessibilityElementsHidden importantForAccessibility="no-hide-descendants">*</Text>
-          </Rise>
+          <PageHeading title={title} titleTop={titleTop} />
         </AppearContext.Provider>
       }
       ListEmptyComponent={
@@ -130,6 +128,19 @@ export default function ArticleList({ lang, title, fetchArticles, articleHref })
       }
       refreshControl={<RefreshControl refreshing={refreshing} onRefresh={refresh} tintColor={colors.ink} />}
     />
+  )
+}
+
+// A page's title rising in line by line, then its asterisk, inside an
+// AppearContext: the article lists' header, and the Portraits page's.
+export function PageHeading({ title, titleTop }) {
+  return (
+    <>
+      <RiseLines style={[titleStyle, titleTop != null && { marginTop: titleTop }]}>{title}</RiseLines>
+      <Rise step={APPEAR.titleMark} style={styles.titleMark}>
+        <Text style={styles.asterisk} accessibilityElementsHidden importantForAccessibility="no-hide-descendants">*</Text>
+      </Rise>
+    </>
   )
 }
 

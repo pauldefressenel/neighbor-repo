@@ -19,19 +19,43 @@ export const articleDate = (iso, lang) => longDate(iso, lang === 'en' ? 'en' : '
 // list that
 // sets AppearContext, it rises all at once (APPEAR.card). (Each part on its
 // own beat felt too drawn out.)
-export default function ArticleCard({ category, title, excerpt, author, mainImage, publishedAt, picture, pictureInset }) {
+//
+// With `pictureFirst` (a portrait, PortraitCard.js) the drawing comes first,
+// then the category, title and excerpt, and the author and date stand at the
+// bottom left, at the foot of the card's box however tall it is made (the
+// Portraits slideshow makes every card as tall as the tallest).
+export default function ArticleCard({ category, title, excerpt, author, mainImage, publishedAt, picture, pictureInset, pictureFirst }) {
   const { lang } = useGlobalSearchParams()
   const t = i18n[lang] ?? i18n.fr
   const date = publishedAt ? articleDate(publishedAt, lang) : null
+  const heading = (
+    <>
+      {category ? <Text style={styles.category}>{category}</Text> : null}
+      {/* A one-line title wider than 80% of the card goes onto two lines. */}
+      <BalancedText style={styles.title} maxFill={card.titleMaxFill}>{title}</BalancedText>
+      {excerpt ? <BalancedText style={styles.excerpt}>{excerpt}</BalancedText> : null}
+    </>
+  )
+  if (pictureFirst) {
+    return (
+      <View style={styles.fill}>
+        <Rise step={APPEAR.card} style={styles.fill}>
+          <View style={[styles.pictureTop, pictureInset && { marginTop: -pictureInset.top, marginBottom: card.imageGap - pictureInset.bottom }]}>
+            {picture}
+          </View>
+          <Pressed>{heading}</Pressed>
+          <Pressed style={styles.signature}>
+            {author ? <Text style={[styles.author, styles.left]}>{t.by} {author}</Text> : null}
+            {date ? <Text style={[styles.date, styles.left]}>{date}</Text> : null}
+          </Pressed>
+        </Rise>
+      </View>
+    )
+  }
   return (
     <View>
       <Rise step={APPEAR.card}>
-        <Pressed>
-          {category ? <Text style={styles.category}>{category}</Text> : null}
-          {/* A one-line title wider than 80% of the card goes onto two lines. */}
-          <BalancedText style={styles.title} maxFill={card.titleMaxFill}>{title}</BalancedText>
-          {excerpt ? <BalancedText style={styles.excerpt}>{excerpt}</BalancedText> : null}
-        </Pressed>
+        <Pressed>{heading}</Pressed>
         {/* A portrait's drawing takes the illustration's place, as on the
             website's phones, and stays still on press while the text above
             and below it shrinks (FadePressable's scaleChildren): moved or
@@ -68,6 +92,9 @@ export default function ArticleCard({ category, title, excerpt, author, mainImag
 // portrait, 2 and 1pt on an illustration). The illustration, or a
 // portrait's drawing, sits that much higher to match.
 const GARAMOND_RISE = 1.5
+
+// The least room between a portrait's excerpt and its signature.
+const SIGNATURE_GAP = 30
 
 // Every illustration gets the same box, as on the website: the card's width,
 // at the vignettes' shared proportions (card.illustrationAspect). A few
@@ -121,6 +148,25 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginTop: card.imageGap - GARAMOND_RISE,
     marginBottom: card.imageGap + GARAMOND_RISE,
+  },
+  // A portrait's drawing at the top of its card, centred, its figure's top
+  // at the card's top and card.imageGap below its foot (`pictureInset` takes
+  // away the room the figure leaves in its slot).
+  pictureTop: {
+    alignItems: 'center',
+    marginBottom: card.imageGap,
+  },
+  fill: {
+    flexGrow: 1,
+  },
+  // The author and date at the foot of a portrait's card, flush left, at
+  // least SIGNATURE_GAP under the excerpt.
+  signature: {
+    marginTop: 'auto',
+    paddingTop: SIGNATURE_GAP,
+  },
+  left: {
+    textAlign: 'left',
   },
   placeholder: {
     backgroundColor: colors.placeholder,

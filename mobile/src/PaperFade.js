@@ -9,11 +9,13 @@ import { colors } from './theme'
 // bar's side of the page: 'top' hangs below a bar at the top (the
 // masthead), 'bottom' stands above one at the bottom (the tab bar). It is
 // drawn over the page, so the bar needs a zIndex above it, and lets touches
-// through.
-export default function PaperFade({ edge = 'top' }) {
+// through. `inline` puts it in the layout instead, right after what comes
+// before it, taking no room (a negative margin): the Rubriques switch, where
+// the absolute one was drawn over the names.
+export default function PaperFade({ edge = 'top', inline = false }) {
   const id = `paper-fade-${edge}`
   return (
-    <View style={[styles.fade, edge === 'top' ? styles.below : styles.above]} pointerEvents="none">
+    <View style={inline ? styles.inline : [styles.fade, edge === 'top' ? styles.below : styles.above]} pointerEvents="none">
       <Svg width="100%" height={headerFade}>
         <Defs>
           <LinearGradient id={id} x1="0" y1={edge === 'top' ? 0 : 1} x2="0" y2={edge === 'top' ? 1 : 0}>
@@ -33,6 +35,10 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     height: headerFade,
+  },
+  inline: {
+    height: headerFade,
+    marginBottom: -headerFade,
   },
   below: {
     top: '100%',

@@ -1,5 +1,6 @@
 import { createContext, useContext, useEffect, useRef, useState } from 'react'
 import { Animated, Easing, Pressable, StyleSheet, Text, View } from 'react-native'
+import { useNavigation } from 'expo-router'
 import { appear, press } from '../../shared/tokens'
 
 // Moving between the Rubriques list and a rubrique: the rubrique slides in
@@ -164,7 +165,7 @@ export const APPEAR = {
     title: { rise: 10, delay: 350, spring: { duration: 400, bounce: 0 } },
     body: { rise: 10, delay: 400, spring: { duration: 400, bounce: 0 } },
   },
-  // The Rubriques list, after the cards but quicker: its title rises like a
+  // A menu page (Voisinage's games), after the cards but quicker: its title rises like a
   // page title, each row's name like an image, its subtitle and rule like a
   // card's text, each row a beat after the last.
   menu: {
@@ -173,6 +174,13 @@ export const APPEAR = {
     subtitle: { rise: 5, delay: 210, spring: { duration: 200, bounce: 0 } },
     rule: { rise: 5, delay: 270, spring: { duration: 200, bounce: 0 } },
     stagger: 60,
+  },
+  // The Rubriques tab's row of pages as the tab is entered: the names one
+  // after another, ahead of the page title, then the line under them.
+  switch: {
+    name: { rise: 5, delay: 50, spring: { duration: 300, bounce: 0 } },
+    stagger: 50,
+    rule: { rise: 5, delay: 200, spring: { duration: 300, bounce: 0 } },
   },
   // A line of text swapped in place, like Voisinage's description when the
   // reader picks the other link: it rises in as a card's text does, at once.
@@ -329,4 +337,28 @@ export function useFade(visible, { duration, easing } = PAGE) {
     return () => anim.stop()
   }, [visible, value, duration, easing])
   return value
+}
+
+// When the page's tab was last entered (Date.now()), for a page inside a
+// tab's stack that builds up again every time its tab is entered (the
+// Rubriques and Portraits tabs): keyed by it, the page remounts and plays
+// its build-up from the top. Coming back from an article within the tab
+// doesn't count. Only a return counts, a focus after the tab was left: the
+// tab's focus also fires on the first visit, which the mount already plays.
+export function useTabEntered() {
+  const navigation = useNavigation()
+  const [entered, setEntered] = useState(() => Date.now())
+  useEffect(() => {
+    const tab = navigation.getParent()
+    if (!tab) return undefined
+    let left = false
+    const offBlur = tab.addListener('blur', () => { left = true })
+    const offFocus = tab.addListener('focus', () => {
+      if (!left) return
+      left = false
+      setEntered(Date.now())
+    })
+    return () => { offBlur(); offFocus() }
+  }, [navigation])
+  return entered
 }

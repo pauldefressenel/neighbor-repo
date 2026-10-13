@@ -1,26 +1,86 @@
-import { useCallback } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { View } from 'react-native'
-import { useGlobalSearchParams } from 'expo-router'
+import { useFocusEffect, useGlobalSearchParams, useNavigation } from 'expo-router'
 import ArticleList from '../../../ArticleList'
+import PortraitsPage from '../../../PortraitsPage'
+import RubriqueSwitch from '../../../RubriqueSwitch'
 import { i18n } from '../../../i18n'
-import { getLatestArticles } from '../../../sanity'
+import { getLatestArticles, getSectionArticles, prefetchSectionArticles } from '../../../sanity'
+import { SECTIONS } from '../../../sections'
+import { useTabEntered } from '../../../motion'
 import { colors } from '../../../theme'
 
-// En Couverture: the articles the editors flag as featured for this language.
-// The masthead comes from (couverture)/_layout.js.
-export default function LatestScreen() {
+// The Rubriques tab: A La Une (the articles the editors flag as featured for
+// this language) and the three rubriques in the RubriqueSwitch over the
+// chosen one's page, Portraits as the slideshow (PortraitsPage.js). It opens
+// on A La Une; tapping the tab again, or coming back to it, returns there.
+// Picking a page replaces the one below, which builds up again. The masthead
+// comes from (couverture)/_layout.js.
+const LATEST = 'a-la-une'
+
+// From the switch's line to the title under it (the page titles' own 41.5
+// left them far apart).
+const TITLE_TOP = 22
+
+export default function RubriquesScreen() {
   // From the URL: a stack's screens don't inherit the tab's params.
   const { lang } = useGlobalSearchParams()
-  const fetchArticles = useCallback(() => getLatestArticles(lang), [lang])
+  const t = i18n[lang] ?? i18n.fr
+  // A rubrique's slug, or LATEST.
+  const [current, setCurrent] = useState(LATEST)
+  const section = SECTIONS.find((s) => s.slug === current)
 
+  // Back on A La Une each time the tab is entered again, and built up again.
+  // Set while rendering, so the tab opens on it straight away rather than on
+  // the last page for a moment.
+  const entered = useTabEntered()
+  const [landed, setLanded] = useState(entered)
+  if (entered !== landed) {
+    setLanded(entered)
+    setCurrent(LATEST)
+  }
+  // And when the tab is tapped while already in front (which also pops an
+  // article and scrolls to the top).
+  const navigation = useNavigation()
+  useEffect(
+    () => navigation.getParent()?.addListener('tabPress', () => {
+      if (navigation.getParent()?.isFocused()) setCurrent(LATEST)
+    }),
+    [navigation],
+  )
+
+  const entries = [{ key: LATEST, label: t.latest }, ...SECTIONS.map((s) => ({ key: s.slug, label: s.label[lang] ?? s.label.fr }))]
+  const fetchArticles = useCallback(
+    () => (section ? getSectionArticles(lang, section.sanity) : getLatestArticles(lang)),
+    [lang, section],
+  )
+
+  // The rubriques not on screen start loading. (The one on screen is
+  // fetched by its page: a prefetch of it would wait unused.)
+  useFocusEffect(
+    useCallback(() => {
+      SECTIONS.filter((s) => s.slug !== current).forEach((s) => prefetchSectionArticles(lang, s.sanity))
+    }, [lang, current]),
+  )
+
+  // Keyed by language too: kept, a page went on showing the other
+  // language's title. And by the tab's entry, to build up again.
+  const key = `${lang}-${current}-${entered}`
   return (
     <View style={{ flex: 1, backgroundColor: colors.paper }}>
-      <ArticleList
-        lang={lang}
-        title={(i18n[lang] ?? i18n.fr).latest}
-        fetchArticles={fetchArticles}
-        articleHref={(article) => `/${lang}/articles/${article.slug.current}`}
-      />
+      <RubriqueSwitch key={entered} entries={entries} current={current} onChange={setCurrent} since={entered} />
+      {current === 'portraits' ? (
+        <PortraitsPage key={key} lang={lang} titleTop={TITLE_TOP} />
+      ) : (
+        <ArticleList
+          key={key}
+          lang={lang}
+          title={section ? section.label[lang] ?? section.label.fr : t.latest}
+          titleTop={TITLE_TOP}
+          fetchArticles={fetchArticles}
+          articleHref={(article) => `/${lang}/articles/${article.slug.current}`}
+        />
+      )}
     </View>
   )
 }

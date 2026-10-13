@@ -1,6 +1,12 @@
 import icons from './menuIcons'
 import './MenuIcon.css'
 
+// SET ASIDE (2026-10-13): the site has no menu for now, and nothing uses
+// this. Kept, with MenuIcon.css and menuIcons.js (still written by
+// assets/icons/make-icons.py), for when a menu comes back; the toggle that
+// held it and its overlay are in git history before that date (Layout.jsx,
+// Layout.css).
+//
 // The phone header's menu icon, drawn by hand like the app's tab icons: a
 // list, three dots each with a line (assets/icons/make-icons.py). When the
 // menu opens, its top and bottom lines swing into a cross while the dots and

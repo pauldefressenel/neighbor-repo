@@ -4,7 +4,7 @@
 // rather than failing the deploy.
 import { writeFileSync, existsSync } from 'node:fs'
 import { createClient } from '@sanity/client'
-import { NEIGHBORHOOD_OPEN, RUBRIQUES, rubriqueOf } from '../src/sections.js'
+import { ABOUT_OPEN, NEIGHBORHOOD_OPEN, RUBRIQUES, rubriqueOf } from '../src/sections.js'
 import { SANITY } from '../shared/sanity.js'
 
 const ORIGIN = 'https://react.theneighborr.com'
@@ -19,7 +19,8 @@ const client = createClient({ ...SANITY, useCdn: true })
 
 const urls = []
 for (const lang of LANGS) {
-  urls.push(`/${lang}`, `/${lang}/about`)
+  urls.push(`/${lang}`)
+  if (ABOUT_OPEN) urls.push(`/${lang}/about`)
   if (NEIGHBORHOOD_OPEN) urls.push(`/${lang}/neighborhood`)
   for (const { value } of RUBRIQUES) urls.push(`/${lang}/${value}`)
 }

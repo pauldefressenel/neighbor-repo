@@ -1,0 +1,90 @@
+/* TEMPORARY: PressSheet.jsx. Self-contained, so it can go in one piece. */
+.press-sheet {
+  margin-top: 100px;
+  padding: 20px 0 80px;
+}
+
+.press-option {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 56px;
+}
+
+.press-letter {
+  font-family: 'NeighborFont', serif;
+  font-size: 40px;
+  line-height: 1;
+  color: var(--red);
+  margin: 0 0 18px;
+}
+
+.press-switch {
+  display: inline-flex;
+  flex-direction: column;
+}
+
+.press-row {
+  display: flex;
+  gap: min(22px, 5.8vw);
+}
+
+.press-link {
+  padding: 12px 0;
+  margin: -12px 0;
+  border: none;
+  background: none;
+  font-family: 'Averia Libre', sans-serif;
+  font-weight: 400;
+  font-size: min(16px, 4.2vw);
+  letter-spacing: -0.05em;
+  line-height: 1.1;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: #000;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.press-link--current {
+  color: var(--red);
+}
+
+.press-label {
+  display: block;
+}
+
+.press-rule {
+  display: block;
+  width: 0;
+  min-width: 100%;
+  height: 8px;
+  margin-top: 15px;
+  color: #000;
+}
+
+/* A: as on the site now: 95%, in over 0.26s, back over 0.45s. */
+.press-A .press-label { transition: transform 450ms cubic-bezier(0.22, 1, 0.36, 1); }
+.press-A .press-link--pressed .press-label { transform: scale(0.95); transition: transform 260ms cubic-bezier(0.33, 0, 0.2, 1); }
+
+/* B: the app's press: 90%, in over 0.15s, back over 0.32s. */
+.press-B .press-label { transition: transform 320ms cubic-bezier(0.22, 1, 0.36, 1); }
+.press-B .press-link--pressed .press-label { transform: scale(0.9); transition: transform 150ms cubic-bezier(0.25, 0.1, 0.25, 1); }
+
+/* C: barely: 97%, slow both ways. */
+.press-C .press-label { transition: transform 600ms cubic-bezier(0.22, 1, 0.36, 1); }
+.press-C .press-link--pressed .press-label { transform: scale(0.97); transition: transform 350ms cubic-bezier(0.33, 0, 0.2, 1); }
+
+/* D: pressed into the paper: it sinks 2px as it shrinks a little. */
+.press-D .press-label { transition: transform 450ms cubic-bezier(0.22, 1, 0.36, 1); }
+.press-D .press-link--pressed .press-label { transform: translateY(2px) scale(0.97); transition: transform 200ms cubic-bezier(0.33, 0, 0.2, 1); }
+
+/* E: a soft spring: 93%, and a small bounce past its size on release. */
+.press-E .press-label { transition: transform 550ms cubic-bezier(0.34, 1.56, 0.64, 1); }
+.press-E .press-link--pressed .press-label { transform: scale(0.93); transition: transform 220ms cubic-bezier(0.33, 0, 0.2, 1); }
+
+/* F: no movement: the name turns red while held, softly. */
+.press-F .press-label { transition: color 400ms ease; }
+.press-F .press-link--pressed .press-label { color: var(--red); transition: color 120ms ease; }

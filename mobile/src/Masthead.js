@@ -15,8 +15,10 @@ import { categoryType, colors, fonts } from './theme'
 // arrow (`onBack`) on the left and the language on the right. The arrow
 // pops in as a rubrique opens (BACK_POP in motion.js), or just fades with
 // Reduce Motion on, and keeps its last handler while it goes so the slot
-// never jumps.
-export default function Masthead({ onBack, backLabel = 'Retour' }) {
+// never jumps. `fade` set to false leaves out the paper fading out below the
+// line, for a page that keeps its own (the Rubriques switch, whose names it
+// greyed out).
+export default function Masthead({ onBack, backLabel = 'Retour', fade: paperFade = true }) {
   const insets = useSafeAreaInsets()
   const lastBack = useRef(onBack)
   if (onBack) lastBack.current = onBack
@@ -55,7 +57,7 @@ export default function Masthead({ onBack, backLabel = 'Retour' }) {
         </View>
       </View>
       <Rule />
-      <PaperFade edge="top" />
+      {paperFade ? <PaperFade edge="top" /> : null}
     </View>
   )
 }
@@ -78,7 +80,6 @@ function Language() {
     const parts = pathname.split('/').filter(Boolean).slice(1)
     let rest = parts
     if (parts[0] === 'articles') rest = []
-    else if (parts[0] === 'rubriques' && parts.length > 2) rest = parts.slice(0, 2)
     router.replace(`/${[other, ...rest].join('/')}`)
   }
 

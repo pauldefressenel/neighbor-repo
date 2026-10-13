@@ -3,6 +3,12 @@
   margin-top: 100px;
 }
 
+/* While a list is still being fetched, the page is a screen tall, so the
+   footer waits below the fold instead of showing where the cards will go. */
+.main--loading {
+  min-height: 100vh;
+}
+
 /* The Neighborhood still lifts in whole, as on Framer (y 10 → 0, spring
    bounce 0.3, delay 0.4s, 0.4s). The article lists build up as in the app
    instead (PageTitle.jsx, ArticleCard.jsx). */

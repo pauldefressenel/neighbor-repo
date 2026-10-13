@@ -76,8 +76,9 @@ export const rubriquesTitle = {
   textAlign: 'center',
 }
 
-// The Rubriques list's layout: a page of titled blocks, each with a small red
-// subtitle and ruled off below.
+// A menu page's layout (Voisinage's games; the Rubriques tab's first, numbered
+// list used it too): titled blocks, each with a small red subtitle and ruled
+// off below.
 export const menu = {
   body: {
     flex: 1,

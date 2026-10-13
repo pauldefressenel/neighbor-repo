@@ -11,6 +11,7 @@ import SignUpForm from '../../SignUpForm'
 import { i18n } from '../../i18n'
 import { APPEAR, AppearContext, Rise, RiseLines } from '../../motion'
 import Rule from '../../Rule'
+import RubriqueSwitch from '../../RubriqueSwitch'
 import { categoryType, colors, fonts, menu as menuStyle } from '../../theme'
 
 // The games, for readers who have signed up. They don't exist yet: the list
@@ -34,6 +35,8 @@ const COPY = {
   fr: {
     games: 'Jeux',
     soon: 'Bientôt',
+    // The row under the masthead; none of its pages is built yet.
+    nav: ['Chez vous', 'La place centrale', 'Le kiosque', 'Le café'],
     account: 'Votre compte',
     signOut: 'Se déconnecter',
     newsletter: 'Recevoir la lettre du Neighbor',
@@ -42,6 +45,7 @@ const COPY = {
   en: {
     games: 'Games',
     soon: 'Soon',
+    nav: ['Your home', 'The main square', 'The kiosk', 'The café'],
     account: 'Your account',
     signOut: 'Sign out',
     newsletter: "Get the Neighbor's letter",
@@ -54,6 +58,7 @@ const COPY = {
 // signs up or signs in); signed in without a profile, the sign-up
 // (SignUpForm.js); signed in, the games, then the reader's account.
 export default function VoisinageScreen() {
+  const { lang } = useGlobalSearchParams()
   const { member } = useAccount()
   const scroll = useRef(null)
   useScrollToTop(scroll)
@@ -77,13 +82,28 @@ export default function VoisinageScreen() {
     setShown(Date.now())
   }
   const reduceMotion = useReducedMotion()
+  // The landing's chosen link, "S'inscrire" or "Se connecter", named in the
+  // row too.
+  const [landingMode, setLandingMode] = useState('up')
   // The sign-up fits the screen and doesn't scroll; it lifts itself over the
   // keyboard (SignUpForm.js), so the screen's own avoiding is off for it.
   const signingUp = !!member?.needsProfile
 
   return (
     <View style={styles.screen}>
-      <Masthead />
+      {/* Its row fades the page out below itself, so the masthead's own fade
+          is left out (it greyed the names out). */}
+      <Masthead fade={false} />
+      {/* The places of the neighbourhood. Their pages aren't built yet: a
+          tapped name shakes. (Signing up or in led the row for a while; it
+          is the page's own "S'inscrire / Se connecter" now.) */}
+      <RubriqueSwitch
+        key={shown}
+        entries={(COPY[lang] ?? COPY.fr).nav.map((label) => ({ key: label, label }))}
+        current={null}
+        since={shown}
+        unavailable
+      />
       <KeyboardAvoidingView style={styles.screen} behavior="padding" enabled={!signingUp}>
         <AppearContext.Provider value={{ since: shown, still: reduceMotion }}>
           <ScrollView
@@ -98,7 +118,7 @@ export default function VoisinageScreen() {
             ) : member ? (
               <Neighbourhood key={`member-${shown}`} />
             ) : (
-              <NeighbourLanding key={`landing-${shown}`} />
+              <NeighbourLanding key={`landing-${shown}`} mode={landingMode} onMode={setLandingMode} />
             )}
           </ScrollView>
         </AppearContext.Provider>

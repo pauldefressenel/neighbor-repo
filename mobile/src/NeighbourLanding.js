@@ -2,14 +2,15 @@ import { useEffect, useRef, useState } from 'react'
 import { ActivityIndicator, Animated, StyleSheet, Text, TextInput, View } from 'react-native'
 import { Image } from 'expo-image'
 import { useGlobalSearchParams } from 'expo-router'
+import { PageHeading } from './ArticleList'
 import { useIsFocused } from 'expo-router/react-navigation'
 import { CODE_LENGTH, isEmail, useAccount } from './account'
 import { MONTHS } from '../../shared/dates'
 import { i18n } from './i18n'
-import { APPEAR, FadePressable, NEIGHBOUR, Rise, RiseLines, usePlayOn } from './motion'
+import { APPEAR, FadePressable, NEIGHBOUR, Rise, usePlayOn } from './motion'
 import Rule from './Rule'
 import { avatarUrl, getNeighbours } from './supabase'
-import { categoryType, colors, fonts, rubriquesTitle } from './theme'
+import { categoryType, colors, fonts } from './theme'
 
 // How many avatars ahead are loaded while one is shown. Loading all of them
 // up front would be some 30 MB over a phone's data.
@@ -19,7 +20,7 @@ const AHEAD = 3
 // too big).
 const AVATAR = 135
 
-const MODES = {
+export const MODES = {
   fr: { up: "S'inscrire", in: 'Se connecter' },
   en: { up: 'Sign up', in: 'Sign in' },
 }
@@ -103,17 +104,20 @@ const copyFor = (lang) => (COPY[lang] ? lang : 'fr')
 // lead to the same two steps; only who the reader turns out to be (a new
 // address or a known one) will decide what follows the code. There is no
 // dinkus: it separates articles, and there are none here. Chosen on a
-// comparison sheet (option B).
-export default function NeighbourLanding() {
+// comparison sheet (option B). The chosen link is the screen's (`mode`,
+// `onMode`), which names it in Voisinage's row too.
+export default function NeighbourLanding({ mode, onMode: setMode }) {
   const { lang } = useGlobalSearchParams()
-  const [mode, setMode] = useState('up')
   const l = copyFor(lang)
   return (
     <>
-      <RiseLines style={styles.title} step={APPEAR.menu.title}>{(i18n[lang] ?? i18n.fr).neighborhood}</RiseLines>
+      {/* The title closed by its asterisk, as on the Rubriques tab. */}
+      <PageHeading title={(i18n[lang] ?? i18n.fr).neighborhood} />
       <Rise step={APPEAR.menu.subtitle}>
         <View style={styles.links}>
-          {Object.entries(MODES[l]).map(([key, label]) => (
+          {Object.entries(MODES[l]).map(([key, label], i) => [
+            // A slash between the two (option F of a comparison sheet).
+            i > 0 ? <Text key="slash" style={styles.link}>/</Text> : null,
             <FadePressable
               key={key}
               onPress={() => setMode(key)}
@@ -122,8 +126,8 @@ export default function NeighbourLanding() {
               accessibilityState={{ selected: mode === key }}
             >
               <Text style={[styles.link, mode === key && styles.chosen]}>{label}</Text>
-            </FadePressable>
-          ))}
+            </FadePressable>,
+          ])}
         </View>
         <SignIn mode={mode} />
       </Rise>
@@ -446,13 +450,13 @@ const smallCaps = {
 }
 
 const styles = StyleSheet.create({
-  title: {
-    ...rubriquesTitle,
-    marginBottom: 90,
-  },
+  // Flush left (centred was tried), 24pt under the asterisk: with it, the
+  // room the title had above them.
   links: {
     flexDirection: 'row',
-    gap: 26,
+    justifyContent: 'flex-start',
+    gap: 10,
+    marginTop: 24,
   },
   // The categories' capitals at 16pt (22 and 18 were too big).
   link: {
@@ -539,6 +543,7 @@ const styles = StyleSheet.create({
     lineHeight: 21,
     color: colors.ink,
     marginTop: 10,
+    textAlign: 'center',
   },
   underline: {
     textDecorationLine: 'underline',
@@ -548,7 +553,7 @@ const styles = StyleSheet.create({
     fontFamily: fonts.garamond,
     color: colors.red,
   },
-  // A card's excerpt (ArticleCard.js), flush left.
+  // A card's excerpt (ArticleCard.js), flush left (centred was tried).
   description: {
     fontFamily: fonts.garamond,
     fontSize: 20,
@@ -559,7 +564,7 @@ const styles = StyleSheet.create({
   stage: {
     marginTop: 28,
   },
-  // Flush left like the text above (centred was tried).
+  // Flush left, under the centred picture (centred was tried).
   neighbour: {
     alignItems: 'flex-start',
   },

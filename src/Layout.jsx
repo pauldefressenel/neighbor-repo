@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { NavLink, Link, Navigate, Routes, Route, useParams, useNavigate, useLocation } from 'react-router-dom'
 import { i18n } from './i18n'
-import { LEGACY_SECTIONS, NEIGHBORHOOD_OPEN } from './sections'
+import { ABOUT_OPEN, LEGACY_SECTIONS, NEIGHBORHOOD_OPEN } from './sections'
 import './Layout.css'
 import SectionPage from './SectionPage'
 import ArticlePage from './ArticlePage'
@@ -10,15 +10,19 @@ import AboutPage from './AboutPage'
 import VoisinagePage from './VoisinagePage'
 import Footer from './Footer'
 import FooterSheet from './FooterSheet' // TEMPORARY
+import PressSheet from './PressSheet' // TEMPORARY
+import AccessSheet from './AccessSheet' // TEMPORARY
+import ScrollSheet from './ScrollSheet' // TEMPORARY
 import Rule from './Rule'
-import MenuIcon from './MenuIcon'
+import RubriqueSwitch from './RubriqueSwitch'
 
-// The nav: the three rubriques, The Neighborhood once it opens, then About.
+// The nav: the three rubriques, then The Neighborhood and About once they
+// open.
 function navSections(t) {
   return [
     ...t.sections,
     ...(NEIGHBORHOOD_OPEN ? [{ label: t.neighborhood, value: 'neighborhood' }] : []),
-    { label: t.about, value: 'about' },
+    ...(ABOUT_OPEN ? [{ label: t.about, value: 'about' }] : []),
   ]
 }
 
@@ -40,16 +44,6 @@ function HeaderLinks({ items, lang, className }) {
   )
 }
 
-// The phone menu lists the same links; The Neighborhood, once it opens, is
-// set apart from the rubriques by a gap and drops its article.
-function menuItems(t, lang) {
-  return navSections(t).map(({ label, value }) =>
-    value === 'neighborhood'
-      ? { label: t.menuNeighborhood, to: `/${lang}/${value}`, groupStart: true }
-      : { label, to: `/${lang}/${value}` }
-  )
-}
-
 // An old section URL (/en/the-arts/…) sends the reader to its rubrique,
 // keeping the article slug if there is one.
 function LegacySection({ to }) {
@@ -60,16 +54,17 @@ function LegacySection({ to }) {
 export default function Layout() {
   const { lang } = useParams()
   const navigate = useNavigate()
-  const [menuOpen, setMenuOpen] = useState(false)
   const [langOpen, setLangOpen] = useState(false)
   const t = i18n[lang] ?? i18n.en
 
   const other = i18n[t.switchTo]
   const { pathname } = useLocation()
+  // Latest and the three rubriques: the pages under the phone's Rubriques
+  // switch.
+  const listPage = [`/${lang}`, `/${lang}/essays-criticism`, `/${lang}/prose-poetry`, `/${lang}/portraits`].includes(pathname.replace(/\/$/, ''))
   // The other language opens on its home page (Latest), from wherever the
   // reader is. (The app keeps the page instead.)
   const switchLanguage = () => {
-    setMenuOpen(false)
     setLangOpen(false)
     // Remembered for a year: the bare address (middleware.js, App.jsx) opens
     // in this language rather than the one picked by location.
@@ -81,17 +76,8 @@ export default function Layout() {
     <div className="page">
       <header className="header">
         <div className="header-top">
-          <button
-            type="button"
-            className="nav-toggle"
-            aria-label={menuOpen ? 'Close menu' : 'Open menu'}
-            aria-expanded={menuOpen}
-            onClick={() => setMenuOpen((open) => !open)}
-          >
-            <MenuIcon open={menuOpen} />
-          </button>
           <HeaderLinks items={t.sections} lang={lang} className="header-links header-links--left" />
-          <Link to={`/${lang}`} className="site-title" onClick={() => setMenuOpen(false)}>
+          <Link to={`/${lang}`} className="site-title">
             The Neighbor
           </Link>
           <div className="header-meta">
@@ -166,33 +152,22 @@ export default function Layout() {
         <Rule className="header-rule" />
         {/* Phones: the app's masthead line, edge to edge. */}
         <Rule className="header-rule-phone" drawn />
+        {/* Phones: the app's Rubriques switch, over the three lists. */}
+        {listPage && <RubriqueSwitch lang={lang} t={t} />}
       </header>
 
-      {/* Phone-only: the sections nav collapses behind the header toggle. */}
-      <div
-        className={`menu-overlay${menuOpen ? ' menu-overlay--open' : ''}`}
-        hidden={!menuOpen}
-      >
-        <nav className="menu-overlay-nav">
-          {menuItems(t, lang).map(({ label, to, groupStart }, i) => (
-            <NavLink
-              key={label}
-              to={to}
-              className={`menu-overlay-link${groupStart ? ' menu-overlay-link--group-start' : ''}`}
-              style={{ animationDelay: `${0.06 + i * 0.035}s` }}
-              onClick={() => setMenuOpen(false)}
-            >
-              {label}
-            </NavLink>
-          ))}
-        </nav>
-      </div>
 
       <Routes>
         <Route index element={<LatestPage key={useLocation().pathname} />} />
-        <Route path="about" element={<AboutPage />} />
+        <Route path="about" element={ABOUT_OPEN ? <AboutPage /> : <Navigate to={`/${lang}`} replace />} />
         {/* TEMPORARY: the footer comparison sheet. */}
         <Route path="footers" element={<FooterSheet />} />
+        {/* TEMPORARY: the press comparison sheet for the phone's switch. */}
+        <Route path="presses" element={<PressSheet />} />
+        {/* TEMPORARY: ways to reach Portraits on a phone. */}
+        <Route path="portraits-access" element={<AccessSheet />} />
+        {/* TEMPORARY: the phone switch scrolling sideways to Portraits. */}
+        <Route path="switch-scroll" element={<ScrollSheet />} />
         <Route
           path="neighborhood"
           element={NEIGHBORHOOD_OPEN ? <VoisinagePage /> : <Navigate to={`/${lang}`} replace />}

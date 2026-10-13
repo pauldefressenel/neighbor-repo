@@ -41,10 +41,8 @@
   border-bottom: 1px solid #000;
 }
 
-/* Explicit placement: the toggle is display:none above the phone breakpoint,
-   and a hidden item is skipped by auto-placement, which would slide the
-   wordmark into the first column. */
-.nav-toggle { grid-column: 1; }
+/* Explicit placement: the first column stays empty (the menu toggle stood
+   there), and the wordmark keeps the middle. */
 .site-title { grid-column: 2; }
 .header-meta { grid-column: 3; }
 
@@ -156,81 +154,6 @@
 }
 
 /* ── Phone menu ───────────────────────────────────────────────────────────── */
-
-/* The toggle and its overlay only exist below 700px; above that the sections
-   nav is a permanent second header row. */
-.nav-toggle {
-  display: none;
-  justify-self: start;
-  width: 26px;
-  height: 26px;
-  padding: 0;
-  border: none;
-  background: none;
-  cursor: pointer;
-}
-
-/* The menu icon, drawn by hand like the app's tab icons (MenuIcon in
-   Layout.jsx), standing at the toggle's left edge where the ruled lines
-   were. */
-.nav-toggle {
-  align-items: center;
-  color: #000;
-  -webkit-tap-highlight-color: transparent;
-}
-
-.menu-overlay {
-  display: none;
-  position: fixed;
-  top: 60px;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  z-index: 99;
-  /* The overlay uses a pale pink ground, not the cream of the rest of the site;
-     the header keeps its cream and stays above it. */
-  background-color: #FDF0F4;
-  padding: 84px 31px;
-  overflow-y: auto;
-  animation: menu-in 0.32s cubic-bezier(0.16, 1, 0.3, 1) both;
-}
-
-@keyframes menu-in {
-  from { opacity: 0; transform: translateY(-8px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-
-.menu-overlay-nav {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-}
-
-.menu-overlay-link {
-  font-family: 'NeighborFont', serif;
-  font-weight: 400;
-  font-size: 40px;
-  letter-spacing: -0.02em;
-  line-height: 1.22em;
-  color: #000;
-  text-decoration: none;
-  animation: menu-item-in 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
-}
-
-/* Framer separates the four sections from the secondary links with a blank
-   line rather than a rule. */
-.menu-overlay-link--group-start {
-  margin-top: 1.55em;
-}
-
-@keyframes menu-item-in {
-  from { opacity: 0; transform: translateY(6px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-
-.menu-overlay-link--disabled {
-  opacity: 0.4;
-}
 
 /* The one-row header's pieces exist only on wide screens (below). */
 .header-links,
@@ -375,20 +298,6 @@
     align-content: center;
   }
 
-  /* The menu icon: 28px from the left edge, as the language is from the
-     right, and standing on the wordmark's baseline, like the language. The
-     padding (taken back by the margin) gives it the language's 12px more to
-     tap all round. */
-  .nav-toggle {
-    align-self: baseline;
-    justify-self: start;
-    width: auto;
-    height: auto;
-    padding: 12px;
-    margin: -12px -12px -12px 1px;
-    line-height: 0;
-  }
-
   /* The app's language switch in place of the selector: "FR EN" in the
      cards' category type at 16px, black, the other language faint. It ends
      28px from the edge, and fades while pressed, as in the app (PRESS). */
@@ -451,11 +360,4 @@
     display: none;
   }
 
-  .nav-toggle {
-    display: block;
-  }
-
-  .menu-overlay--open {
-    display: block;
-  }
 }

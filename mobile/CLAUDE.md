@@ -43,14 +43,10 @@ submitted yet.
 ```
 _layout.js                  fonts, splash screen, the AccountProvider, a <Slot> (not a Stack) inside GestureHandlerRootView
 index.js                    → /fr or /en, from the phone's language and region
-[lang]/_layout.js           Tabs with the custom TabBar: (couverture), rubriques, voisinage, a-propos (in that order)
-[lang]/(couverture)/_layout.js         a PageStack (PageStack.js)
-[lang]/(couverture)/index.js           En Couverture (/fr) — articles whose `featured` is "French"
-[lang]/(couverture)/articles/[slug].js an article opened from En Couverture (/fr/articles/<slug>)
-[lang]/rubriques/_layout.js            a PageStack
-[lang]/rubriques/index.js              the three rubriques as a table of contents; prefetches each one
-[lang]/rubriques/[section]/index.js    one rubrique's articles (slug from sections.js)
-[lang]/rubriques/[section]/[slug].js   an article opened from a rubrique
+[lang]/_layout.js           Tabs with the custom TabBar: (couverture), voisinage, a-propos (in that order)
+[lang]/(couverture)/_layout.js         a PageStack (PageStack.js), without the masthead's fade on its first page
+[lang]/(couverture)/index.js           the Articles tab (/fr; "Rubriques" in the code): A La Une (articles whose `featured` is "French"), Essais & Critiques, Prose & Poésie or Portraits, picked in the RubriqueSwitch; it lands on A La Une
+[lang]/(couverture)/articles/[slug].js an article opened from the Rubriques tab (/fr/articles/<slug>)
 [lang]/a-propos.js          About: the about-<lang> text, set like an article
 [lang]/voisinage.js         Voisinage: the landing (NeighbourLanding), whose e-mail and code fields sign up or in; then the sign-up (SignUpForm) for a new account; signed in, the games, none built yet, and the account
 ```
@@ -58,15 +54,19 @@ index.js                    → /fr or /en, from the phone's language and region
 Navigation details that are easy to break:
 - The root is a `Slot` so that opening a rubrique doesn't push a second copy
   of the tabs.
-- Screens inside the rubriques stack don't inherit the tab's params. Read
+- Screens inside a tab's stack don't inherit the tab's params. Read
   `lang` with `useGlobalSearchParams()`, not `useLocalSearchParams()`. When it
   was read locally, links went to `/undefined/…`.
-- En Couverture and Rubriques are each a `PageStack`: `expo-router/js-stack`
+- The Rubriques tab is a `PageStack`: `expo-router/js-stack`
   (not the native stack), so the slide can use a custom easing, with the
   Masthead above it. The tabs are `expo-router/js-tabs`. The back arrow shows
   on any route deeper than the tab's own (`useSegments().length > 2`).
-- Pressing the current tab again scrolls its list to the top, or pops a
-  rubrique back to the list (`useScrollToTop` in `ArticleList`).
+- Pressing the current tab again scrolls its page to the top, or pops an
+  article back to the page (`useScrollToTop`).
+- On the Rubriques tab the chosen page (A La Une or a rubrique) is
+  state, not a route: an article opened from it is `/<lang>/articles/<slug>`,
+  and going back finds the same page still chosen. Tapping the tab while in
+  front, or entering it again, goes back to A La Une.
 
 ## Files (`src/`)
 
@@ -102,8 +102,38 @@ Navigation details that are easy to break:
   its line box. Opening a card calls `openArticle` (sanity.js), which keeps
   the card's fields so the title and byline draw at once, and starts loading
   the body while the page slides in.
-- `ArticleList.js` — shared by En Couverture and each rubrique: a page title
-  closed by one asterisk centred under it (`titleMark` in
+- `RubriqueSwitch.js` — the Rubriques tab's row, as on the website's phones
+  (`src/RubriqueSwitch.jsx`): A La Une · Essais & Critiques · Prose & Poésie
+  fill the width and Portraits waits off to the right, in the cards' category
+  capitals at 15pt, 15pt apart, the current one red, over one drawn `Rule`
+  (16pt in from each side). The row scrolls sideways, fading out over its
+  last 100pt towards a drawn chevron that scrolls it on, or back, turned
+  round, at the end, where the fade moves to the start (the paper is drawn
+  over the names: React Native has no masks). Fixed under the masthead, with
+  the paper fading out below (`PaperFade inline`: hung below the bar like the
+  masthead's, the fade was drawn over the names and greyed them out); the
+  masthead's own fade is left out above it (`rootFade`). The names and line
+  rise in (`APPEAR.switch`) each time the tab is entered; a held name
+  shrinks without fading. The arrow and fade show only when the row
+  overflows. Voisinage has the same row (Chez vous · La place centrale · Le kiosque · Le café),
+  `unavailable`: its pages aren't built, so a tapped name shakes and opens
+  nothing; so has A Propos (Manifesto · Qui sommes-nous · Contactez-nous). Picking a page remounts the page below (keyed by page,
+  language and tab entry), so it builds up again, its title 22pt under the
+  line.
+- `PortraitsPage.js` — Portraits, picked in the Rubriques switch: title,
+  asterisk, then `PortraitShow`. (It was a tab of its own.)
+- `PortraitShow.js` — the portraits' slideshow, after the website's
+  wide-screen row (`PortraitStrip` in `src/ArticleGrid.jsx`): one portrait at
+  a time between the website's two drawn arrows, swiped or tapped, and on its
+  own every 5s from the last move (not while the tab is out of sight, the app
+  in the background, or with Reduce Motion). A paged ScrollView holds the
+  portraits before, at and after the current one, and is put back on the
+  middle before the turned list is drawn; cards are keyed by portrait, so
+  their animations run on. Every card is as tall as the tallest, so the
+  signatures line up.
+- `ArticleList.js` — the Rubriques tab's list: a page title closed by one
+  asterisk centred under it (`PageHeading`, which the Portraits page uses
+  too; `titleMark` in
   `../shared/tokens.js`, as on the website; three asterisks, then a short
   drawn line, came first), a FlatList of cards, pull to refresh, and
   a retry message on error. `fetchArticles` must be stable (`useCallback`). Between two article
@@ -200,9 +230,9 @@ Navigation details that are easy to break:
   (repo-root `supabase/functions/send-email/`, Supabase's Send Email Hook),
   in the language `sendCode` stores in the user's metadata (`lang`). Provided above `[lang]`, so switching
   language keeps it.
-- `DrawnIcons.js` — `TabIcon`, the tab bar's four icons (a crown for A La
-  Une, a ticket for Rubriques, three people for Voisinage, a palette for
-  A Propos), and the sign-up tick box. The icons' lines are gently bent so
+- `DrawnIcons.js` — `TabIcon`, the tab bar's icons (a ticket for Rubriques,
+  three people for Voisinage, a palette for A Propos; the crown and the
+  framed portrait are left from A La Une's and Portraits' own tabs), and the sign-up tick box. The icons' lines are gently bent so
   they look hand-drawn (wobble, open loops and uneven weight were tried and
   rejected). Their paths and sizes are generated into `tabIcons.js` by the
   repo-root `assets/icons/make-icons.py`, which also writes the `.svg`
@@ -221,17 +251,18 @@ Navigation details that are easy to break:
   an `AppearContext`. Every animation honours Reduce Motion.
   A page builds up only the first time it is shown (tabs stay mounted, so
   switching tabs and back shows it as it was), and when it slides in: a
-  rubrique or an article each time it opens. Coming back to a page (the
-  Rubriques list included) shows it as it was. A Propos is the exception: it
-  builds up again, from the top, every time its tab is entered, and so
-  does Voisinage.
+  page picked in the Rubriques switch, or an article, each time it opens.
+  Coming back to a page from an article shows it as it was. Every tab's
+  first page builds up again, from the top, each time its tab is entered
+  (`useTabEntered` for the Rubriques stack; A Propos and
+  Voisinage on their own focus).
 - `theme.js` — colours (paper `#FFFFF2`, ink, red `#FF1919`), font families,
   and shared text and layout styles (`pageTitle`, `rubriquesTitle`, `menu`).
   The values the website uses too (paper, red, the title and category type)
   come from `../shared/tokens.js`; change them there.
-  The Rubriques list sets its block names ("1. Essais & Critiques") in
-  `titleType`, like the page title, and their red subtitles in
-  `categoryType`, like the cards' categories, but at 16pt.
+  `menu` lays out Voisinage's list of games (it was the Rubriques tab's
+  numbered list first): names in `titleType`, like the page title, and red
+  subtitles in `categoryType`, like the cards' categories, but at 16pt.
 - `rivers.js` / `River.js` — wavy "river" separators between articles,
   currently off (`SHOW_RIVERS = false`, plain spacing instead).
 - `PortraitAnimation.js` — the website's portrait player ported to React
@@ -243,12 +274,13 @@ Navigation details that are easy to break:
   expo-image crashes Expo Go natively, so keep every value finite. Drawn at
   100pt, in Framer's 110px slot scaled down (`PORTRAIT_SCALE`; 1.4, 1, 0.85
   and 0.75 were tried).
-- `PortraitCard.js` — a portrait: the same `ArticleCard` as every other
-  article, with the animation passed as `picture`, in the illustration's
-  place (`card.imageGap` above and below), as on the website's phones; at the top of
-  the card, above the category, it ran all the text together. The drawing
-  stays still on press while the text above and below it shrinks. (It was the website's own portrait card, a 300px column in other
-  sizes, until it was brought in line with the other rubriques.) A portrait
+- `PortraitCard.js` — a portrait: the same `ArticleCard` with
+  `pictureFirst`: the animation first (its figure's top at the card's top,
+  `card.imageGap` under its foot), then the category, title and excerpt, and
+  "de <author>" and the date flush left at the foot of the card, at least
+  30pt under the excerpt. The drawing stays still on press while the text
+  shrinks. (It was the website's own portrait card, then the other
+  articles' order with the drawing where the illustration goes.) A portrait
   with no animation shows its whole `mainImage` at `PORTRAIT_SIZE`.
 - `portraitSprites.js` — `require()` and pixel size for each sprite (Metro
   needs static requires; the sizes give height-only layers their width). A new
@@ -263,8 +295,9 @@ change the other half too.
   sets the space above the title. Below it, the asterisk: `titleMark.above`
   between the title's box and the asterisk's (a 26pt line box, so iOS
   doesn't clip it), `titleMark.below` between that and the first card's,
-  as on the website (`../shared/tokens.js`). `rubriquesTitle` also places the
-  Rubriques list's and A Propos's titles, so all tabs move together.
+  as on the website (`../shared/tokens.js`). `rubriquesTitle` also places
+  Voisinage's and A Propos's titles, so the tabs move together; under the
+  Rubriques switch the title is 22pt below its line instead.
 - **The line between cards** sits 54pt from the date above and 54pt from the
   category below. The separator's margins in `ArticleList.js` (47.7 / 49.9)
   only make up the difference, because the date's and category's line boxes

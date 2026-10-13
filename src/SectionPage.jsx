@@ -10,7 +10,8 @@ import PageTitle from './PageTitle'
 
 export default function SectionPage() {
   const { lang, section } = useParams()
-  const [articles, setArticles] = useState([])
+  // null until fetched: the page holds the footer out of view till then.
+  const [articles, setArticles] = useState(null)
   // When the page opened, for its build-up (appear.js).
   const [since] = useState(() => performance.now())
   const t = i18n[lang] ?? i18n.en
@@ -22,9 +23,9 @@ export default function SectionPage() {
 
   return (
     <AppearContext.Provider value={since}>
-      <main className="main">
+      <main className={`main${articles ? '' : ' main--loading'}`}>
         <PageTitle>{title}</PageTitle>
-        <ArticleGrid articles={articles} />
+        <ArticleGrid articles={articles ?? []} />
       </main>
     </AppearContext.Provider>
   )

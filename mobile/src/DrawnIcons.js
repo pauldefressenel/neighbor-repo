@@ -2,8 +2,9 @@ import Svg, { Path } from 'react-native-svg'
 import tabIcons from './tabIcons'
 import { colors } from './theme'
 
-// One of the tab bar's icons (a-la-une, rubriques, voisinage, a-propos): a
-// crown, a tilted ticket, three people and a painter's palette, with gently
+// One of the tab bar's icons (rubriques, portraits, voisinage, a-propos): a
+// tilted ticket, a framed portrait, three people and a painter's palette (and
+// a crown, a-la-une, from when A La Une had its own tab), with gently
 // bent lines so they look drawn by hand. They are generated, with their
 // sizes and stroke widths, by assets/icons/make-icons.py into tabIcons.js;
 // change the script and run it again rather than editing that file. Every

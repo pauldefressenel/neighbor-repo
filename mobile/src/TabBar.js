@@ -10,8 +10,7 @@ import { categoryType, colors } from './theme'
 // Each tab's icon (DrawnIcons.js), always drawn in ink. Keyed by the tab's
 // route name in app/[lang]/_layout.js.
 const icons = {
-  '(couverture)': 'a-la-une',
-  rubriques: 'rubriques',
+  '(couverture)': 'rubriques',
   voisinage: 'voisinage',
   'a-propos': 'a-propos',
 }
@@ -44,7 +43,7 @@ export default function TabBar({ state, navigation }) {
           return (
             <Pressable
               key={route.key}
-              style={[styles.tab, lang === 'en' && route.name === 'rubriques' && styles.sectionsEn]}
+              style={styles.tab}
               onPress={onPress}
               accessibilityRole="tab"
               accessibilityState={{ selected: focused }}
@@ -86,11 +85,6 @@ const styles = StyleSheet.create({
   },
   tabsEn: {
     paddingHorizontal: 12,
-  },
-  // In English, Sections sits a little left of its share of the bar, set
-  // by eye.
-  sectionsEn: {
-    transform: [{ translateX: -11 }],
   },
   tab: {
     flex: 1,

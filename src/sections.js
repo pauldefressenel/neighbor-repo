@@ -11,10 +11,11 @@ export const findRubrique = (value) => RUBRIQUES.find((r) => r.value === value)
 export const rubriqueOf = (section) =>
   RUBRIQUES.find((r) => r.sanity.includes(section))?.value ?? section
 
-// The Neighborhood (the app's Voisinage: a sign-up mock-up). While this is
-// false it is left out of the nav, the phone menu and the sitemap, and its URL
-// goes to the homepage.
-export const NEIGHBORHOOD_OPEN = true
+// The Neighborhood (the app's Voisinage: a sign-up mock-up) and About. While
+// these are false they are left out of the nav, the footer and the sitemap,
+// and their URLs go to the homepage. Both are closed for now (2026-10-13).
+export const NEIGHBORHOOD_OPEN = false
+export const ABOUT_OPEN = false
 
 // The website's old section URLs, before the rubriques. vercel.json redirects
 // them in production; Layout does the same in development.

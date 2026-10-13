@@ -9,7 +9,8 @@ import './SectionPage.css'
 
 export default function LatestPage() {
   const { lang } = useParams()
-  const [articles, setArticles] = useState([])
+  // null until fetched: the page holds the footer out of view till then.
+  const [articles, setArticles] = useState(null)
   // When the page opened, for its build-up (appear.js).
   const [since] = useState(() => performance.now())
   const t = i18n[lang] ?? i18n.en
@@ -20,9 +21,9 @@ export default function LatestPage() {
 
   return (
     <AppearContext.Provider value={since}>
-      <main className="main">
+      <main className={`main${articles ? '' : ' main--loading'}`}>
         <PageTitle>{t.latest}</PageTitle>
-        <ArticleGrid articles={articles} />
+        <ArticleGrid articles={articles ?? []} />
       </main>
     </AppearContext.Provider>
   )

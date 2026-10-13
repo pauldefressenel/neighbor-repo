@@ -21,7 +21,9 @@ import { colors } from './theme'
 // `root` is the tab's first page, for a back arrow on a page opened straight
 // from a link, with nothing to go back to. `backLabel` names the arrow for
 // VoiceOver, given the current route's segments and the language's strings.
-export default function PageStack({ root, backLabel = (segments, t) => t.back }) {
+// `rootFade` set to false leaves out the masthead's fade on the first page
+// (see Masthead).
+export default function PageStack({ root, backLabel = (segments, t) => t.back, rootFade = true }) {
   // From the URL: the stack's screens don't inherit the tab's params.
   const { lang } = useGlobalSearchParams()
   const segments = useSegments()
@@ -32,7 +34,7 @@ export default function PageStack({ root, backLabel = (segments, t) => t.back })
 
   return (
     <View style={{ flex: 1, backgroundColor: colors.paper }}>
-      <Masthead onBack={deeper ? back : undefined} backLabel={backLabel(segments, i18n[lang] ?? i18n.fr)} />
+      <Masthead fade={deeper || rootFade} onBack={deeper ? back : undefined} backLabel={backLabel(segments, i18n[lang] ?? i18n.fr)} />
       <Stack
         screenOptions={{
           headerShown: false,

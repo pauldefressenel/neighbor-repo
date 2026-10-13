@@ -7,6 +7,7 @@ import { ArticleHeading } from '../../ArticleScreen'
 import ArticleText from '../../ArticleText'
 import LateSpinner from '../../LateSpinner'
 import Masthead from '../../Masthead'
+import RubriqueSwitch from '../../RubriqueSwitch'
 import { APPEAR, AppearContext, Rise } from '../../motion'
 import { getAboutPage } from '../../sanity'
 import { i18n } from '../../i18n'
@@ -17,6 +18,12 @@ import { colors, fonts } from '../../theme'
 // the website), then the `about-<lang>` document's text (ArticleText.js),
 // opening on a drop cap. The heading is fixed so it can rise in while the
 // text loads.
+
+// The row under the masthead.
+const NAV = {
+  fr: ['Manifesto', 'Qui sommes-nous', 'Contactez-nous'],
+  en: ['Manifesto', 'About us', 'Contact us'],
+}
 
 export default function AProposScreen() {
   const { lang } = useLocalSearchParams()
@@ -56,7 +63,18 @@ export default function AProposScreen() {
 
   return (
     <View style={styles.screen}>
-      <Masthead />
+      {/* Its row fades the page out below itself, so the masthead's own fade
+          is left out (it greyed the names out). */}
+      <Masthead fade={false} />
+      {/* The row as on the other tabs. The text below is the Manifesto; the
+          other pages aren't built yet: a tapped name shakes. */}
+      <RubriqueSwitch
+        key={shown}
+        entries={(NAV[lang] ?? NAV.fr).map((label) => ({ key: label, label }))}
+        current="Manifesto"
+        since={shown}
+        unavailable
+      />
       <AppearContext.Provider value={{ since: shown, still: reduceMotion }}>
         <ScrollView ref={scroll} style={styles.scroll} contentContainerStyle={styles.content}>
           <View key={shown}>

@@ -89,7 +89,12 @@ function useLoops(spec, running) {
 export default function PortraitAnimation({ slug, alt }) {
   const spec = portraitSpec(slug)
   // Paused while its card is held, and whenever its screen isn't in front.
-  const running = useIsFocused() && !useReducedMotion() && !useHeld()
+  // Each hook is called every time: joined by &&, a screen leaving focus
+  // skipped the others, and React stopped on the changed order of hooks.
+  const focused = useIsFocused()
+  const reduceMotion = useReducedMotion()
+  const held = useHeld()
+  const running = focused && !reduceMotion && !held
   const step = useStepCycle(spec, running)
   const toggled = useLoops(spec, running)
   if (!spec) return null

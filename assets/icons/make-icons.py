@@ -1,4 +1,4 @@
-"""Draws the app's four tab icons with gently bent lines, so they look drawn
+"""Draws the app's tab icons with gently bent lines, so they look drawn
 by hand rather than ruled, and writes them out twice:
 
   assets/icons/<name>.svg   to look at and share
@@ -129,6 +129,15 @@ def palette():  # A Propos
     return [outline, circle((62, 30), 6, 200), circle((36, 42), 6, 140), circle((30, 70), 6, 250)]
 
 
+def frame():  # Portraits
+    # A portrait in its frame: head and shoulders, the shoulders standing on
+    # the frame's foot. Drawn after the palette, so the other icons' bows
+    # are as they were.
+    box = join(line((22, 6), (78, 6), 24), line((78, 6), (78, 94), 30), line((78, 94), (22, 94), 24), line((22, 94), (22, 6), 30))
+    return [box, circle((50, 40), 13, 120),
+            join(cubic((32, 94), (32, 73), (40, 62), (50, 62), 24), cubic((50, 62), (60, 62), (68, 73), (68, 94), 24))]
+
+
 # viewBox, drawn height in pt of that viewBox (as in the tab bar), stroke width in viewBox
 # units (about 1.7pt at that height for each; 1.45pt looked too light), and
 # the strokes. Voisinage is drawn taller than its first 16.7pt, at which it
@@ -139,6 +148,7 @@ ICONS = {
     'rubriques': dict(viewBox=(0, 0, 100, 100), height=25, strokeWidth=6.8, strokes=ticket()),
     'voisinage': dict(viewBox=(30, 40, 855, 560), height=18.5, warpAt=16.7, strokeWidth=51.5, strokes=people()),
     'a-propos': dict(viewBox=(0, 0, 100, 100), height=23, strokeWidth=7.4, strokes=palette()),
+    'portraits': dict(viewBox=(0, 0, 100, 100), height=23, strokeWidth=7.4, strokes=frame()),
 }
 
 
