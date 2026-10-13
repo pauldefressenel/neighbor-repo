@@ -1,6 +1,7 @@
-import { useLayoutEffect, useRef, useState } from 'react'
+import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { NavLink, useLocation } from 'react-router-dom'
 import Rule from './Rule'
+import { leaving } from './fade'
 import './RubriqueSwitch.css'
 
 // Phones only: a row like the app's Rubriques switch (mobile/src/RubriqueSwitch.js)
@@ -22,6 +23,9 @@ import './RubriqueSwitch.css'
 const PRESS_IN = 150 // ms, the shrink's length in RubriqueSwitch.css
 
 export default function RubriqueSwitch({ lang, t }) {
+  // Come back to from an article, it is simply there (fade.js).
+  const [still] = useState(() => leaving.article)
+  useEffect(() => { leaving.article = false }, [])
   const [pressed, setPressed] = useState(null)
   const since = useRef(0)
   const timer = useRef(null)
@@ -57,7 +61,7 @@ export default function RubriqueSwitch({ lang, t }) {
   const turn = () => track.current?.scrollTo({ left: atEnd ? 0 : track.current.scrollWidth, behavior: 'smooth' })
 
   return (
-    <nav className="rubrique-switch">
+    <nav className={`rubrique-switch${still ? ' rubrique-switch--still' : ''}`}>
       <div className="rubrique-switch-bar">
         <div className={`rubrique-switch-row${atEnd ? ' rubrique-switch-row--end' : ''}`} ref={track} onScroll={measure}>
           {items.map(({ label, to, end }, i) => (

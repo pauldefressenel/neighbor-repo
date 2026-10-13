@@ -1,9 +1,10 @@
 import { useContext, useLayoutEffect, useRef } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { longDate } from '../shared/dates.js'
 import { illustrationSize } from '../shared/illustration.js'
 import { appear } from '../shared/tokens.js'
 import { AppearContext, delayLeft } from './appear'
+import { back, fadeLine, fadeOut } from './fade'
 import { i18n } from './i18n'
 import Rule from './Rule'
 import { urlFor } from './sanity/client'
@@ -26,6 +27,8 @@ export default function ArticleCard({ category, title, excerpt, author, mainImag
   // page opens (a wide screen's second row) rise with the first ones.
   const since = useContext(AppearContext)
   const link = useRef(null)
+  const navigate = useNavigate()
+  const to = `/${language}/${rubriqueOf(section)}/${slug.current}`
   useLayoutEffect(() => {
     if (since == null || appearIndex == null) return
     const el = link.current
@@ -48,7 +51,24 @@ export default function ArticleCard({ category, title, excerpt, author, mainImag
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
   return (
-    <Link className={`article-card${picture ? ' article-card--portrait' : ''}`} to={`/${language}/${rubriqueOf(section)}/${slug.current}`} ref={link}>
+    <Link
+      className={`article-card${picture ? ' article-card--portrait' : ''}`}
+      to={to}
+      ref={link}
+      // The page fades out before the article opens, at its top, the phone's
+      // Rubriques switch with it (fade.js), noting where the card stood for
+      // the way back. Not when it is opened in a new tab.
+      onClick={(e) => {
+        if (e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return
+        e.preventDefault()
+        Object.assign(back, { from: window.location.pathname, slug: slug.current, top: e.currentTarget.getBoundingClientRect().top })
+        fadeLine(document.querySelector('.rubrique-switch-rule'))
+        fadeOut(e.currentTarget.closest('main'), document.querySelector('.rubrique-switch')).then(() => {
+          window.scrollTo(0, 0)
+          navigate(to)
+        })
+      }}
+    >
       <Rule className="card-rule" />
       {category && <p className="article-category">{category}</p>}
       <CardTitle>{title}</CardTitle>

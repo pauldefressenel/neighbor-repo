@@ -1,0 +1,131 @@
+/* TEMPORARY: ArticleTransitionsSheet.jsx. Self-contained, so it can go in
+   one piece. Each letter is a phone's screen: the masthead, the cards as on
+   phones (ArticleCard.css), the article as on phones (ArticlePage.css). */
+.tx-sheet {
+  margin-top: 100px;
+  padding: 20px 16px 80px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 56px 48px;
+}
+
+@media (max-width: 699.98px) {
+  .tx-sheet {
+    margin-top: 60px;
+  }
+}
+
+.tx-option {
+  width: min(375px, 100%);
+}
+
+.tx-letter {
+  font-family: 'NeighborFont', serif;
+  font-size: 40px;
+  line-height: 1;
+  color: var(--red);
+  text-align: center;
+  margin: 0 0 18px;
+}
+
+.tx-phone {
+  position: relative;
+  height: 700px;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  border-radius: 28px;
+  overflow: hidden;
+  background: var(--paper);
+  isolation: isolate;
+}
+
+.tx-masthead {
+  position: relative;
+  z-index: 3;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--paper);
+}
+
+.tx-wordmark {
+  font-family: 'NeighborFont', serif;
+  font-size: 26px;
+  letter-spacing: -0.03em;
+  color: #000;
+}
+
+.tx-masthead-rule {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  height: 8px;
+}
+
+.tx-screen {
+  position: absolute;
+  top: 60px;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  overflow: hidden;
+}
+
+.tx-list {
+  position: absolute;
+  inset: 0;
+  overflow-y: auto;
+  padding: 36px 24px 60px;
+  transform-origin: 50% 30%;
+  scrollbar-width: none;
+}
+
+.tx-list .tx-card:first-child .card-rule {
+  display: none;
+}
+
+/* The phone's card at any window width (ArticleCard.css sets it on the left
+   from 700px). */
+.tx-list .tx-card {
+  align-items: center;
+  text-align: center;
+}
+
+.tx-list .article-title {
+  text-wrap: balance;
+}
+
+.tx-list .article-description {
+  max-width: none;
+  padding: 0 var(--excerpt-inset);
+  text-wrap: balance;
+}
+
+.tx-list .article-image {
+  width: 90%;
+}
+
+.tx-article {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  overflow-y: auto;
+  background: var(--paper);
+  transform-origin: 50% 20%;
+  scrollbar-width: none;
+}
+
+.tx-article-inner {
+  padding: 30px 26px 80px;
+  --article-title-size: 40px;
+  transform-origin: 50% 0;
+}
+
+.tx-back {
+  background: none;
+  border: none;
+  cursor: pointer;
+}

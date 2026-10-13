@@ -132,7 +132,24 @@
   }
 }
 
+/* Come back to from an article (fade.js): fading in whole, as the list
+   does, rather than its entrance. */
+.rubrique-switch--still {
+  animation: rubrique-switch-fade-in 300ms ease-in-out backwards;
+}
+
+@keyframes rubrique-switch-fade-in {
+  from { opacity: 0; }
+}
+
+.rubrique-switch--still .rubrique-switch-link,
+.rubrique-switch--still .rubrique-switch-arrow,
+.rubrique-switch--still .rubrique-switch-rule {
+  animation: none;
+}
+
 @media (prefers-reduced-motion: reduce) {
+  .rubrique-switch--still,
   .rubrique-switch-link,
   .rubrique-switch-arrow,
   .rubrique-switch-rule {

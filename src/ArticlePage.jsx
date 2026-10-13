@@ -5,6 +5,7 @@ import { getArticleBySlug } from './sanity/queries'
 import { longDate } from '../shared/dates.js'
 import { readingMinutes } from './readingMinutes'
 import { rubriqueOf } from './sections'
+import { fadeOut, leaving } from './fade'
 import { i18n } from './i18n'
 import Arrow from './Arrow'
 import './ArticlePage.css'
@@ -24,6 +25,10 @@ export default function ArticlePage() {
   const navigate = useNavigate()
   const t = i18n[lang] ?? i18n.en
 
+  // However it is left, the list it goes to shows its switch at once. Set
+  // while it is open: the next page is drawn before this one's effects end.
+  useEffect(() => { leaving.article = true }, [])
+
   useEffect(() => {
     getArticleBySlug(slug).then((loaded) => {
       setElapsed(performance.now() - since)
@@ -31,7 +36,9 @@ export default function ArticlePage() {
     })
   }, [slug, since])
 
-  if (!article) return null
+  // Until the article arrives, an empty page a screen tall, so the footer
+  // doesn't show for a moment at the foot of the window.
+  if (!article) return <main className="article-page article-page--loading" />
 
   // "Anna Canonne, 20 mai 2026." on one line, closed by a full stop.
   const date = article.publishedAt ? longDate(article.publishedAt, lang) : null
@@ -46,9 +53,9 @@ export default function ArticlePage() {
         className="article-page-back"
         aria-label={t.back}
         onClick={(e) => {
-          if (location.key === 'default') return
           e.preventDefault()
-          navigate(-1)
+          const to = location.key === 'default' ? `/${lang}/${rubriqueOf(article.section)}` : -1
+          fadeOut(e.currentTarget.closest('main')).then(() => navigate(to))
         }}
       >
         <Arrow />

@@ -44,6 +44,10 @@
   animation: var(--article-rise-heading);
 }
 
+.article-page--loading {
+  min-height: 100vh;
+}
+
 /* About has no arrow: its heading keeps the arrow's room. */
 .article-page--about {
   padding-top: 60px;
@@ -111,7 +115,9 @@
 
 /* EB Garamond 21px on 31px lines, paragraphs 1.4em apart, justified and
    hyphenated in the article's language (the page's `lang`; without
-   hyphenation, phones' lines gaped). The app's text is ragged. */
+   hyphenation, phones' lines gaped). The app's text is ragged. Only longer
+   words are broken, keeping four letters each side, and (in Safari) never
+   on two lines running: breaking any word left too many hyphens. */
 .article-page-body {
   font-family: 'EB Garamond', serif;
   font-size: 21px;
@@ -120,19 +126,28 @@
   text-align: justify;
   hyphens: auto;
   -webkit-hyphens: auto;
+  hyphenate-limit-chars: 8 4 4;
+  -webkit-hyphenate-limit-before: 4;
+  -webkit-hyphenate-limit-after: 4;
+  -webkit-hyphenate-limit-lines: 1;
 }
 
 .article-page-body p + p {
   margin-top: 1.4em;
 }
 
-/* The drop cap: a NeighborFont letter over the first two lines. */
+/* The drop cap: a NeighborFont letter over the first two lines. A J's
+   tail reaches left of the text, which Safari cut off at the letter's box:
+   the box is widened 14px to the left and pulled back as much, so the
+   letter stays put. */
 .article-page-body > p:first-child::first-letter {
   float: left;
   font-family: 'NeighborFont', serif;
   font-size: 64px;
   line-height: 52px;
-  margin: 6px 8px 0 0;
+  margin: 6px 8px 0 -14px;
+  padding-left: 14px;
+  overflow: visible;
 }
 
 /* The website's quieter italic. */
@@ -142,7 +157,8 @@
   color: #555;
 }
 
-/* A poem: 48px above, its title in 24px, its lines 0.4em apart. */
+/* A poem: 48px above, its title in 24px, its lines set close, one under
+   the other at the text's leading (a stanza break is a line of its own). */
 .article-page-poem {
   margin-top: 48px;
 }
@@ -159,7 +175,7 @@
   font-family: 'EB Garamond', serif;
   font-size: 21px;
   line-height: 31px;
-  margin: 0 0 0.4em;
+  margin: 0;
   white-space: pre-wrap;
 }
 
