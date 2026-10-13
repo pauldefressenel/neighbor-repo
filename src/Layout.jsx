@@ -9,10 +9,6 @@ import LatestPage from './LatestPage'
 import AboutPage from './AboutPage'
 import VoisinagePage from './VoisinagePage'
 import Footer from './Footer'
-import FooterSheet from './FooterSheet' // TEMPORARY
-import PressSheet from './PressSheet' // TEMPORARY
-import AccessSheet from './AccessSheet' // TEMPORARY
-import ScrollSheet from './ScrollSheet' // TEMPORARY
 import Rule from './Rule'
 import RubriqueSwitch from './RubriqueSwitch'
 
@@ -160,14 +156,6 @@ export default function Layout() {
       <Routes>
         <Route index element={<LatestPage key={useLocation().pathname} />} />
         <Route path="about" element={ABOUT_OPEN ? <AboutPage /> : <Navigate to={`/${lang}`} replace />} />
-        {/* TEMPORARY: the footer comparison sheet. */}
-        <Route path="footers" element={<FooterSheet />} />
-        {/* TEMPORARY: the press comparison sheet for the phone's switch. */}
-        <Route path="presses" element={<PressSheet />} />
-        {/* TEMPORARY: ways to reach Portraits on a phone. */}
-        <Route path="portraits-access" element={<AccessSheet />} />
-        {/* TEMPORARY: the phone switch scrolling sideways to Portraits. */}
-        <Route path="switch-scroll" element={<ScrollSheet />} />
         <Route
           path="neighborhood"
           element={NEIGHBORHOOD_OPEN ? <VoisinagePage /> : <Navigate to={`/${lang}`} replace />}
@@ -178,8 +166,7 @@ export default function Layout() {
         <Route path=":section/:slug" element={<ArticlePage />} />
         <Route path=":section" element={<SectionPage key={useLocation().pathname} />} />
       </Routes>
-      {/* TEMPORARY: the comparison sheet hides the current footer. */}
-      {!pathname.endsWith('/footers') && <Footer lang={lang} />}
+      <Footer lang={lang} />
     </div>
   )
 }
