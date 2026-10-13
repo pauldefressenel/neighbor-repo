@@ -9,8 +9,6 @@ import LatestPage from './LatestPage'
 import AboutPage from './AboutPage'
 import VoisinagePage from './VoisinagePage'
 import Footer from './Footer'
-import ArticleTransitionsSheet from './ArticleTransitionsSheet' // TEMPORARY
-import FooterSheet from './FooterSheet' // TEMPORARY
 import Rule from './Rule'
 import RubriqueSwitch from './RubriqueSwitch'
 
@@ -176,10 +174,6 @@ export default function Layout() {
 
       <Routes>
         <Route index element={<LatestPage key={useLocation().pathname} />} />
-        {/* TEMPORARY: ways to go from a card to its article and back. */}
-        <Route path="article-transitions" element={<ArticleTransitionsSheet />} />
-        {/* TEMPORARY: footers to compare. */}
-        <Route path="footers" element={<FooterSheet />} />
         <Route path="about" element={ABOUT_OPEN ? <AboutPage /> : <Navigate to={`/${lang}`} replace />} />
         <Route
           path="neighborhood"
