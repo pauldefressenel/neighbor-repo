@@ -2,7 +2,6 @@ import { defineField, defineType } from 'sanity'
 import { BlockquoteIcon } from '@sanity/icons'
 import { ScaleSlider } from '../scaleSlider.jsx'
 import { CategoryInput, categoriesFor } from '../categoryInput.jsx'
-import { RubriqueInput } from '../rubriqueInput.jsx'
 import { RUBRIQUES } from '../../shared/sections.js'
 
 export const article = defineType({
@@ -26,11 +25,10 @@ export const article = defineType({
     defineField({
       name: 'language',
       title: 'Language',
-      description: 'Set by the language folder the article was created in.',
       type: 'string',
-      // Read-only, like the rubrique: the sidebar's folder sets it
-      // (structure.js).
-      readOnly: true,
+      // Hidden, like the rubrique: the language folder the article is
+      // created in sets it (structure.js). (It was shown read-only first.)
+      hidden: true,
       options: {
         list: [
           { title: 'English', value: 'en' },
@@ -42,13 +40,11 @@ export const article = defineType({
     defineField({
       name: 'section',
       title: 'Rubrique',
-      description: 'Set by the rubrique the article was created in.',
       type: 'string',
-      // Read-only: the sidebar's rubrique sets it (structure.js), and it
-      // decides where the article is listed and its address. Shown as the
-      // rubrique's name in the article's language (rubriqueInput.jsx).
-      readOnly: true,
-      components: { input: RubriqueInput },
+      // Hidden: the rubrique folder the article is created in sets it
+      // (structure.js), and it decides where the article is listed and its
+      // address. (It was shown read-only first, in the article's language.)
+      hidden: true,
       options: {
         // The three rubriques (shared/sections.js), each stored as its first
         // Sanity value.
