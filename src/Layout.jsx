@@ -9,7 +9,6 @@ import LatestPage from './LatestPage'
 import AboutPage from './AboutPage'
 import VoisinagePage from './VoisinagePage'
 import Footer from './Footer'
-import ArticleSheet from './ArticleSheet' // TEMPORARY
 import Rule from './Rule'
 import RubriqueSwitch from './RubriqueSwitch'
 
@@ -170,8 +169,6 @@ export default function Layout() {
 
       <Routes>
         <Route index element={<LatestPage key={useLocation().pathname} />} />
-        {/* TEMPORARY: the article page comparison sheet. */}
-        <Route path="article-sheet" element={<ArticleSheet />} />
         <Route path="about" element={ABOUT_OPEN ? <AboutPage /> : <Navigate to={`/${lang}`} replace />} />
         <Route
           path="neighborhood"

@@ -7,7 +7,7 @@
 // E-mail apps that load web fonts (Apple Mail, iOS) show NeighborFont, EB
 // Garamond and Averia Libre; Gmail falls back to Georgia.
 
-const FONT = 'https://react.theneighborr.com/NeighborFont-Regular.otf'
+const FONT = 'https://www.theneighborr.com/NeighborFont-Regular.otf'
 
 const NEIGHBOR = "font-family:NeighborFont,Georgia,'Times New Roman',serif"
 const SERIF = "font-family:'EB Garamond',Georgia,'Times New Roman',serif"

@@ -15,7 +15,7 @@ npm run lint         # ESLint
 
 Each app is started separately — there is no single command that runs them concurrently. The iOS app runs from `mobile/` (`npx expo start`, then Expo Go); see `mobile/CLAUDE.md`.
 
-Deployment is through Vercel, not `sanity deploy`: the site is one Vercel project (root, Vite, served at `react.theneighborr.com`) and the Studio another (root directory `studio/`, served at `cms.theneighborr.com`). `scripts/vercel-build.mjs` picks which one to build when a project's root directory is left at the repo root. See the README's Deploy section. The mobile app is not deployed yet (no EAS config).
+Deployment is through Vercel, not `sanity deploy`: the site is one Vercel project (root, Vite, served at `www.theneighborr.com`, which took over from Framer; `react.theneighborr.com` was its address before) and the Studio another (root directory `studio/`, served at `cms.theneighborr.com`). `scripts/vercel-build.mjs` picks which one to build when a project's root directory is left at the repo root. See the README's Deploy section. The mobile app is not deployed yet (no EAS config).
 
 From `studio/`:
 

@@ -7,7 +7,7 @@ import { createClient } from '@sanity/client'
 import { ABOUT_OPEN, NEIGHBORHOOD_OPEN, RUBRIQUES, rubriqueOf } from '../src/sections.js'
 import { SANITY } from '../shared/sanity.js'
 
-const ORIGIN = 'https://react.theneighborr.com'
+const ORIGIN = 'https://www.theneighborr.com'
 const LANGS = ['en', 'fr']
 
 if (!existsSync('dist')) {
