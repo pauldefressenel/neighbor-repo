@@ -177,8 +177,9 @@
 }
 
 /* Wide screens (from 1400px, where the links fit either side of the
-   wordmark): one 70px row, the rubriques to the left of the wordmark, The
-   Neighborhood, About and the language to its right, all on the wordmark's
+   wordmark): one 70px row, the three rubriques to the left of the
+   wordmark, A La Une, The Neighborhood, About and the language to its
+   right, all on the wordmark's
    baseline. Under it, the hand-drawn line instead of a border, 50px in from
    each side like the page's content; the row's ends line up with it. The
    wordmark is 30px, smaller than the page titles (35px), so they lead.

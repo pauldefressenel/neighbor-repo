@@ -12,9 +12,6 @@ import Footer from './Footer'
 import Rule from './Rule'
 import RubriqueSwitch from './RubriqueSwitch'
 
-// How many of the nav's links the wide header sets left of the wordmark.
-const LEFT_LINKS = 2
-
 // A La Une / Latest, first in the nav: the home page.
 const latest = (t) => ({ label: t.latest, value: '', home: true })
 
@@ -29,9 +26,9 @@ function navSections(t) {
   ]
 }
 
-// The wide header's links, split either side of the wordmark: A La Une and
-// Essays & Critiques to the left, Prose & Poetry, Portraits and the rest to
-// the right (LEFT_LINKS of them on the left).
+// The wide header's links, split either side of the wordmark: the three
+// rubriques to the left, A La Une and the rest to the right, before the
+// language (wideLinks).
 function HeaderLinks({ items, lang, className }) {
   return (
     <nav className={className}>
@@ -47,6 +44,11 @@ function HeaderLinks({ items, lang, className }) {
       ))}
     </nav>
   )
+}
+
+const wideLinks = (t) => {
+  const right = navSections(t).filter((item) => !t.sections.includes(item))
+  return { left: t.sections, right }
 }
 
 // An old section URL (/en/the-arts/…) sends the reader to its rubrique,
@@ -85,12 +87,12 @@ export default function Layout() {
     <div className="page">
       <header className="header">
         <div className="header-top">
-          <HeaderLinks items={navSections(t).slice(0, LEFT_LINKS)} lang={lang} className="header-links header-links--left" />
+          <HeaderLinks items={wideLinks(t).left} lang={lang} className="header-links header-links--left" />
           <Link to={`/${lang}`} className="site-title">
             The Neighbor
           </Link>
           <div className="header-meta">
-            <HeaderLinks items={navSections(t).slice(LEFT_LINKS)} lang={lang} className="header-links" />
+            <HeaderLinks items={wideLinks(t).right} lang={lang} className="header-links" />
             {/* Framer: the selector opens a row with the other language rather than switching outright. */}
             <span className="lang-menu">
               <button
