@@ -5,6 +5,7 @@ import { TabIcon } from './DrawnIcons'
 import PaperFade from './PaperFade'
 import { i18n } from './i18n'
 import Rule from './Rule'
+import { VOISINAGE_OPEN } from './sections'
 import { categoryType, colors } from './theme'
 
 // Each tab's icon (DrawnIcons.js), always drawn in ink. Keyed by the tab's
@@ -37,6 +38,7 @@ export default function TabBar({ state, emitter, navigateToTab }) {
         {state.routes.map((route, i) => {
           const icon = icons[route.name]
           if (!icon) return null
+          if (route.name === 'voisinage' && !VOISINAGE_OPEN) return null
           const focused = state.index === i
           const onPress = () => {
             const event = emitter.emit({ type: 'tabPress', target: route.key, canPreventDefault: true })

@@ -11,4 +11,10 @@ export const SECTIONS = RUBRIQUES.map((r) => ({
   sanity: r.sanity,
 }))
 
-export const findSection = (slug) => SECTIONS.find((s) => s.slug === slug)
+// Voisinage isn't finished, so the first App Store release ships without it:
+// while this is false its tab is left out of the bar (TabBar.js), its route
+// sends to A La Une, and no account is looked up on launch (account.js). The
+// website's own switch is NEIGHBORHOOD_OPEN (src/sections.js).
+export const VOISINAGE_OPEN = false
+
+export const findSection =(slug) => SECTIONS.find((s) => s.slug === slug)

@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { KeyboardAvoidingView, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native'
-import { useGlobalSearchParams, useNavigation } from 'expo-router'
+import { Redirect, useGlobalSearchParams, useNavigation } from 'expo-router'
+import { VOISINAGE_OPEN } from '../../sections'
 import { useScrollToTop } from 'expo-router/react-navigation'
 import { useReducedMotion } from 'react-native-reanimated'
 import { useAccount } from '../../account'
@@ -53,7 +54,15 @@ const COPY = {
 // neighbour means, the neighbours one at a time, and the e-mail field that
 // signs up or signs in); signed in without a profile, the sign-up
 // (SignUpForm.js); signed in, the games, then the reader's account.
-export default function VoisinageScreen() {
+// While VOISINAGE_OPEN is false (sections.js) the tab is hidden, and a link
+// that still reaches it lands on A La Une.
+export default function VoisinageRoute() {
+  const { lang } = useGlobalSearchParams()
+  if (!VOISINAGE_OPEN) return <Redirect href={`/${lang ?? 'fr'}`} />
+  return <VoisinageScreen />
+}
+
+function VoisinageScreen() {
   const { lang } = useGlobalSearchParams()
   const { member } = useAccount()
   const scroll = useRef(null)

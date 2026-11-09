@@ -1,4 +1,5 @@
 import { createContext, useContext, useEffect, useMemo, useState } from 'react'
+import { VOISINAGE_OPEN } from './sections'
 import { supabase } from './supabase'
 
 // The reader's account, from Supabase Auth: signed in or not, and whether
@@ -15,8 +16,10 @@ export function AccountProvider({ children }) {
   // undefined while it loads, null for an account without one yet.
   const [profile, setProfile] = useState(undefined)
 
-  // The saved session on launch, then every sign-in and sign-out.
+  // The saved session on launch, then every sign-in and sign-out. Not while
+  // Voisinage is closed: nobody can sign in, so Supabase isn't asked.
   useEffect(() => {
+    if (!VOISINAGE_OPEN) return
     supabase.auth.getSession().then(({ data }) => setUser(data.session?.user ?? null))
     const { data } = supabase.auth.onAuthStateChange((_event, session) => setUser(session?.user ?? null))
     return () => data.subscription.unsubscribe()

@@ -14,8 +14,18 @@ npx expo install <pkg> # add dependencies this way, never with npm install <pkg>
 
 The code is plain JavaScript (`.js`), not TypeScript. There is no `tsconfig`,
 so skip `tsc`. ESLint is not set up yet: `npx expo lint` would install and
-configure it on its first run. There is no `eas.json`, so nothing is built or
-submitted yet.
+configure it on its first run. `eas.json` has development, preview and
+production profiles; build numbers are kept by EAS (`appVersionSource:
+remote`, `autoIncrement`). The app is iPhone only (`supportsTablet: false`)
+and declares no non-exempt encryption. Nothing has been submitted yet.
+
+The first App Store release ships without Voisinage: `VOISINAGE_OPEN` in
+`sections.js` is false, so the tab bar has three tabs, `/<lang>/voisinage`
+redirects to A La Une, and `AccountProvider` doesn't ask Supabase for a
+session. The code stays. Before turning it on, Apple requires a way to
+delete the account from inside the app. `expo-image-picker`'s camera and
+photo descriptions stay in `app.json` even while the sign-up is hidden: the
+module is still linked, and a build that links it without them is rejected.
 
 ## Scope today
 
@@ -52,7 +62,7 @@ index.js                    → /fr or /en, from the phone's language and region
 [lang]/rubriques/[section]/index.js    one rubrique's cards, Portraits included (a list like the others)
 [lang]/rubriques/[section]/[slug].js   an article opened from a rubrique (/fr/rubriques/<rubrique>/<slug>)
 [lang]/a-propos.js          About: the about-<lang> text, set like an article
-[lang]/voisinage.js         Voisinage: the landing (NeighbourLanding), whose e-mail and code fields sign up or in; then the sign-up (SignUpForm) for a new account; signed in, the games, none built yet, and the account
+[lang]/voisinage.js         Voisinage (→ A La Une, its tab hidden, while VOISINAGE_OPEN is false): the landing (NeighbourLanding), whose e-mail and code fields sign up or in; then the sign-up (SignUpForm) for a new account; signed in, the games, none built yet, and the account
 ```
 
 Navigation details that are easy to break:
@@ -80,7 +90,7 @@ Navigation details that are easy to break:
 - `sections.js` — the three rubriques (`essais-critiques`, `prose-poesie`,
   `portraits`), each mapped to one or more of Sanity's four `section` values,
   derived from `../shared/sections.js`, the list the website and the Studio
-  read too.
+  read too. Also `VOISINAGE_OPEN`, false for the first App Store release.
 - `sanity.js` — client (same project, dataset `production`, CDN on; the
   project and the queries are in `../shared/sanity.js`), `urlFor`,
   `getLatestArticles`, `getSectionArticles`, `prefetchSectionArticles`,
