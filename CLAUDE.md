@@ -42,7 +42,7 @@ This is a monorepo with three apps, all reading the same Sanity dataset:
 - **`studio/`** — Sanity Studio v3 (separate `package.json`, runs independently)
 - **`mobile/`** — the iOS app, Expo + Expo Router (separate `package.json`). It has its own `mobile/CLAUDE.md`; read it before touching anything in `mobile/`. Most current work happens here.
 
-Sanity stores four `section` values. The website, the app and the Studio sidebar all group them into the same three rubriques: Essays & Critiques (`literature-review` + `the-arts`), Prose & Poetry (`fiction-poetry`) and Portraits. (In the app, the three are a switch at the top of the Rubriques tab, which opens on A La Une.) The list lives once, in `shared/sections.js`; `src/sections.js`, `mobile/src/sections.js` and `studio/structure.js` derive their own shapes from it. The website is bilingual and uses English URL slugs for both languages. The app is French-only for now and uses French slugs.
+Sanity stores four `section` values. The website, the app and the Studio sidebar all group them into the same three rubriques: Essays & Critiques (`literature-review` + `the-arts`), Prose & Poetry (`fiction-poetry`) and Portraits. (In the app, the three are the Rubriques tab's numbered menu; A La Une is a tab of its own.) The list lives once, in `shared/sections.js`; `src/sections.js`, `mobile/src/sections.js` and `studio/structure.js` derive their own shapes from it. The website is bilingual and uses English URL slugs for both languages. The app is French-only for now and uses French slugs.
 
 ### Shared (`shared/`)
 

@@ -1,6 +1,6 @@
 # CLAUDE.md — the iOS app
 
-The Neighbor's iPhone app: Expo SDK 57, Expo Router, React Native 0.86. It is a
+The Neighbor's iPhone app: Expo SDK 58, Expo Router, React Native 0.88. It is a
 separate app inside the monorepo, with its own `package.json`. It reads the same
 Sanity dataset as the website (see the root `CLAUDE.md`).
 
@@ -43,10 +43,14 @@ submitted yet.
 ```
 _layout.js                  fonts, splash screen, the AccountProvider, a <Slot> (not a Stack) inside GestureHandlerRootView
 index.js                    → /fr or /en, from the phone's language and region
-[lang]/_layout.js           Tabs with the custom TabBar: (couverture), voisinage, a-propos (in that order)
-[lang]/(couverture)/_layout.js         a PageStack (PageStack.js), without the masthead's fade on its first page
-[lang]/(couverture)/index.js           the Articles tab (/fr; "Rubriques" in the code): A La Une (the articles in the language's À la Une document, in its order), Essais & Critiques, Prose & Poésie or Portraits, picked in the RubriqueSwitch; it lands on A La Une
-[lang]/(couverture)/articles/[slug].js an article opened from the Rubriques tab (/fr/articles/<slug>)
+[lang]/_layout.js           Tabs with the custom TabBar: (couverture), rubriques, voisinage, a-propos (in that order)
+[lang]/(couverture)/_layout.js         a PageStack (PageStack.js)
+[lang]/(couverture)/index.js           A La Une (/fr): the articles in the language's À la Une document, in its order
+[lang]/(couverture)/articles/[slug].js an article opened from A La Une (/fr/articles/<slug>)
+[lang]/rubriques/_layout.js            a PageStack: the menu, a rubrique on top, an article on top of that
+[lang]/rubriques/index.js              the Rubriques menu: "1. Essais & Critiques >", its subtitle, a drawn line, and so on for the three
+[lang]/rubriques/[section]/index.js    one rubrique's cards, Portraits included (a list like the others)
+[lang]/rubriques/[section]/[slug].js   an article opened from a rubrique (/fr/rubriques/<rubrique>/<slug>)
 [lang]/a-propos.js          About: the about-<lang> text, set like an article
 [lang]/voisinage.js         Voisinage: the landing (NeighbourLanding), whose e-mail and code fields sign up or in; then the sign-up (SignUpForm) for a new account; signed in, the games, none built yet, and the account
 ```
@@ -57,16 +61,19 @@ Navigation details that are easy to break:
 - Screens inside a tab's stack don't inherit the tab's params. Read
   `lang` with `useGlobalSearchParams()`, not `useLocalSearchParams()`. When it
   was read locally, links went to `/undefined/…`.
-- The Rubriques tab is a `PageStack`: `expo-router/js-stack`
+- A La Une and Rubriques are each a `PageStack`: `expo-router/js-stack`
   (not the native stack), so the slide can use a custom easing, with the
   Masthead above it. The tabs are `expo-router/js-tabs`. The back arrow shows
   on any route deeper than the tab's own (`useSegments().length > 2`).
 - Pressing the current tab again scrolls its page to the top, or pops an
   article back to the page (`useScrollToTop`).
-- On the Rubriques tab the chosen page (A La Une or a rubrique) is
-  state, not a route: an article opened from it is `/<lang>/articles/<slug>`,
-  and going back finds the same page still chosen. Tapping the tab while in
-  front, or entering it again, goes back to A La Une.
+- Four tabs again since 2026-11-03: from 2026-10-13 the app had three,
+  with A La Une and the rubriques in one sideways row (`RubriqueSwitch.js`)
+  over the page, the same row on Voisinage and A Propos, and Portraits as a
+  slideshow (`PortraitsPage.js`, `PortraitShow.js`). Those three files are
+  set aside, unused. The website's phones still have the row.
+- The tab bar gets `emitter` and `navigateToTab` from the navigator since
+  SDK 58, not `navigation` (TabBar.js).
 
 ## Files (`src/`)
 
@@ -102,7 +109,7 @@ Navigation details that are easy to break:
   its line box. Opening a card calls `openArticle` (sanity.js), which keeps
   the card's fields so the title and byline draw at once, and starts loading
   the body while the page slides in.
-- `RubriqueSwitch.js` — the Rubriques tab's row, as on the website's phones
+- `RubriqueSwitch.js` — (set aside, unused) the Rubriques tab's row, as on the website's phones
   (`src/RubriqueSwitch.jsx`): A La Une · Essais & Critiques · Prose & Poésie
   fill the width and Portraits waits off to the right, in the cards' category
   capitals at 15pt, 15pt apart, the current one red, over one drawn `Rule`
@@ -120,9 +127,9 @@ Navigation details that are easy to break:
   nothing; so has A Propos (Manifesto · Qui sommes-nous · Contactez-nous). Picking a page remounts the page below (keyed by page,
   language and tab entry), so it builds up again, its title 22pt under the
   line.
-- `PortraitsPage.js` — Portraits, picked in the Rubriques switch: title,
+- `PortraitsPage.js` — (set aside, unused) Portraits, picked in the Rubriques switch: title,
   asterisk, then `PortraitShow`. (It was a tab of its own.)
-- `PortraitShow.js` — the portraits' slideshow, after the website's
+- `PortraitShow.js` — (set aside, unused) the portraits' slideshow, after the website's
   wide-screen row (`PortraitStrip` in `src/ArticleGrid.jsx`): one portrait at
   a time between the website's two drawn arrows, swiped or tapped, and on its
   own every 5s from the last move (not while the tab is out of sight, the app
@@ -278,7 +285,7 @@ Navigation details that are easy to break:
 - `PortraitCard.js` — a portrait: the same `ArticleCard` with
   `pictureFirst`: the animation first (its figure's top at the card's top,
   `card.imageGap` under its foot), then the category, title and excerpt, and
-  "de <author>" and the date flush left at the foot of the card, at least
+  "de <author>" and the date centred at the foot of the card, at least
   30pt under the excerpt. The drawing stays still on press while the text
   shrinks. (It was the website's own portrait card, then the other
   articles' order with the drawing where the illustration goes.) A portrait

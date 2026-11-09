@@ -22,9 +22,9 @@ export const articleDate = (iso, lang) => longDate(iso, lang === 'en' ? 'en' : '
 // own beat felt too drawn out.)
 //
 // With `pictureFirst` (a portrait, PortraitCard.js) the drawing comes first,
-// then the category, title and excerpt, and the author and date stand at the
-// bottom left, at the foot of the card's box however tall it is made (the
-// Portraits slideshow makes every card as tall as the tallest).
+// then the category, title and excerpt, and the author and date, centred, at
+// the foot of the card's box however tall it is made (the Portraits
+// slideshow, set aside, made every card as tall as the tallest).
 export default function ArticleCard({ category, title, excerpt, author, mainImage, illustrationScale, publishedAt, picture, pictureInset, pictureFirst }) {
   const { lang } = useGlobalSearchParams()
   const t = i18n[lang] ?? i18n.fr
@@ -46,8 +46,8 @@ export default function ArticleCard({ category, title, excerpt, author, mainImag
           </View>
           <Pressed>{heading}</Pressed>
           <Pressed style={styles.signature}>
-            {author ? <Text style={[styles.author, styles.left]}>{t.by} {author}</Text> : null}
-            {date ? <Text style={[styles.date, styles.left]}>{date}</Text> : null}
+            {author ? <Text style={styles.author}>{t.by} {author}</Text> : null}
+            {date ? <Text style={styles.date}>{date}</Text> : null}
           </Pressed>
         </Rise>
       </View>
@@ -167,14 +167,12 @@ const styles = StyleSheet.create({
   fill: {
     flexGrow: 1,
   },
-  // The author and date at the foot of a portrait's card, flush left, at
-  // least SIGNATURE_GAP under the excerpt.
+  // The author and date at the foot of a portrait's card, centred like the
+  // rest of it (flush left while Portraits was a slideshow), at least
+  // SIGNATURE_GAP under the excerpt.
   signature: {
     marginTop: 'auto',
     paddingTop: SIGNATURE_GAP,
-  },
-  left: {
-    textAlign: 'left',
   },
   placeholder: {
     backgroundColor: colors.placeholder,

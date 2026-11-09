@@ -10,7 +10,8 @@ import { categoryType, colors } from './theme'
 // Each tab's icon (DrawnIcons.js), always drawn in ink. Keyed by the tab's
 // route name in app/[lang]/_layout.js.
 const icons = {
-  '(couverture)': 'rubriques',
+  '(couverture)': 'a-la-une',
+  rubriques: 'rubriques',
   voisinage: 'voisinage',
   'a-propos': 'a-propos',
 }
@@ -18,8 +19,9 @@ const icons = {
 // Rendered by the Tabs navigator (its `tabBar` prop). Icons and labels are
 // in ink; a red dot under the label marks the current tab. Pressing the
 // current tab again lets the navigator scroll its list to the top, or pop a
-// rubrique back to the list.
-export default function TabBar({ state, navigation }) {
+// rubrique back to the list. Since SDK 58 the navigator passes `emitter` and
+// `navigateToTab` rather than `navigation`, which is undefined here.
+export default function TabBar({ state, emitter, navigateToTab }) {
   const insets = useSafeAreaInsets()
   const { lang } = useGlobalSearchParams()
   const labels = (i18n[lang] ?? i18n.fr).tabs
@@ -37,8 +39,8 @@ export default function TabBar({ state, navigation }) {
           if (!icon) return null
           const focused = state.index === i
           const onPress = () => {
-            const event = navigation.emit({ type: 'tabPress', target: route.key, canPreventDefault: true })
-            if (!focused && !event.defaultPrevented) navigation.navigate(route.name, route.params)
+            const event = emitter.emit({ type: 'tabPress', target: route.key, canPreventDefault: true })
+            if (!focused && !event.defaultPrevented) navigateToTab(route.key)
           }
           return (
             <Pressable

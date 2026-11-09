@@ -144,15 +144,22 @@ export default function SignUpForm({ onDone }) {
         // The image is kept as base64 to upload as it is (account.js), cut
         // square by iOS's own editor.
         const options = { mediaTypes: ['images'], allowsEditing: true, aspect: [1, 1], quality: 0.7, base64: true }
-        let result
-        if (i === 0) {
-          const { granted } = await ImagePicker.requestCameraPermissionsAsync()
-          if (!granted) return setError(copy.camera)
-          result = await ImagePicker.launchCameraAsync({ ...options, cameraType: ImagePicker.CameraType.front })
-        } else {
-          result = await ImagePicker.launchImageLibraryAsync(options)
+        // A failure here was silent (nothing catches the action sheet's
+        // callback): the frame just stayed dashed. It is shown instead.
+        try {
+          let result
+          if (i === 0) {
+            const { granted } = await ImagePicker.requestCameraPermissionsAsync()
+            if (!granted) return setError(copy.camera)
+            result = await ImagePicker.launchCameraAsync({ ...options, cameraType: ImagePicker.CameraType.front })
+          } else {
+            result = await ImagePicker.launchImageLibraryAsync(options)
+          }
+          if (!result.canceled && result.assets?.[0]) setPhoto(result.assets[0])
+        } catch (e) {
+          console.warn('[photo]', e)
+          setError(String(e?.message ?? e))
         }
-        if (!result.canceled) setPhoto(result.assets[0])
       },
     )
   }
@@ -220,8 +227,11 @@ export default function SignUpForm({ onDone }) {
         <Text style={[styles.label, styles.section]}>{copy.avatar}</Text>
         <Text style={[styles.label, styles.optional]}>{copy.optional}</Text>
         <View style={styles.avatarPart}>
+        {/* Keyed apart, so the frame is drawn anew once a photo is taken:
+            reused, it kept its dashes (react-native-svg since SDK 58 doesn't
+            clear strokeDasharray). */}
         {photo ? (
-          <View style={styles.taken}>
+          <View key="taken" style={styles.taken}>
             <Pressable onPress={choosePhoto} accessibilityRole="button" accessibilityLabel={copy.changePhoto}>
               <Frame photo={photo} />
             </Pressable>
@@ -244,7 +254,7 @@ export default function SignUpForm({ onDone }) {
             </View>
           </View>
         ) : (
-          <View style={styles.pictures}>
+          <View key="pictures" style={styles.pictures}>
             <Pressable onPress={choosePhoto} accessibilityRole="button" accessibilityLabel={copy.importSelfie}>
               <Frame invite={copy.importSelfieCaps} />
             </Pressable>
@@ -513,9 +523,15 @@ const styles = StyleSheet.create({
     gap: 16,
     marginTop: 6,
   },
+  // Sized outright, 4pt inside the frame's line: filling the frame
+  // (absoluteFill and a margin), the image got no size since SDK 58, and
+  // expo-image doesn't load an image it has no room for.
   photo: {
-    ...StyleSheet.absoluteFillObject,
-    margin: 4,
+    position: 'absolute',
+    top: 4,
+    left: 4,
+    width: FRAME.width - 8,
+    height: FRAME.height - 8,
   },
   // The "+" and its words are laid out in the frame itself, centred both
   // ways: as an absolute overlay they stuck to the top.

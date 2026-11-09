@@ -7,7 +7,7 @@ import { urlFor } from './sanity'
 
 // A portrait: the same card as every other article (ArticleCard.js), with the
 // website's animated portrait (Framer's Portrait Vignette) first, then the
-// category, title and excerpt, and the author and date at the bottom left
+// category, title and excerpt, and the author and date centred below
 // (`pictureFirst`). (It was first the website's own portrait card, then the
 // other articles' order, the drawing where the illustration goes.)
 export default function PortraitCard(props) {

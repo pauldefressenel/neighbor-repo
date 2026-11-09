@@ -70,9 +70,8 @@ export default function Masthead({ onBack, backLabel = 'Retour', fade: paperFade
 // website goes to the home page instead; the app did too for a while). It
 // replaced a selector that opened a row with the other language beside it.
 // Article slugs differ between languages, so from an article it goes to the
-// article's rubrique, picked in the Rubriques switch (`?rubrique=`; it went
-// back to the list the article was opened from at first). The website does
-// the same. The account (account.js) sits above the [lang] segment, so it
+// article's rubrique (from a rubrique, that rubrique; from A La Une, the one
+// the card it was opened from names). The website does the same. The account (account.js) sits above the [lang] segment, so it
 // survives the switch.
 // A slug as the cards hold it: the path may carry it encoded (accents).
 const slugOf = (part) => {
@@ -91,11 +90,12 @@ function Language() {
 
   const choose = () => {
     const parts = pathname.split('/').filter(Boolean).slice(1)
+    if (parts[0] === 'rubriques' && parts.length > 2) return router.replace(`/${other}/rubriques/${parts[1]}`)
     if (parts[0] !== 'articles') return router.replace(`/${[other, ...parts].join('/')}`)
     // The card it was opened from (sanity.js) knows its section.
     const section = articleCard(slugOf(parts[1]))?.section
     const rubrique = SECTIONS.find((s) => s.sanity.includes(section))?.slug
-    router.replace(rubrique ? `/${other}?rubrique=${rubrique}` : `/${other}`)
+    router.replace(rubrique ? `/${other}/rubriques/${rubrique}` : `/${other}`)
   }
 
   return (

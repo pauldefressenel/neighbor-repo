@@ -12,4 +12,8 @@ config.watchFolders = [
   path.resolve(__dirname, '../public/portraits'),
 ]
 
+// Since SDK 58 an image asks for react-native/asset-registry from its own
+// folder, and the repo root has no react-native: look in the app's packages.
+config.resolver.nodeModulesPaths = [path.resolve(__dirname, 'node_modules')]
+
 module.exports = config
