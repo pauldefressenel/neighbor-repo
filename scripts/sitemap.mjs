@@ -21,6 +21,7 @@ const urls = []
 for (const lang of LANGS) {
   urls.push(`/${lang}`)
   if (ABOUT_OPEN) urls.push(`/${lang}/about`)
+  urls.push(`/${lang}/privacy`)
   if (NEIGHBORHOOD_OPEN) urls.push(`/${lang}/neighborhood`)
   for (const { value } of RUBRIQUES) urls.push(`/${lang}/${value}`)
 }

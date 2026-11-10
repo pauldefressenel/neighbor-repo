@@ -7,6 +7,7 @@ import SectionPage from './SectionPage'
 import ArticlePage from './ArticlePage'
 import LatestPage from './LatestPage'
 import AboutPage from './AboutPage'
+import PrivacyPage from './PrivacyPage'
 import VoisinagePage from './VoisinagePage'
 import Footer from './Footer'
 import Rule from './Rule'
@@ -177,6 +178,7 @@ export default function Layout() {
       <Routes>
         <Route index element={<LatestPage key={useLocation().pathname} />} />
         <Route path="about" element={ABOUT_OPEN ? <AboutPage /> : <Navigate to={`/${lang}`} replace />} />
+        <Route path="privacy" element={<PrivacyPage />} />
         <Route
           path="neighborhood"
           element={NEIGHBORHOOD_OPEN ? <VoisinagePage /> : <Navigate to={`/${lang}`} replace />}
