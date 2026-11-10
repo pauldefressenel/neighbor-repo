@@ -31,6 +31,7 @@ export const RUBRIQUES = [
       { fr: 'CINÉMA', en: 'FILM' },
       { fr: 'MUSIQUE', en: 'MUSIC' },
       { fr: 'ARTS CROISÉS', en: 'CROSSROADS' },
+      { fr: 'ENTRETIEN', en: 'INTERVIEW' },
     ],
   },
   {

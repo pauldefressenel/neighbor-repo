@@ -48,7 +48,7 @@ Sanity stores four `section` values. The website, the app and the Studio sidebar
 
 What the website and the app must agree on, as plain data and functions with no package imports (each side keeps its own `@sanity/client`, whose versions differ, and passes it in):
 
-- `sections.js` — the rubriques (labels and slugs per language, the app's subtitles, their Sanity sections, and Essais & Critiques' four categories, the only ones its articles may take: Livres / Books, Cinéma / Film, Musique / Music, Arts croisés / Crossroads; the Studio's Category field offers them as a list, `studio/categoryInput.jsx`, and `import/set-categories.mjs` set them on the existing articles) and each Sanity section's own name
+- `sections.js` — the rubriques (labels and slugs per language, the app's subtitles, their Sanity sections, and Essais & Critiques' five categories, the only ones its articles may take: Livres / Books, Cinéma / Film, Musique / Music, Arts croisés / Crossroads, Entretien / Interview; the Studio's Category field offers them as a list, `studio/categoryInput.jsx`, and `import/set-categories.mjs` set them on the existing articles) and each Sanity section's own name
 - `sanity.js` — the project (`SANITY`) and the queries both run: latest, a rubrique, an article, the About page
 - `i18n.js` — the strings both print; `src/i18n.js` and `mobile/src/i18n.js` add their own on top
 - `dates.js` — "9 mai 2026" / "May 9, 2026", spelled out by hand in UTC
