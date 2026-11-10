@@ -17,7 +17,16 @@ so skip `tsc`. ESLint is not set up yet: `npx expo lint` would install and
 configure it on its first run. `eas.json` has development, preview and
 production profiles; build numbers are kept by EAS (`appVersionSource:
 remote`, `autoIncrement`). The app is iPhone only (`supportsTablet: false`)
-and declares no non-exempt encryption. Nothing has been submitted yet.
+and declares no non-exempt encryption. Build 1.0.0 (2) is in App Store
+Connect, with Expo's placeholder icon; it has not been sent for review.
+
+EAS Update is set up (`expo-updates`, `updates.url` in `app.json`, a
+`channel` per build profile). Changes to the JavaScript alone reach phones
+with `npx eas-cli update --channel production`, without Apple's review.
+`runtimeVersion` follows the app's version (`policy: appVersion`), so an
+update only reaches builds of the same version: after a native change (a new
+module, a permission, the icon, an SDK upgrade) raise `version` in
+`app.json` and go through `eas build` and the App Store again.
 
 The first App Store release ships without Voisinage: `VOISINAGE_OPEN` in
 `sections.js` is false, so the tab bar has three tabs, `/<lang>/voisinage`

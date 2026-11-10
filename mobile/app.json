@@ -12,7 +12,10 @@
       "config": {
         "usesNonExemptEncryption": false
       },
-      "infoPlist": {}
+      "infoPlist": {},
+      "runtimeVersion": {
+        "policy": "appVersion"
+      }
     },
     "android": {
       "adaptiveIcon": {
@@ -62,6 +65,9 @@
         "projectId": "98267357-b348-449f-b718-6b7a114cdce3"
       }
     },
-    "owner": "pauldefressenel"
+    "owner": "pauldefressenel",
+    "updates": {
+      "url": "https://u.expo.dev/98267357-b348-449f-b718-6b7a114cdce3"
+    }
   }
 }
