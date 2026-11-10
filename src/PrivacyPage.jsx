@@ -15,7 +15,7 @@ const TEXT = {
     paragraphs: [
       [null, 'The Neighbor est un journal publié sur theneighborr.com et dans l’application iPhone The Neighbor. Cette page dit quelles données nous recueillons : presque aucune.'],
       ['L’application.', ' Elle ne demande ni compte, ni nom, ni adresse e-mail. Elle ne contient ni publicité, ni mesure d’audience, ni traceur, et ne recueille aucune donnée personnelle. Pour afficher les textes, elle les télécharge depuis Sanity, le service qui héberge nos articles ; comme toute connexion à Internet, ces demandes transmettent l’adresse IP de l’appareil, que nous ne conservons pas.'],
-      ['Le site.', ' Il n’utilise ni publicité ni mesure d’audience. Il dépose un seul cookie, « lang », qui retient la langue choisie. Il est hébergé par Vercel, et ses polices viennent de Google Fonts ; comme tout hébergeur, ces services voient l’adresse IP des visiteurs.'],
+      ['Le site.', ' Il n’utilise pas de publicité. Il compte ses visites avec Vercel Web Analytics, sans cookie ni donnée permettant de vous identifier : nous voyons seulement combien de pages sont lues, lesquelles, d’où viennent les lecteurs (pays, site précédent) et sur quel type d’appareil. Il dépose un seul cookie, « lang », qui retient la langue choisie. Il est hébergé par Vercel, et ses polices viennent de Google Fonts ; comme tout hébergeur, ces services voient l’adresse IP des visiteurs.'],
       ['Ce qui pourrait changer.', ' Si nous proposons un jour des comptes de lecteurs, cette page sera mise à jour avant, pour dire ce qui est recueilli et pourquoi.'],
       ['Contact.', ' Écrivez à admin@theneighborr.com pour toute question sur vos données.'],
     ],
@@ -26,7 +26,7 @@ const TEXT = {
     paragraphs: [
       [null, 'The Neighbor is a paper published at theneighborr.com and in The Neighbor iPhone app. This page says what data we collect: almost none.'],
       ['The app.', ' It asks for no account, no name and no e-mail address. It has no advertising, no analytics and no trackers, and collects no personal data. To show the texts, it downloads them from Sanity, the service that hosts our articles; like any connection to the internet, these requests carry the device’s IP address, which we do not keep.'],
-      ['The website.', ' It uses no advertising and no analytics. It sets a single cookie, “lang”, which remembers the language chosen. It is hosted by Vercel, and its fonts come from Google Fonts; like any host, these services see visitors’ IP addresses.'],
+      ['The website.', ' It uses no advertising. It counts its visits with Vercel Web Analytics, without cookies or anything that identifies you: we see only how many pages are read, which ones, where readers come from (country, previous site) and on what kind of device. It sets a single cookie, “lang”, which remembers the language chosen. It is hosted by Vercel, and its fonts come from Google Fonts; like any host, these services see visitors’ IP addresses.'],
       ['What could change.', ' If we ever offer reader accounts, this page will be updated first, to say what is collected and why.'],
       ['Contact.', ' Write to admin@theneighborr.com with any question about your data.'],
     ],
