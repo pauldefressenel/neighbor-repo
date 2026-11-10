@@ -187,6 +187,18 @@
     margin-top: 60px;
     --article-title-size: 48px;
   }
+
+  /* The text two pixels closer: 29px lines. */
+  .article-page-body,
+  .article-page-poem p {
+    line-height: 29px;
+  }
+
+  /* The drop cap shrunk with them, still over two lines (58px, not 62px). */
+  .article-page-body > p:first-child::first-letter {
+    font-size: 56px;
+    line-height: 46px;
+  }
 }
 
 /* Under the one-row header on wide screens (Layout.css). */
