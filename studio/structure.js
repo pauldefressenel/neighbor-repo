@@ -7,7 +7,8 @@ const languages = [
 ]
 
 const frontTitle = { en: 'Top Stories', fr: 'A La Une' }
-const aboutTitle = { en: 'About', fr: 'A Propos' }
+// Named after what it holds, in both languages.
+const aboutTitle = { en: 'Manifesto', fr: 'Manifeste' }
 
 // The three rubriques, from the list the website and the app share
 // (shared/sections.js). Each lists the articles whose `section` is among
