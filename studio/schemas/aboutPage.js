@@ -17,8 +17,10 @@ export const aboutPage = defineType({
           { title: 'French', value: 'fr' },
         ],
       },
-      readOnly: true,
-      validation: (Rule) => Rule.required(),
+      // The id (about-fr / about-en) already says the language, and the app
+      // and the website fetch by id. Nothing filled this in on a new page, so
+      // requiring it stopped about-en from being published.
+      hidden: true,
     }),
     defineField({
       name: 'title',
@@ -52,7 +54,7 @@ export const aboutPage = defineType({
     }),
   ],
   preview: {
-    select: { title: 'title', language: 'language' },
-    prepare: ({ title, language }) => ({ title, subtitle: language === 'fr' ? 'Français' : 'Anglais' }),
+    select: { title: 'title', id: '_id' },
+    prepare: ({ title, id }) => ({ title, subtitle: id?.endsWith('about-fr') ? 'Français' : 'Anglais' }),
   },
 })
