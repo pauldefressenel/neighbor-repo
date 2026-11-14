@@ -7,6 +7,7 @@ const languages = [
 ]
 
 const frontTitle = { en: 'Top Stories', fr: 'A La Une' }
+const aboutTitle = { en: 'About', fr: 'A Propos' }
 
 // The three rubriques, from the list the website and the app share
 // (shared/sections.js). Each lists the articles whose `section` is among
@@ -76,6 +77,14 @@ export const structure = (S) =>
                         ])
                     )
                 ),
+                S.divider(),
+                // A Propos: the manifesto the app's A Propos tab shows (and
+                // the website's About page, once ABOUT_OPEN). One fixed
+                // document per language, opened straight into the editor.
+                // Writing it here reaches the app at once, with no new build.
+                S.listItem()
+                  .title(aboutTitle[lang])
+                  .child(S.document().schemaType('aboutPage').documentId(`about-${lang}`)),
               ])
           )
       )
