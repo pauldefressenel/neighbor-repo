@@ -200,10 +200,21 @@
     line-height: 27px;
   }
 
-  /* The drop cap smaller, still over two lines (54px, not 62px). */
+  /* No drop cap: each paragraph opens on an indent (alinéa) instead. */
   .article-page-body > p:first-child::first-letter {
-    font-size: 46px;
-    line-height: 38px;
+    float: none;
+    font: inherit;
+    margin: 0;
+    padding: 0;
+  }
+
+  .article-page-body p {
+    text-indent: 1.5em;
+  }
+
+  /* The indent marks the paragraph, so no gap between them. */
+  .article-page-body p + p {
+    margin-top: 0;
   }
 }
 

@@ -47,7 +47,7 @@ export default function ArticlePage() {
   const shown = article ?? (opened?.slug === slug ? opened.card : null)
   if (!shown) return <main className="article-page article-page--loading" />
 
-  // "Anna Canonne." over the title, "20 mai 2026" under it.
+  // "Anna Canonne" over the title, "20 mai 2026" under it.
   const date = shown.publishedAt ? shortDate(shown.publishedAt, lang) : null
 
   return (
@@ -72,7 +72,7 @@ export default function ArticlePage() {
       </Link>
       <ArticleHeading
         category={shown.category}
-        byline={shown.author ? `${shown.author}.` : ''}
+        byline={shown.author ?? ''}
         title={shown.title}
         date={date}
       />
