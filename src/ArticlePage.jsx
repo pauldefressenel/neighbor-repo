@@ -2,8 +2,7 @@ import { useState, useEffect } from 'react'
 import { Link, useLocation, useNavigate, useParams } from 'react-router-dom'
 import { PortableText } from '@portabletext/react'
 import { getArticleBySlug } from './sanity/queries'
-import { longDate } from '../shared/dates.js'
-import { readingMinutes } from './readingMinutes'
+import { shortDate } from '../shared/dates.js'
 import { rubriqueOf } from './sections'
 import { fadeOut, leaving, opening } from './fade'
 import { i18n } from './i18n'
@@ -11,9 +10,8 @@ import Arrow from './Arrow'
 import './ArticlePage.css'
 
 // An article's page, as in the app (mobile/src/ArticleScreen.js and
-// ArticleText.js): the category, "author, date.", the title and the reading
-// time, on the left, then the text, opening on a drop cap, then any poems.
-// Above them, the app's back arrow.
+// ArticleText.js): the category, the author, the title and the date, on
+// the left, then the text, opening on a drop cap, then any poems. Above them, the app's back arrow.
 export default function ArticlePage() {
   const { lang, slug } = useParams()
   // Opened from a card (fade.js opening): its fetch, already under way, and
@@ -49,9 +47,8 @@ export default function ArticlePage() {
   const shown = article ?? (opened?.slug === slug ? opened.card : null)
   if (!shown) return <main className="article-page article-page--loading" />
 
-  // "Anna Canonne, 20 mai 2026." on one line, closed by a full stop.
-  const date = shown.publishedAt ? longDate(shown.publishedAt, lang) : null
-  const byline = [shown.author, date].filter(Boolean).join(', ')
+  // "Anna Canonne." over the title, "20 mai 2026" under it.
+  const date = shown.publishedAt ? shortDate(shown.publishedAt, lang) : null
 
   return (
     <main
@@ -75,20 +72,18 @@ export default function ArticlePage() {
       </Link>
       <ArticleHeading
         category={shown.category}
-        byline={byline ? `${byline}.` : ''}
+        byline={shown.author ? `${shown.author}.` : ''}
         title={shown.title}
-        readingTime={article ? `${readingMinutes(article)} min.` : null}
+        date={date}
       />
       {article && <ArticleText body={article.body ?? []} poems={article.poems ?? []} />}
     </main>
   )
 }
 
-// The block above an article's text, also About's: the category, "author,
-// date." right under it, the title, then the reading time. `readingTime` is
-// null until the text has loaded: its line is held open until then, so
-// nothing moves when it arrives.
-export function ArticleHeading({ category, byline, title, readingTime }) {
+// The block above an article's text, also About's: the category, the author
+// right under it, the title, then the date (none on About).
+export function ArticleHeading({ category, byline, title, date }) {
   return (
     <>
       {(category || byline) && (
@@ -97,8 +92,8 @@ export function ArticleHeading({ category, byline, title, readingTime }) {
           {byline && <p className="article-page-byline">{byline}</p>}
         </div>
       )}
-      <h1 className={`article-page-title${category || byline ? '' : ' article-page-title--alone'}`}>{title}</h1>
-      <p className="article-page-byline article-page-reading">{readingTime ?? ' '}</p>
+      <h1 className={`article-page-title${category || byline ? '' : ' article-page-title--alone'}${date ? '' : ' article-page-title--last'}`}>{title}</h1>
+      {date && <p className="article-page-byline article-page-date">{date}</p>}
     </>
   )
 }

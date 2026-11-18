@@ -72,7 +72,7 @@
   text-transform: uppercase;
 }
 
-/* "Author, date.", right under the category, and the reading time. */
+/* The author, right under the category, and the date under the title. */
 .article-page-byline {
   font-family: 'EB Garamond', serif;
   font-size: 21px;
@@ -103,11 +103,17 @@
   margin-top: 0;
 }
 
-/* "6 min." under the title, 48px above the text. */
-.article-page-reading {
-  margin-top: 2px;
+/* "18 nov. 2026" 12px under the title, 48px above the text, shown with
+   the title (the card already had it). */
+.article-page-date {
+  margin-top: 12px;
   margin-bottom: 48px;
-  animation: var(--article-rise-body);
+  animation: var(--article-rise-title);
+}
+
+/* With no date (About), the title holds the room above the text. */
+.article-page-title--last {
+  margin-bottom: 48px;
 }
 
 .article-page-text {

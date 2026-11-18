@@ -17,3 +17,19 @@ export const longDate = (iso, lang) => {
   const year = d.getUTCFullYear()
   return lang === 'fr' ? `${day} ${month} ${year}` : `${month} ${day}, ${year}`
 }
+
+// The same, the month cut short: "18 nov. 2026" / "Nov. 18, 2026" (the
+// website's article heading). Months of four letters or fewer stay whole.
+export const SHORT_MONTHS = {
+  fr: ['janv.', 'févr.', 'mars', 'avr.', 'mai', 'juin', 'juil.', 'août', 'sept.', 'oct.', 'nov.', 'déc.'],
+  en: ['Jan.', 'Feb.', 'Mar.', 'Apr.', 'May', 'June', 'July', 'Aug.', 'Sept.', 'Oct.', 'Nov.', 'Dec.'],
+}
+
+export const shortDate = (iso, lang) => {
+  const d = new Date(iso)
+  if (Number.isNaN(d.getTime())) return null
+  const day = d.getUTCDate()
+  const month = (SHORT_MONTHS[lang] ?? SHORT_MONTHS.en)[d.getUTCMonth()]
+  const year = d.getUTCFullYear()
+  return lang === 'fr' ? `${day} ${month} ${year}` : `${month} ${day}, ${year}`
+}

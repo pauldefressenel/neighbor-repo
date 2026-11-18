@@ -3,10 +3,9 @@ import { useParams } from 'react-router-dom'
 import { getAboutPage } from './sanity/queries'
 import { i18n } from './i18n'
 import { ArticleHeading, ArticleText } from './ArticlePage'
-import { readingMinutes } from './readingMinutes'
 
 // A Propos, set like an article, as in the app (mobile/src/app/[lang]/a-propos.js):
-// a fixed heading (category, byline, title, reading time), then the
+// a fixed heading (category, byline, title), then the
 // `about-<lang>` document's text. The heading is fixed so it shows while the
 // text loads.
 export default function AboutPage() {
@@ -25,7 +24,6 @@ export default function AboutPage() {
         category={heading.category}
         byline={heading.byline}
         title={heading.title}
-        readingTime={body?.length ? `${readingMinutes({ body })} min.` : null}
       />
       {body && <ArticleText body={body} />}
     </main>
