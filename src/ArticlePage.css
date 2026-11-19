@@ -37,9 +37,12 @@
 /* The back arrow (the Portraits row's drawn chevron, 21px tall), on the
    left, centred on the category's line, rising with the heading, and black
    throughout (red on hover was tried, and stuck after a tap on phones). Its
-   padding widens what a finger can hit without moving it. */
+   padding widens what a finger can hit without moving it. Above the
+   heading, whose full-width rows (raised by their animation) would
+   otherwise cover it and take its clicks. */
 .article-page-back {
   position: absolute;
+  z-index: 1;
   top: calc(var(--article-top) + (var(--category-leading) * var(--category-size) - 21px) / 2 - 10px);
   left: -12px;
   padding: 10px 12px;
