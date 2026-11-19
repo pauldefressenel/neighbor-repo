@@ -27,19 +27,22 @@
 }
 
 .article-page {
+  --article-top: 45px;
+  position: relative;
   width: min(600px, 100% - 40px);
   margin: 100px auto 0;
-  padding: 36px 0 80px;
+  padding: var(--article-top) 0 80px;
 }
 
-/* The back arrow (the Portraits row's drawn chevron), on the left above the
-   heading, rising with it, and black throughout (red on hover was tried,
-   and stuck after a tap on phones). Its padding widens what a finger can hit without
-   moving it. */
+/* The back arrow (the Portraits row's drawn chevron, 21px tall), on the
+   left, centred on the category's line, rising with the heading, and black
+   throughout (red on hover was tried, and stuck after a tap on phones). Its
+   padding widens what a finger can hit without moving it. */
 .article-page-back {
-  display: inline-block;
+  position: absolute;
+  top: calc(var(--article-top) + (var(--category-leading) * var(--category-size) - 21px) / 2 - 10px);
+  left: -12px;
   padding: 10px 12px;
-  margin: -10px -12px 18px;
   color: #000;
   -webkit-tap-highlight-color: transparent;
   animation: var(--article-rise-heading);
@@ -49,20 +52,23 @@
   min-height: 100vh;
 }
 
-/* About has no arrow: its heading keeps the arrow's room. */
-.article-page--about {
-  padding-top: 60px;
-}
-
 .article-page-back svg {
   display: block;
+}
+
+/* The heading (category, author, title, date) is centred; the back arrow
+   beside it and the text below stay on the left. */
+.article-page-heading,
+.article-page-title,
+.article-page-date {
+  text-align: center;
 }
 
 .article-page-heading {
   animation: var(--article-rise-heading);
 }
 
-/* The cards' category, on the left. */
+/* The cards' category. */
 .article-page-category {
   font-family: 'Averia Libre', sans-serif;
   font-size: var(--category-size);
@@ -84,7 +90,7 @@
   margin-top: 4px;
 }
 
-/* Larger than the app's 42pt (56px, 48px on phones), on the left, its
+/* Larger than the app's 42pt (56px, 48px on phones), centred, its
    lines balanced (the app leaves them unbalanced). */
 .article-page-title {
   margin-top: 6px;
