@@ -26,6 +26,13 @@
   }
 }
 
+/* The text face (--text-font in index.css: Newsreader, a little larger
+   than EB Garamond, which was set at 21px). */
+.article-page {
+  --article-font: var(--text-font);
+  --article-text-size: 20px;
+}
+
 .article-page {
   --article-top: 45px;
   position: relative;
@@ -83,8 +90,8 @@
 
 /* The author, right under the category, and the date under the title. */
 .article-page-byline {
-  font-family: 'EB Garamond', serif;
-  font-size: 21px;
+  font-family: var(--article-font);
+  font-size: var(--article-text-size);
   line-height: 24px;
   color: #000;
 }
@@ -129,14 +136,14 @@
   animation: var(--article-rise-body);
 }
 
-/* EB Garamond 21px on 31px lines, paragraphs 1.4em apart, justified and
+/* The text face (--article-font) on 31px lines, paragraphs 1.4em apart, justified and
    hyphenated in the article's language (the page's `lang`; without
    hyphenation, phones' lines gaped). The app's text is ragged. Only longer
    words are broken, keeping four letters each side, and (in Safari) never
    on two lines running: breaking any word left too many hyphens. */
 .article-page-body {
-  font-family: 'EB Garamond', serif;
-  font-size: 21px;
+  font-family: var(--article-font);
+  font-size: var(--article-text-size);
   line-height: 31px;
   color: #000;
   text-align: justify;
@@ -180,7 +187,7 @@
 }
 
 .article-page-poem-title {
-  font-family: 'EB Garamond', serif;
+  font-family: var(--article-font);
   font-size: 24px;
   line-height: 1.2;
   font-weight: 400;
@@ -188,8 +195,8 @@
 }
 
 .article-page-poem p {
-  font-family: 'EB Garamond', serif;
-  font-size: 21px;
+  font-family: var(--article-font);
+  font-size: var(--article-text-size);
   line-height: 31px;
   margin: 0;
   white-space: pre-wrap;

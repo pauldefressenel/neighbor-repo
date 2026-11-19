@@ -65,7 +65,7 @@
   letter-spacing: var(--title-tracking);
   line-height: var(--title-leading);
   text-wrap: balance;
-  padding-bottom: 4px;
+  padding-bottom: 6px;
 }
 
 /* The card's width less an inset each side, as in the app, its lines
@@ -73,7 +73,7 @@
 .article-description {
   align-self: stretch;
   padding: 0 var(--excerpt-inset);
-  font-family: 'EB Garamond', serif;
+  font-family: var(--text-font);
   font-weight: 400;
   font-size: var(--excerpt-size);
   line-height: var(--excerpt-leading);
@@ -111,7 +111,7 @@
 
 .article-author,
 .article-date {
-  font-family: 'EB Garamond', serif;
+  font-family: var(--text-font);
   font-size: var(--byline-size);
   line-height: var(--byline-line-height);
 }

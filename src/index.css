@@ -10,6 +10,11 @@
   src: url('/NeighborFont-Medium.otf') format('opentype');
 }
 
+/* The text face of articles and cards: Newsreader (EB Garamond before). */
+:root {
+  --text-font: 'Newsreader', 'EB Garamond', serif;
+}
+
 /* Framer "appear" effects: rise from y offset while fading in.
    bounce 0.3 → overshoot; bounce 0 → plain ease-out. */
 @keyframes appear-10 {
